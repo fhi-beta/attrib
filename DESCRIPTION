@@ -7,7 +7,11 @@ Depends: R (>= 3.5.0)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-Imports: data.table
+Imports: data.table,
+    glue,
+    pbs,
+    dlnm,
+    FluMoDL
 Suggests: testthat,
     knitr,
     rmarkdown
