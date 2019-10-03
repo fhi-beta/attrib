@@ -171,7 +171,7 @@ get_attrib_int <- function(attrib_small, tag, range, sub, coef = NULL, vcov = NU
     vcovx <- attrib_small$pred[[tag]]$vcov
   }
 
-    retval <- attrdl(
+  retval <- attrdl(
     x = attrib_small$exposure_values[[tag]],
     basis = attrib_small$basis[[tag]],
     cases = attrib_small$outcome,
@@ -187,7 +187,7 @@ get_attrib_int <- function(attrib_small, tag, range, sub, coef = NULL, vcov = NU
   retval <- as.data.frame(t(quantile(retval, probs = c(0.025, 0.5, 0.975))))
   data.table::setDT(retval)
   data.table::setnames(retval, c("attr_low", "attr_est", "attr_high"))
-  retval[,attr_se:=(attr_high-attr_low)/2/1.96]
+  retval[, attr_se := (attr_high - attr_low) / 2 / 1.96]
 
   return(retval)
 }
