@@ -6,7 +6,9 @@
 \usage{
 fit_attrib(dates = FluMoDL::greece$daily$date,
   outcome = FluMoDL::greece$daily$deaths, exposure_values = list(tg =
-  FluMoDL::greece$daily$temp), exposure_types = list(tg = "cubic"))
+  FluMoDL::greece$daily$temp), exposure_types = list(tg = "cubic"),
+  exposure_knots = list(tg = c(-10, 20)),
+  exposure_boundary_knots = list(tx = c(-25, 35)))
 }
 \arguments{
 \item{dates}{x}
@@ -16,6 +18,10 @@ fit_attrib(dates = FluMoDL::greece$daily$date,
 \item{exposure_values}{x}
 
 \item{exposure_types}{a}
+
+\item{exposure_knots}{a}
+
+\item{exposure_boundary_knots}{a}
 }
 \description{
 fit_attrib

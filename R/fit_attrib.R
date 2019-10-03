@@ -1,10 +1,13 @@
-create_basis <- function(x, type) {
+create_basis <- function(x, type, knots=NULL, boundary_knots = NULL) {
   lg <- 30 # 30 days maximum lag (fixed)
+
+  if(is.null(knots)) knots <- stats::quantile(x, c(0.2, 0.8))
+  if(is.null(boundary_knots)) boundary_knots <- range(x)
 
   if (type == "cubic") {
     retval <- dlnm::crossbasis(x,
       lag = lg,
-      argvar = list(fun = "ns", knots = stats::quantile(x, c(0.1, 0.5, 0.9))),
+      argvar = list(fun = "ns", knots = knots, Boundary.knots = boundary_knots),
       arglag = list(fun = "ns", knots = dlnm::logknots(lg, 3))
     )
   } else if (type == "linear") {
@@ -26,6 +29,8 @@ gen_basis_name <- function(tag) {
 #' @param outcome x
 #' @param exposure_values x
 #' @param exposure_types a
+#' @param exposure_knots a
+#' @param exposure_boundary_knots a
 #' @export
 fit_attrib <- function(
   dates = FluMoDL::greece$daily$date,
@@ -35,7 +40,14 @@ fit_attrib <- function(
   ),
   exposure_types = list(
     "tg" = "cubic"
-  )) {
+  ),
+  exposure_knots = list(
+    "tg" = c(-10,20)
+  ),
+  exposure_boundary_knots = list(
+    "tx" = c(-25, 35)
+  )
+  ) {
 
   calc_year <- fhi::isoyear_n(dates)-2000
   calc_week <- fhi::isoweek_n(dates)
@@ -45,7 +57,12 @@ fit_attrib <- function(
   for (i in seq_along(exposure_values)) {
     name <- names(exposure_values)[[i]]
     new_name <- gen_basis_name(tag = name)
-    basis[[name]] <- temp <- create_basis(x = exposure_values[[i]], type = exposure_types[[i]])
+    basis[[name]] <- temp <- create_basis(
+      x = exposure_values[[name]],
+      type = exposure_types[[name]],
+      knots = exposure_knots[[name]],
+      boundary_knots = exposure_boundary_knots[[name]]
+      )
     txt <- glue::glue("{new_name} <- temp")
     eval(parse(text = txt))
     basis_names <- c(basis_names, new_name)

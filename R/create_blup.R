@@ -1,14 +1,13 @@
 #' create_blup
-#' @param ... attrib
+#' @param summaries attrib
 #' @export
-create_blup <- function(...){
-  summaries <- list(...)
+create_blup <- function(summaries){
 
   TE <- lapply(summaries, function(s) coef(s$attrib_fixed$fit))
   seTE <- lapply(summaries, function(s) vcov(s$attrib_fixed$fit))
   TE <- do.call("rbind", TE)
 
-  fit_meta <- mvmeta::mvmeta(TE, S=seTE, method="mm")
+  fit_meta <- mvmeta::mvmeta(TE, S=seTE, method="reml")
   res <- mvmeta::blup(fit_meta,vcov=T)
 
   retval <- vector("list", length=length(summaries))

@@ -4,10 +4,10 @@
 \alias{create_blup}
 \title{create_blup}
 \usage{
-create_blup(...)
+create_blup(summaries)
 }
 \arguments{
-\item{...}{attrib}
+\item{summaries}{attrib}
 }
 \description{
 create_blup
