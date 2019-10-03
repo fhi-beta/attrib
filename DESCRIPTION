@@ -11,9 +11,12 @@ Imports: data.table,
     glue,
     pbs,
     dlnm,
-    FluMoDL
+    fhi,
+    mvmeta,
+    tsModel
 Suggests: testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    FluMoDL
 RoxygenNote: 6.1.1
 VignetteBuilder: knitr

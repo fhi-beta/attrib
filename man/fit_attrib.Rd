@@ -4,11 +4,13 @@
 \alias{fit_attrib}
 \title{fit_attrib}
 \usage{
-fit_attrib(outcome = FluMoDL::greece$daily$deaths,
-  exposure_values = list(tg = FluMoDL::greece$daily$temp),
-  exposure_types = list(tg = "cubic"))
+fit_attrib(dates = FluMoDL::greece$daily$date,
+  outcome = FluMoDL::greece$daily$deaths, exposure_values = list(tg =
+  FluMoDL::greece$daily$temp), exposure_types = list(tg = "cubic"))
 }
 \arguments{
+\item{dates}{x}
+
 \item{outcome}{x}
 
 \item{exposure_values}{x}
