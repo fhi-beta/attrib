@@ -1,5 +1,5 @@
 .onAttach <- function(libname, pkgname) {
   packageStartupMessage("PACKAGE: fhidata")
-  packageStartupMessage("Version: 2019.09.07 at 20:05")
+  packageStartupMessage("Version: 2019.10.03 at 11:24")
   packageStartupMessage("Developed by Richard White, Norwegian Institute of Public Health")
 }
