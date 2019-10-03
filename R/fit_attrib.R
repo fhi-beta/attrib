@@ -1,8 +1,8 @@
-create_basis <- function(x, type, knots=NULL, boundary_knots = NULL) {
+create_basis <- function(x, type, knots = NULL, boundary_knots = NULL) {
   lg <- 30 # 30 days maximum lag (fixed)
 
-  if(is.null(knots)) knots <- stats::quantile(x, c(0.2, 0.8))
-  if(is.null(boundary_knots)) boundary_knots <- range(x)
+  if (is.null(knots)) knots <- stats::quantile(x, c(0.2, 0.8))
+  if (is.null(boundary_knots)) boundary_knots <- range(x)
 
   if (type == "cubic") {
     retval <- dlnm::crossbasis(x,
@@ -33,23 +33,21 @@ gen_basis_name <- function(tag) {
 #' @param exposure_boundary_knots a
 #' @export
 fit_attrib <- function(
-  dates = FluMoDL::greece$daily$date,
-  outcome = FluMoDL::greece$daily$deaths,
-  exposure_values = list(
-    "tg" = FluMoDL::greece$daily$temp
-  ),
-  exposure_types = list(
-    "tg" = "cubic"
-  ),
-  exposure_knots = list(
-    "tg" = c(-10,20)
-  ),
-  exposure_boundary_knots = list(
-    "tx" = c(-25, 35)
-  )
-  ) {
-
-  calc_year <- fhi::isoyear_n(dates)-2000
+                       dates = FluMoDL::greece$daily$date,
+                       outcome = FluMoDL::greece$daily$deaths,
+                       exposure_values = list(
+                         "tg" = FluMoDL::greece$daily$temp
+                       ),
+                       exposure_types = list(
+                         "tg" = "cubic"
+                       ),
+                       exposure_knots = list(
+                         "tg" = c(-10, 20)
+                       ),
+                       exposure_boundary_knots = list(
+                         "tx" = c(-25, 35)
+                       )) {
+  calc_year <- fhi::isoyear_n(dates) - 2000
   calc_week <- fhi::isoweek_n(dates)
 
   basis_names <- c()
@@ -62,7 +60,7 @@ fit_attrib <- function(
       type = exposure_types[[name]],
       knots = exposure_knots[[name]],
       boundary_knots = exposure_boundary_knots[[name]]
-      )
+    )
     txt <- glue::glue("{new_name} <- temp")
     eval(parse(text = txt))
     basis_names <- c(basis_names, new_name)
@@ -96,17 +94,17 @@ fit_attrib <- function(
   class(attrib_blup) <- "attrib_small"
 
   attrib <- list(
-    attrib_fixed=attrib_small,
-    attrib_blup=attrib_blup
+    attrib_fixed = attrib_small,
+    attrib_blup = attrib_blup
   )
   class(attrib) <- "attrib"
 
   return(attrib)
 }
 
-fit_preds <- function(basis, exposure_values, fit=NULL, coef=NULL, vcov=NULL){
+fit_preds <- function(basis, exposure_values, fit = NULL, coef = NULL, vcov = NULL) {
   basis_names <- glue::glue("x_basis_{names(basis)}")
-  for(i in seq_along(basis_names)){
+  for (i in seq_along(basis_names)) {
     new_name <- basis_names[i]
     txt <- glue::glue("{new_name} <- basis[[i]]")
     eval(parse(text = txt))
@@ -120,11 +118,11 @@ fit_preds <- function(basis, exposure_values, fit=NULL, coef=NULL, vcov=NULL){
     name <- names(exposure_values)[[i]]
     vals <- exposure_values[[name]]
 
-    if(is.null(fit) & !is.null(coef) & !is.null(vcov)){
+    if (is.null(fit) & !is.null(coef) & !is.null(vcov)) {
       index <- names(coef) %in% colnames(get(basis_names[i]))
       coefx <- coef[index]
       vcovx <- vcov[index, index]
-      model.link = "log"
+      model.link <- "log"
     } else {
       model.link <- coefx <- vcovx <- NULL
     }
@@ -145,7 +143,7 @@ fit_preds <- function(basis, exposure_values, fit=NULL, coef=NULL, vcov=NULL){
       "bylag=0.2, cen={MMP}, cumul=TRUE)"
     )
     pred[[name]] <- eval(parse(text = txt))
-    if(!is.null(coef) & !is.null(vcov)){
+    if (!is.null(coef) & !is.null(vcov)) {
       pred[[name]]$coefficients <- coefx
       pred[[name]]$vcov <- vcovx
     }
@@ -157,17 +155,17 @@ fit_preds <- function(basis, exposure_values, fit=NULL, coef=NULL, vcov=NULL){
   ))
 }
 
-get_attrib_int <- function(attrib_small, tag, range, sub, coef=NULL, vcov=NULL) {
-  if(is.null(sub)){
+get_attrib_int <- function(attrib_small, tag, range, sub, coef = NULL, vcov = NULL) {
+  if (is.null(sub)) {
     sub <- list(
       1:length(attrib_small$outcome)
     )
   }
 
-  if(!is.null(coef) & !is.null(vcov)){
+  if (!is.null(coef) & !is.null(vcov)) {
     index <- which(names(coef) %in% attrib_small$pred[[tag]]$coefficients)
     coefx <- coef[index]
-    vcovx <- vcov[index,index]
+    vcovx <- vcov[index, index]
   } else {
     coefx <- attrib_small$pred[[tag]]$coefficients
     vcovx <- attrib_small$pred[[tag]]$vcov
@@ -186,9 +184,9 @@ get_attrib_int <- function(attrib_small, tag, range, sub, coef=NULL, vcov=NULL) 
     sub = sub
   )
 
-  retval <- as.data.frame(t(quantile(retval,probs=c(0.025,0.5,0.975))))
+  retval <- as.data.frame(t(quantile(retval, probs = c(0.025, 0.5, 0.975))))
   data.table::setDT(retval)
-  data.table::setnames(retval, c("attr_low","attr_est","attr_high"))
+  data.table::setnames(retval, c("attr_low", "attr_est", "attr_high"))
 
   return(retval)
 }
@@ -201,34 +199,34 @@ get_attrib_int <- function(attrib_small, tag, range, sub, coef=NULL, vcov=NULL) 
 #' @param sub a
 #' @import data.table
 #' @export
-get_attrib <- function(attrib_x, use_blup=FALSE, tag, range, sub = NULL) {
-  if("attrib_small" %in% class(attrib_x) & use_blup==TRUE){
+get_attrib <- function(attrib_x, use_blup = FALSE, tag, range, sub = NULL) {
+  if ("attrib_small" %in% class(attrib_x) & use_blup == TRUE) {
     stop("cannot use_blup==T when class==attrib_small")
   }
 
-  if("attrib_small" %in% class(attrib_x)){
+  if ("attrib_small" %in% class(attrib_x)) {
     attrib_use <- attrib_x
-  } else if("attrib" %in% class(attrib_x) & use_blup==FALSE){
+  } else if ("attrib" %in% class(attrib_x) & use_blup == FALSE) {
     attrib_use <- attrib_x$attrib_fixed
-  } else if("attrib" %in% class(attrib_x) & use_blup==TRUE){
+  } else if ("attrib" %in% class(attrib_x) & use_blup == TRUE) {
     attrib_use <- attrib_x$attrib_blup
   }
-  if(!attrib_use$can_be_used){
+  if (!attrib_use$can_be_used) {
     stop("can_be_used flag set to false")
   }
 
-  if(is.null(sub)){
+  if (is.null(sub)) {
     sub <- list(
       1:length(attrib_x$outcome)
     )
-  } else if(!is.list(sub)){
+  } else if (!is.list(sub)) {
     sub <- list(
       sub
     )
   }
 
-  retval <- vector("list", length=length(sub))
-  for(i in seq_along(retval)){
+  retval <- vector("list", length = length(sub))
+  for (i in seq_along(retval)) {
     retval[[i]] <- get_attrib_int(
       attrib_small = attrib_use,
       tag = tag,
@@ -238,6 +236,4 @@ get_attrib <- function(attrib_x, use_blup=FALSE, tag, range, sub = NULL) {
   }
   retval <- rbindlist(retval)
   return(retval)
-
 }
-
