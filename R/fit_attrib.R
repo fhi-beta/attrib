@@ -219,7 +219,7 @@ get_attrib <- function(attrib_x, use_blup=FALSE, tag, range, sub = NULL) {
 
   if(is.null(sub)){
     sub <- list(
-      1:length(attrib_x$outcome)
+      1:length(attrib_use$outcome)
     )
   } else if(!is.list(sub)){
     sub <- list(
