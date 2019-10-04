@@ -155,13 +155,13 @@ fit_preds <- function(basis, exposure_values, fit = NULL, coef = NULL, vcov = NU
   ))
 }
 
-get_attrib_int <- function(list_of_attrib_small, tag, range, sub=NULL, coef = NULL, vcov = NULL) {
+get_attrib_int <- function(list_of_attrib_small, tag, range, sub = NULL, coef = NULL, vcov = NULL) {
   if (is.null(sub)) {
     sub <- 1:length(list_of_attrib_small[[1]]$outcome)
   }
 
-  retval <- matrix(NA,nrow=5000,ncol=length(list_of_attrib_small))
-  for(i in 1:length(list_of_attrib_small)){
+  retval <- matrix(NA, nrow = 5000, ncol = length(list_of_attrib_small))
+  for (i in 1:length(list_of_attrib_small)) {
     attrib_small <- list_of_attrib_small[[i]]
     if (!is.null(coef) & !is.null(vcov)) {
       index <- which(names(coef) %in% attrib_small$pred[[tag]]$coefficients)
@@ -185,7 +185,7 @@ get_attrib_int <- function(list_of_attrib_small, tag, range, sub=NULL, coef = NU
       nsim = 5000,
       sub = sub
     )
-    retval[,i] <- retvalx
+    retval[, i] <- retvalx
   }
   retval <- apply(retval, 1, sum)
 
@@ -196,7 +196,7 @@ get_attrib_int <- function(list_of_attrib_small, tag, range, sub=NULL, coef = NU
   return(retval)
 }
 
-attrib_use <- function(attrib, use_blup = FALSE){
+attrib_use <- function(attrib, use_blup = FALSE) {
   stopifnot("attrib" %in% class(attrib))
 
   if ("attrib" %in% class(attrib) & use_blup == FALSE) {
@@ -220,9 +220,9 @@ attrib_use <- function(attrib, use_blup = FALSE){
 #' @import data.table
 #' @export
 get_attrib <- function(attrib, use_blup = FALSE, tag, range, sub = NULL) {
-  if("attrib" %in% class(attrib)) attrib <- list(attrib)
+  if ("attrib" %in% class(attrib)) attrib <- list(attrib)
 
-  a_use <- attrib_use(attrib=attrib[[1]], use_blup=use_blup)
+  a_use <- attrib_use(attrib = attrib[[1]], use_blup = use_blup)
 
   if (is.null(sub)) {
     sub <- list(
@@ -237,7 +237,7 @@ get_attrib <- function(attrib, use_blup = FALSE, tag, range, sub = NULL) {
   list_of_attrib_small <- lapply(attrib, function(x) x[[a_use]])
 
   retval <- vector("list", length = length(sub))
-  pb <- fhi::txt_progress_bar(max=length(retval))
+  pb <- fhi::txt_progress_bar(max = length(retval))
   for (i in seq_along(retval)) {
     utils::setTxtProgressBar(pb, i)
 
