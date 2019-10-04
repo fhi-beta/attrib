@@ -155,70 +155,78 @@ fit_preds <- function(basis, exposure_values, fit = NULL, coef = NULL, vcov = NU
   ))
 }
 
-get_attrib_int <- function(attrib_small, tag, range, sub, coef = NULL, vcov = NULL) {
+get_attrib_int <- function(list_of_attrib_small, tag, range, sub=NULL, coef = NULL, vcov = NULL) {
   if (is.null(sub)) {
-    sub <- list(
-      1:length(attrib_small$outcome)
+    sub <- 1:length(list_of_attrib_small[[1]]$outcome)
+  }
+
+  retval <- matrix(NA,nrow=5000,ncol=length(list_of_attrib_small))
+  for(i in 1:length(list_of_attrib_small)){
+    attrib_small <- list_of_attrib_small[[i]]
+    if (!is.null(coef) & !is.null(vcov)) {
+      index <- which(names(coef) %in% attrib_small$pred[[tag]]$coefficients)
+      coefx <- coef[index]
+      vcovx <- vcov[index, index]
+    } else {
+      coefx <- attrib_small$pred[[tag]]$coefficients
+      vcovx <- attrib_small$pred[[tag]]$vcov
+    }
+
+    retvalx <- attrdl(
+      x = attrib_small$exposure_values[[tag]],
+      basis = attrib_small$basis[[tag]],
+      cases = attrib_small$outcome,
+      coef = coefx,
+      vcov = vcovx,
+      type = "an",
+      cen = attrib_small$mmp[[tag]],
+      range = range,
+      sim = T,
+      nsim = 5000,
+      sub = sub
     )
+    retval[,i] <- retvalx
   }
+  retval <- apply(retval, 1, sum)
 
-  if (!is.null(coef) & !is.null(vcov)) {
-    index <- which(names(coef) %in% attrib_small$pred[[tag]]$coefficients)
-    coefx <- coef[index]
-    vcovx <- vcov[index, index]
-  } else {
-    coefx <- attrib_small$pred[[tag]]$coefficients
-    vcovx <- attrib_small$pred[[tag]]$vcov
-  }
-
-  retval <- attrdl(
-    x = attrib_small$exposure_values[[tag]],
-    basis = attrib_small$basis[[tag]],
-    cases = attrib_small$outcome,
-    coef = coefx,
-    vcov = vcovx,
-    type = "an",
-    cen = attrib_small$mmp[[tag]],
-    range = range,
-    sim = T,
-    sub = sub
-  )
-
-  retval <- as.data.frame(t(quantile(retval, probs = c(0.025, 0.5, 0.975))))
+  retval <- as.data.frame(t(stats::quantile(c(retval), probs = c(0.025, 0.5, 0.975))))
   data.table::setDT(retval)
   data.table::setnames(retval, c("attr_low", "attr_est", "attr_high"))
-  retval[, attr_se := (attr_high - attr_low) / 2 / 1.96]
 
   return(retval)
 }
 
+attrib_use <- function(attrib, use_blup = FALSE){
+  stopifnot("attrib" %in% class(attrib))
+
+  if ("attrib" %in% class(attrib) & use_blup == FALSE) {
+    tag <- "attrib_fixed"
+  } else if ("attrib" %in% class(attrib) & use_blup == TRUE) {
+    tag <- "attrib_blup"
+  }
+  if (!attrib[[tag]]$can_be_used) {
+    stop("can_be_used flag set to false")
+  }
+
+  return(tag)
+}
+
 #' get_attrib
-#' @param attrib_x x
+#' @param attrib x
 #' @param use_blup x
 #' @param tag x
 #' @param range a
 #' @param sub a
 #' @import data.table
 #' @export
-get_attrib <- function(attrib_x, use_blup = FALSE, tag, range, sub = NULL) {
-  if ("attrib_small" %in% class(attrib_x) & use_blup == TRUE) {
-    stop("cannot use_blup==T when class==attrib_small")
-  }
+get_attrib <- function(attrib, use_blup = FALSE, tag, range, sub = NULL) {
+  if("attrib" %in% class(attrib)) attrib <- list(attrib)
 
-  if ("attrib_small" %in% class(attrib_x)) {
-    attrib_use <- attrib_x
-  } else if ("attrib" %in% class(attrib_x) & use_blup == FALSE) {
-    attrib_use <- attrib_x$attrib_fixed
-  } else if ("attrib" %in% class(attrib_x) & use_blup == TRUE) {
-    attrib_use <- attrib_x$attrib_blup
-  }
-  if (!attrib_use$can_be_used) {
-    stop("can_be_used flag set to false")
-  }
+  a_use <- attrib_use(attrib=attrib[[1]], use_blup=use_blup)
 
   if (is.null(sub)) {
     sub <- list(
-      1:length(attrib_use$outcome)
+      1:length(attrib[[1]][[a_use]]$outcome)
     )
   } else if (!is.list(sub)) {
     sub <- list(
@@ -226,10 +234,15 @@ get_attrib <- function(attrib_x, use_blup = FALSE, tag, range, sub = NULL) {
     )
   }
 
+  list_of_attrib_small <- lapply(attrib, function(x) x[[a_use]])
+
   retval <- vector("list", length = length(sub))
+  pb <- fhi::txt_progress_bar(max=length(retval))
   for (i in seq_along(retval)) {
+    utils::setTxtProgressBar(pb, i)
+
     retval[[i]] <- get_attrib_int(
-      attrib_small = attrib_use,
+      list_of_attrib_small = list_of_attrib_small,
       tag = tag,
       range = range,
       sub = sub[[i]]

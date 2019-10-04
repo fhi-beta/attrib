@@ -101,35 +101,41 @@ attributable risk (dir="forw") can be computed. See Gasparrini and Leone (2014) 
 \examples{
 \donttest{
 # load the package
-library(FluMoDL)  # package dlnm is automatically loaded
+library(FluMoDL) # package dlnm is automatically loaded
 
 # define the cross-basis and fit the model
-cb <- crossbasis(chicagoNMMAPS$temp, lag=30, argvar=list(fun="bs",
-   knots=c(-10,3,18)), arglag=list(knots=c(1,3,10)))
+cb <- crossbasis(chicagoNMMAPS$temp, lag = 30, argvar = list(
+  fun = "bs",
+  knots = c(-10, 3, 18)
+), arglag = list(knots = c(1, 3, 10)))
 library(splines)
-model <- glm(death ~ cb + ns(time, 7*14) + dow,
-   family=quasipoisson(), chicagoNMMAPS)
+model <- glm(death ~ cb + ns(time, 7 * 14) + dow,
+  family = quasipoisson(), chicagoNMMAPS
+)
 
 # global backward attributable risk of temperature (number and fraction)
-attrdl(chicagoNMMAPS$temp,cb,chicagoNMMAPS$death,model,type="an",cen=21)
-attrdl(chicagoNMMAPS$temp,cb,chicagoNMMAPS$death,model,cen=21)
+attrdl(chicagoNMMAPS$temp, cb, chicagoNMMAPS$death, model, type = "an", cen = 21)
+attrdl(chicagoNMMAPS$temp, cb, chicagoNMMAPS$death, model, cen = 21)
 
 # global forward attributable fraction
-attrdl(chicagoNMMAPS$temp,cb,chicagoNMMAPS$death,model,dir="forw",cen=21)
+attrdl(chicagoNMMAPS$temp, cb, chicagoNMMAPS$death, model, dir = "forw", cen = 21)
 
 # empirical confidence intervals
-afsim <- attrdl(chicagoNMMAPS$temp,cb,chicagoNMMAPS$death,model,cen=21,
-   sim=TRUE,nsim=1000)
-quantile(afsim,c(2.5,97.5)/100)
+afsim <- attrdl(chicagoNMMAPS$temp, cb, chicagoNMMAPS$death, model,
+  cen = 21,
+  sim = TRUE, nsim = 1000
+)
+quantile(afsim, c(2.5, 97.5) / 100)
 
 # attributable fraction component due to heat and cold
-attrdl(chicagoNMMAPS$temp,cb,chicagoNMMAPS$death,model,cen=21,range=c(21,100))
-attrdl(chicagoNMMAPS$temp,cb,chicagoNMMAPS$death,model,cen=21,range=c(-100,21))
+attrdl(chicagoNMMAPS$temp, cb, chicagoNMMAPS$death, model, cen = 21, range = c(21, 100))
+attrdl(chicagoNMMAPS$temp, cb, chicagoNMMAPS$death, model, cen = 21, range = c(-100, 21))
 
 # daily attributable deaths in the second month
-attrdl(chicagoNMMAPS$temp,cb,chicagoNMMAPS$death,model,type="an",
-   tot=FALSE,cen=21)[31:60]
-
+attrdl(chicagoNMMAPS$temp, cb, chicagoNMMAPS$death, model,
+  type = "an",
+  tot = FALSE, cen = 21
+)[31:60]
 }
 
 }

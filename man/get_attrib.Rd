@@ -4,10 +4,10 @@
 \alias{get_attrib}
 \title{get_attrib}
 \usage{
-get_attrib(attrib_x, use_blup = FALSE, tag, range, sub = NULL)
+get_attrib(attrib, use_blup = FALSE, tag, range, sub = NULL)
 }
 \arguments{
-\item{attrib_x}{x}
+\item{attrib}{x}
 
 \item{use_blup}{x}
 

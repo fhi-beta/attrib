@@ -124,8 +124,22 @@
 #'
 #' @export
 
-attrdl <- function(x, basis, cases, model = NULL, coef = NULL, vcov = NULL, type = "af",
-                   dir = "back", tot = TRUE, cen, range = NULL, sim = FALSE, nsim = 5000, sub = 1:length(cases)) {
+attrdl <- function(
+  x,
+  basis,
+  cases,
+  model = NULL,
+  coef = NULL,
+  vcov = NULL,
+  type = "af",
+  dir = "back",
+  tot = TRUE,
+  cen,
+  range = NULL,
+  sim = FALSE,
+  nsim = 5000,
+  sub = 1:length(cases)
+  ) {
   .getcoef <- getFromNamespace("getcoef", "dlnm")
   .getvcov <- getFromNamespace("getvcov", "dlnm")
   .getlink <- getFromNamespace("getlink", "dlnm")
@@ -262,13 +276,16 @@ attrdl <- function(x, basis, cases, model = NULL, coef = NULL, vcov = NULL, type
     # SAMPLE COEF
     k <- length(coef)
     eigen <- eigen(vcov)
-    X <- matrix(rnorm(length(coef) * nsim), nsim)
+    X <- matrix(stats::rnorm(length(coef) * nsim), nsim)
     coefsim <- coef + eigen$vectors %*% diag(sqrt(eigen$values), k) %*% t(X)
     if (tot) {
       # RUN THE LOOP
       afsim <- apply(coefsim, 2, function(coefi) {
-        ani <- ((1 - exp(-drop(Xpredall %*% coefi))) * cases)
-        sum(ani[!is.na(ani)]) / sum(cases[!is.na(ani)])
+        ani <- ((1 - exp(-drop(Xpredall %*% coefi))) * cases)[sub]
+        denom <- sum(cases[sub][!is.na(ani)])
+        if(denom==0) return(0) # if there's no deaths, there can't be any attributable deaths
+        #if(length(denom)==0) return(0)
+        sum(ani[!is.na(ani)]) / sum(cases[sub][!is.na(ani)])
       })
       ansim <- afsim * den
     } else {
