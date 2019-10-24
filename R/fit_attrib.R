@@ -160,32 +160,37 @@ get_attrib_int <- function(list_of_attrib_small, tag, range, sub = NULL, coef = 
     sub <- 1:length(list_of_attrib_small[[1]]$outcome)
   }
 
-  retval <- matrix(NA, nrow = 5000, ncol = length(list_of_attrib_small))
-  for (i in 1:length(list_of_attrib_small)) {
-    attrib_small <- list_of_attrib_small[[i]]
-    if (!is.null(coef) & !is.null(vcov)) {
-      index <- which(names(coef) %in% attrib_small$pred[[tag]]$coefficients)
-      coefx <- coef[index]
-      vcovx <- vcov[index, index]
-    } else {
-      coefx <- attrib_small$pred[[tag]]$coefficients
-      vcovx <- attrib_small$pred[[tag]]$vcov
-    }
+  retval <- matrix(NA, nrow = 5000, ncol = length(list_of_attrib_small)*length(tag))
+  for(j in 1:length(tag)){
+    tag_x <- tag[j]
+    start_column <- (j-1)*length(list_of_attrib_small)
 
-    retvalx <- attrdl(
-      x = attrib_small$exposure_values[[tag]],
-      basis = attrib_small$basis[[tag]],
-      cases = attrib_small$outcome,
-      coef = coefx,
-      vcov = vcovx,
-      type = "an",
-      cen = attrib_small$mmp[[tag]],
-      range = range,
-      sim = T,
-      nsim = 5000,
-      sub = sub
-    )
-    retval[, i] <- retvalx
+    for (i in 1:length(list_of_attrib_small)) {
+      attrib_small <- list_of_attrib_small[[i]]
+      if (!is.null(coef) & !is.null(vcov)) {
+        index <- which(names(coef) %in% attrib_small$pred[[tag_x]]$coefficients)
+        coefx <- coef[index]
+        vcovx <- vcov[index, index]
+      } else {
+        coefx <- attrib_small$pred[[tag_x]]$coefficients
+        vcovx <- attrib_small$pred[[tag_x]]$vcov
+      }
+
+      retvalx <- attrdl(
+        x = attrib_small$exposure_values[[tag_x]],
+        basis = attrib_small$basis[[tag_x]],
+        cases = attrib_small$outcome,
+        coef = coefx,
+        vcov = vcovx,
+        type = "an",
+        cen = attrib_small$mmp[[tag_x]],
+        range = range,
+        sim = T,
+        nsim = 5000,
+        sub = sub
+      )
+      retval[, start_column + i] <- retvalx
+    }
   }
   retval <- apply(retval, 1, sum)
 
