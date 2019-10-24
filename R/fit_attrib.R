@@ -160,10 +160,10 @@ get_attrib_int <- function(list_of_attrib_small, tag, range, sub = NULL, coef = 
     sub <- 1:length(list_of_attrib_small[[1]]$outcome)
   }
 
-  retval <- matrix(NA, nrow = 5000, ncol = length(list_of_attrib_small)*length(tag))
-  for(j in 1:length(tag)){
+  retval <- matrix(NA, nrow = 5000, ncol = length(list_of_attrib_small) * length(tag))
+  for (j in 1:length(tag)) {
     tag_x <- tag[j]
-    start_column <- (j-1)*length(list_of_attrib_small)
+    start_column <- (j - 1) * length(list_of_attrib_small)
 
     for (i in 1:length(list_of_attrib_small)) {
       attrib_small <- list_of_attrib_small[[i]]
