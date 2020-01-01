@@ -233,7 +233,7 @@ get_attrib <- function(attrib, use_blup = FALSE, tag, range, sub = NULL) {
     sub <- list(
       1:length(attrib[[1]][[a_use]]$outcome)
     )
-  } else if (is.list(sub) & length(sub)==0) {
+  } else if (is.list(sub) & length(sub) == 0) {
     # this is an error and we can't compute
     return(NULL)
   } else if (!is.list(sub)) {
