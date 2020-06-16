@@ -4,9 +4,22 @@
 \alias{attrdl}
 \title{Attributable risk from distributed lag nonlinear models}
 \usage{
-attrdl(x, basis, cases, model = NULL, coef = NULL, vcov = NULL,
-  type = "af", dir = "back", tot = TRUE, cen, range = NULL,
-  sim = FALSE, nsim = 5000, sub = 1:length(cases))
+attrdl(
+  x,
+  basis,
+  cases,
+  model = NULL,
+  coef = NULL,
+  vcov = NULL,
+  type = "af",
+  dir = "back",
+  tot = TRUE,
+  cen,
+  range = NULL,
+  sim = FALSE,
+  nsim = 5000,
+  sub = 1:length(cases)
+)
 }
 \arguments{
 \item{x}{An exposure vector OR (only for \code{dir="back"}) a matrix of lagged exposures, for which
@@ -101,7 +114,7 @@ attributable risk (dir="forw") can be computed. See Gasparrini and Leone (2014) 
 \examples{
 \donttest{
 # load the package
-library(FluMoDL) # package dlnm is automatically loaded
+library(dlnm) # package dlnm is automatically loaded
 
 # define the cross-basis and fit the model
 cb <- crossbasis(chicagoNMMAPS$temp, lag = 30, argvar = list(

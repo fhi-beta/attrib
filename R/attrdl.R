@@ -85,7 +85,7 @@
 #' @examples
 #' \donttest{
 #' # load the package
-#' library(FluMoDL) # package dlnm is automatically loaded
+#' library(dlnm) # package dlnm is automatically loaded
 #'
 #' # define the cross-basis and fit the model
 #' cb <- crossbasis(chicagoNMMAPS$temp, lag = 30, argvar = list(
