@@ -16,10 +16,9 @@ test_that("Model fit", {
   )
 
   testthat::expect_equal(
-    round(as.numeric(coef(fit)),0),
+    round(as.numeric(coef(fit)), 0),
     c(3.0, 0.0, 0.0)
   )
-
 })
 
 test_that("Attributable numbers", {
@@ -64,11 +63,10 @@ test_that("Attributable numbers", {
 
   # verify that your model is giving you results like you expect
 
-  testthat::expect_equal(sum(est_influenza<0), 0)
+  testthat::expect_equal(sum(est_influenza < 0), 0)
 
   testthat::expect_lt(
     sum(data[week >= 21 & week <= 39]$attrib_influenza),
     sum(data[week >= 40 | week <= 20]$attrib_influenza)
   )
-
 })

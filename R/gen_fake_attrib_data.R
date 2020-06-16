@@ -2,7 +2,7 @@
 #'
 #' This function generates one dataset
 #' @export
-gen_fake_attrib_data <- function(){
+gen_fake_attrib_data <- function() {
   start_date <- as.Date("2010-01-01")
   end_date <- as.Date("2020-12-31")
 
@@ -13,7 +13,7 @@ gen_fake_attrib_data <- function(){
     date = seq.Date(
       from = start_date,
       to = end_date,
-      by=1
+      by = 1
     ),
     stringsAsFactors = FALSE
   )
@@ -23,15 +23,15 @@ gen_fake_attrib_data <- function(){
   skeleton[, week := fhi::isoweek_n(date)]
   skeleton[, x := fhi::x(week)]
 
-  x_pop <- fhidata::norway_population_b2020[,.(
+  x_pop <- fhidata::norway_population_b2020[, .(
     pop = sum(pop)
-  ), keyby=.(
+  ), keyby = .(
     year,
     location_code
   )]
   skeleton[
     x_pop,
-    on=c("year","location_code"),
+    on = c("year", "location_code"),
     pop := pop
   ]
 
@@ -42,17 +42,17 @@ gen_fake_attrib_data <- function(){
 
   # temperature
   skeleton[, temperature := rnorm(
-    n=.N,
-    mean = 1*(6-abs(lubridate::month(date)-6)),
+    n = .N,
+    mean = 1 * (6 - abs(lubridate::month(date) - 6)),
     sd = 5
   )]
 
   # generate deaths
   skeleton[, mu := exp(3 + 0.1 * temperature + 0.002 * influenza)]
-  skeleton[, deaths := rpois(n=.N, lambda = mu)]
+  skeleton[, deaths := rpois(n = .N, lambda = mu)]
 
   # test with poisson regression
-  fit <- glm(deaths ~ temperature + influenza, data=skeleton, family = "poisson")
+  fit <- glm(deaths ~ temperature + influenza, data = skeleton, family = "poisson")
   summary(fit)
 
   return(skeleton)

@@ -5,11 +5,9 @@
 #' @param data_reference The data with reference values
 #' @export
 est_attrib <- function(
-  fit,
-  data_observed,
-  data_reference
-){
-
+                       fit,
+                       data_observed,
+                       data_reference) {
   pred_observed <- predict(fit, data_observed, type = "response")
   pred_reference <- predict(fit, data_reference, type = "response")
 
@@ -17,4 +15,3 @@ est_attrib <- function(
 
   return(pred_attrib)
 }
-
