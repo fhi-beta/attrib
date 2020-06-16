@@ -10,23 +10,27 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -38,7 +42,6 @@
 <meta property="og:title" content="Attributable risk from distributed lag nonlinear models — attrdl" />
 <meta property="og:description" content="This is a general function that computes attributable risk (attributable numbers or fractions)
 from distributed lag nonlinear models." />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -56,7 +59,7 @@ from distributed lag nonlinear models." />
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -70,7 +73,7 @@ from distributed lag nonlinear models." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">attrib</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2020.2.19</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2020.6.16</span>
       </span>
     </div>
 
@@ -114,9 +117,22 @@ from distributed lag nonlinear models." />
 from distributed lag nonlinear models.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>attrdl</span>(<span class='no'>x</span>, <span class='no'>basis</span>, <span class='no'>cases</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>coef</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>vcov</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"af"</span>, <span class='kw'>dir</span> <span class='kw'>=</span> <span class='st'>"back"</span>, <span class='kw'>tot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>cen</span>, <span class='kw'>range</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>sim</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>nsim</span> <span class='kw'>=</span> <span class='fl'>5000</span>, <span class='kw'>sub</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>cases</span>))</pre>
+    <pre class="usage"><span class='fu'>attrdl</span>(
+  <span class='no'>x</span>,
+  <span class='no'>basis</span>,
+  <span class='no'>cases</span>,
+  <span class='kw'>model</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>coef</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>vcov</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"af"</span>,
+  <span class='kw'>dir</span> <span class='kw'>=</span> <span class='st'>"back"</span>,
+  <span class='kw'>tot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='no'>cen</span>,
+  <span class='kw'>range</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>sim</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>nsim</span> <span class='kw'>=</span> <span class='fl'>5000</span>,
+  <span class='kw'>sub</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>cases</span>)
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -242,12 +258,9 @@ attributable risk (dir="forw") can be computed. See Gasparrini and Leone (2014) 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
 <span class='co'># load the package</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>FluMoDL</span>) <span class='co'># package dlnm is automatically loaded</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: dlnm</span></div><div class='output co'>#&gt; <span class='message'>This is dlnm 2.3.9. For details: help(dlnm) and vignette('dlnmOverview').</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: mvmeta</span></div><div class='output co'>#&gt; <span class='message'>This is mvmeta 1.0.3. For an overview type: help('mvmeta-package').</span></div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Attaching package: ‘FluMoDL’</span></div><div class='output co'>#&gt; <span class='message'>The following object is masked from ‘package:attrib’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    attrdl</span></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>dlnm</span>) <span class='co'># package dlnm is automatically loaded</span></div><div class='output co'>#&gt; <span class='message'>This is dlnm 2.4.2. For details: help(dlnm) and vignette('dlnmOverview').</span></div><div class='input'>
 <span class='co'># define the cross-basis and fit the model</span>
-<span class='no'>cb</span> <span class='kw'>&lt;-</span> <span class='fu'>crossbasis</span>(<span class='no'>chicagoNMMAPS</span>$<span class='no'>temp</span>, <span class='kw'>lag</span> <span class='kw'>=</span> <span class='fl'>30</span>, <span class='kw'>argvar</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
+<span class='no'>cb</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/dlnm/man/crossbasis.html'>crossbasis</a></span>(<span class='no'>chicagoNMMAPS</span>$<span class='no'>temp</span>, <span class='kw'>lag</span> <span class='kw'>=</span> <span class='fl'>30</span>, <span class='kw'>argvar</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
   <span class='kw'>fun</span> <span class='kw'>=</span> <span class='st'>"bs"</span>,
   <span class='kw'>knots</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>10</span>, <span class='fl'>3</span>, <span class='fl'>18</span>)
 ), <span class='kw'>arglag</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>knots</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>3</span>, <span class='fl'>10</span>)))
@@ -257,20 +270,20 @@ attributable risk (dir="forw") can be computed. See Gasparrini and Leone (2014) 
 )
 
 <span class='co'># global backward attributable risk of temperature (number and fraction)</span>
-<span class='fu'><a href='https://rdrr.io/pkg/FluMoDL/man/attrdl.html'>attrdl</a></span>(<span class='no'>chicagoNMMAPS</span>$<span class='no'>temp</span>, <span class='no'>cb</span>, <span class='no'>chicagoNMMAPS</span>$<span class='no'>death</span>, <span class='no'>model</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"an"</span>, <span class='kw'>cen</span> <span class='kw'>=</span> <span class='fl'>21</span>)</div><div class='output co'>#&gt; [1] 41627.79</div><div class='input'><span class='fu'><a href='https://rdrr.io/pkg/FluMoDL/man/attrdl.html'>attrdl</a></span>(<span class='no'>chicagoNMMAPS</span>$<span class='no'>temp</span>, <span class='no'>cb</span>, <span class='no'>chicagoNMMAPS</span>$<span class='no'>death</span>, <span class='no'>model</span>, <span class='kw'>cen</span> <span class='kw'>=</span> <span class='fl'>21</span>)</div><div class='output co'>#&gt; [1] 0.07052545</div><div class='input'>
+<span class='fu'>attrdl</span>(<span class='no'>chicagoNMMAPS</span>$<span class='no'>temp</span>, <span class='no'>cb</span>, <span class='no'>chicagoNMMAPS</span>$<span class='no'>death</span>, <span class='no'>model</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"an"</span>, <span class='kw'>cen</span> <span class='kw'>=</span> <span class='fl'>21</span>)</div><div class='output co'>#&gt; [1] 41627.79</div><div class='input'><span class='fu'>attrdl</span>(<span class='no'>chicagoNMMAPS</span>$<span class='no'>temp</span>, <span class='no'>cb</span>, <span class='no'>chicagoNMMAPS</span>$<span class='no'>death</span>, <span class='no'>model</span>, <span class='kw'>cen</span> <span class='kw'>=</span> <span class='fl'>21</span>)</div><div class='output co'>#&gt; [1] 0.07052545</div><div class='input'>
 <span class='co'># global forward attributable fraction</span>
-<span class='fu'><a href='https://rdrr.io/pkg/FluMoDL/man/attrdl.html'>attrdl</a></span>(<span class='no'>chicagoNMMAPS</span>$<span class='no'>temp</span>, <span class='no'>cb</span>, <span class='no'>chicagoNMMAPS</span>$<span class='no'>death</span>, <span class='no'>model</span>, <span class='kw'>dir</span> <span class='kw'>=</span> <span class='st'>"forw"</span>, <span class='kw'>cen</span> <span class='kw'>=</span> <span class='fl'>21</span>)</div><div class='output co'>#&gt; [1] 0.06880993</div><div class='input'>
+<span class='fu'>attrdl</span>(<span class='no'>chicagoNMMAPS</span>$<span class='no'>temp</span>, <span class='no'>cb</span>, <span class='no'>chicagoNMMAPS</span>$<span class='no'>death</span>, <span class='no'>model</span>, <span class='kw'>dir</span> <span class='kw'>=</span> <span class='st'>"forw"</span>, <span class='kw'>cen</span> <span class='kw'>=</span> <span class='fl'>21</span>)</div><div class='output co'>#&gt; [1] 0.06880993</div><div class='input'>
 <span class='co'># empirical confidence intervals</span>
-<span class='no'>afsim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/FluMoDL/man/attrdl.html'>attrdl</a></span>(<span class='no'>chicagoNMMAPS</span>$<span class='no'>temp</span>, <span class='no'>cb</span>, <span class='no'>chicagoNMMAPS</span>$<span class='no'>death</span>, <span class='no'>model</span>,
+<span class='no'>afsim</span> <span class='kw'>&lt;-</span> <span class='fu'>attrdl</span>(<span class='no'>chicagoNMMAPS</span>$<span class='no'>temp</span>, <span class='no'>cb</span>, <span class='no'>chicagoNMMAPS</span>$<span class='no'>death</span>, <span class='no'>model</span>,
   <span class='kw'>cen</span> <span class='kw'>=</span> <span class='fl'>21</span>,
   <span class='kw'>sim</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>nsim</span> <span class='kw'>=</span> <span class='fl'>1000</span>
 )
 <span class='fu'><a href='https://rdrr.io/r/stats/quantile.html'>quantile</a></span>(<span class='no'>afsim</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2.5</span>, <span class='fl'>97.5</span>) / <span class='fl'>100</span>)</div><div class='output co'>#&gt;       2.5%      97.5% 
 #&gt; 0.03498423 0.10693145 </div><div class='input'>
 <span class='co'># attributable fraction component due to heat and cold</span>
-<span class='fu'><a href='https://rdrr.io/pkg/FluMoDL/man/attrdl.html'>attrdl</a></span>(<span class='no'>chicagoNMMAPS</span>$<span class='no'>temp</span>, <span class='no'>cb</span>, <span class='no'>chicagoNMMAPS</span>$<span class='no'>death</span>, <span class='no'>model</span>, <span class='kw'>cen</span> <span class='kw'>=</span> <span class='fl'>21</span>, <span class='kw'>range</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>21</span>, <span class='fl'>100</span>))</div><div class='output co'>#&gt; [1] 0.002174912</div><div class='input'><span class='fu'><a href='https://rdrr.io/pkg/FluMoDL/man/attrdl.html'>attrdl</a></span>(<span class='no'>chicagoNMMAPS</span>$<span class='no'>temp</span>, <span class='no'>cb</span>, <span class='no'>chicagoNMMAPS</span>$<span class='no'>death</span>, <span class='no'>model</span>, <span class='kw'>cen</span> <span class='kw'>=</span> <span class='fl'>21</span>, <span class='kw'>range</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>100</span>, <span class='fl'>21</span>))</div><div class='output co'>#&gt; [1] 0.06836223</div><div class='input'>
+<span class='fu'>attrdl</span>(<span class='no'>chicagoNMMAPS</span>$<span class='no'>temp</span>, <span class='no'>cb</span>, <span class='no'>chicagoNMMAPS</span>$<span class='no'>death</span>, <span class='no'>model</span>, <span class='kw'>cen</span> <span class='kw'>=</span> <span class='fl'>21</span>, <span class='kw'>range</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>21</span>, <span class='fl'>100</span>))</div><div class='output co'>#&gt; [1] 0.002174912</div><div class='input'><span class='fu'>attrdl</span>(<span class='no'>chicagoNMMAPS</span>$<span class='no'>temp</span>, <span class='no'>cb</span>, <span class='no'>chicagoNMMAPS</span>$<span class='no'>death</span>, <span class='no'>model</span>, <span class='kw'>cen</span> <span class='kw'>=</span> <span class='fl'>21</span>, <span class='kw'>range</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>100</span>, <span class='fl'>21</span>))</div><div class='output co'>#&gt; [1] 0.06836223</div><div class='input'>
 <span class='co'># daily attributable deaths in the second month</span>
-<span class='fu'><a href='https://rdrr.io/pkg/FluMoDL/man/attrdl.html'>attrdl</a></span>(<span class='no'>chicagoNMMAPS</span>$<span class='no'>temp</span>, <span class='no'>cb</span>, <span class='no'>chicagoNMMAPS</span>$<span class='no'>death</span>, <span class='no'>model</span>,
+<span class='fu'>attrdl</span>(<span class='no'>chicagoNMMAPS</span>$<span class='no'>temp</span>, <span class='no'>cb</span>, <span class='no'>chicagoNMMAPS</span>$<span class='no'>death</span>, <span class='no'>model</span>,
   <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"an"</span>,
   <span class='kw'>tot</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>cen</span> <span class='kw'>=</span> <span class='fl'>21</span>
 )[<span class='fl'>31</span>:<span class='fl'>60</span>]</div><div class='output co'>#&gt;  [1] 17.793827 19.068364 18.332966 14.670728 15.808464 15.760747 12.879505
@@ -281,19 +294,10 @@ attributable risk (dir="forw") can be computed. See Gasparrini and Leone (2014) 
 
 </div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#details">Details</a></li>
-      <li><a href="#note">Note</a></li>
-      <li><a href="#references">References</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
-    <h2>Author</h2>
-    <p>Original author: Antonio Gasparrini &lt;<a href='mailto:antonio.gasparrini@lshtm.ac.uk'>antonio.gasparrini@lshtm.ac.uk</a>&gt;</p>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -304,7 +308,7 @@ attributable risk (dir="forw") can be computed. See Gasparrini and Leone (2014) 
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

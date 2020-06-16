@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>fit_attrib — fit_attrib • attrib</title>
+<title>Estimates attributable mortality — est_attrib • attrib</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="fit_attrib — fit_attrib" />
-<meta property="og:description" content="fit_attrib" />
+<meta property="og:title" content="Estimates attributable mortality — est_attrib" />
+<meta property="og:description" content="Estimates attributable mortality" />
 
 
 
@@ -106,35 +106,31 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>fit_attrib</h1>
+    <h1>Estimates attributable mortality</h1>
     
-    <div class="hidden name"><code>fit_attrib.Rd</code></div>
+    <div class="hidden name"><code>est_attrib.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>fit_attrib</p>
+    <p>Estimates attributable mortality</p>
     </div>
 
-    <pre class="usage"><span class='fu'>fit_attrib</span>(
-  <span class='no'>data</span>,
-  <span class='kw'>outcome</span> <span class='kw'>=</span> <span class='st'>"deaths"</span>,
-  <span class='kw'>exposures</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>influenza</span> <span class='kw'>=</span> <span class='st'>"linear"</span>, <span class='kw'>temperature</span> <span class='kw'>=</span> <span class='st'>"linear"</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>est_attrib</span>(<span class='no'>fit</span>, <span class='no'>data_observed</span>, <span class='no'>data_reference</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>data</th>
-      <td><p>x</p></td>
+      <th>fit</th>
+      <td><p>A model fit</p></td>
     </tr>
     <tr>
-      <th>outcome</th>
-      <td><p>x</p></td>
+      <th>data_observed</th>
+      <td><p>The observed data</p></td>
     </tr>
     <tr>
-      <th>exposures</th>
-      <td><p>a</p></td>
+      <th>data_reference</th>
+      <td><p>The data with reference values</p></td>
     </tr>
     </table>
 
