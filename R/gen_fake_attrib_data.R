@@ -37,6 +37,7 @@ gen_fake_attrib_data <- function() {
 
 
   # influenza only happens during weeks 40 -> 20
+  # USE ILI for influenza
   skeleton[, influenza := rpois(.N, lambda = 50)]
   skeleton[week >= 40 | week <= 20, influenza := rpois(.N, lambda = 500)]
 
@@ -47,8 +48,18 @@ gen_fake_attrib_data <- function() {
     sd = 5
   )]
 
+  # covid-19
+  skeleton[, covid19:= 0]
+  skeleton[date>="2020-03-01", covid19:= rpois(.N, lambda = 500)]
+
   # generate deaths
-  skeleton[, mu := exp(3 + 0.1 * temperature + 0.002 * influenza)]
+  skeleton[, mu := exp(
+    3 +
+    0.1 * temperature +
+    0.001 * influenza_lag_0 +
+    0.002 * influenza_lag_1 +
+    0.001 * influenza_lag_2
+    )]
   skeleton[, deaths := rpois(n = .N, lambda = mu)]
 
   # test with poisson regression
