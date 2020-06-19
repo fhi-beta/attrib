@@ -12,13 +12,13 @@ fit_attrib <- function(
                            "temperature_low" = "factor",
                            "pr100_ili" = "linear",
                            "is_winter" = "binary",
+                           "pr100_covid19" = "linear",
                            "pop" = "offset"
                          )) {
   stopifnot(is.list(exposures))
   for (i in seq_along(exposures)) {
     stopifnot(exposures[[i]] %in% c("linear", "factor", "binary", "offset"))
   }
-
   expo <- c()
   for (i in seq_along(exposures)) {
     if (exposures[[i]] == "linear") {
@@ -28,16 +28,16 @@ fit_attrib <- function(
       expo <- c(expo, temp)
     } else if  (exposures[[i]] == "binary"){                         #is this correct?
       expo <- c(expo, names(exposures)[i])
-    } else if  (exposures[[i]] == "factor"){                         #is this correct?
+    } else if  (exposures[[i]] == "factor"){                        
       expo <- c(expo, names(exposures)[i])
     } else if  (exposures[[i]] == "offset"){
-      offset <- glue::glue("offset({names(exposures)[i]})")
+      name <- names(exposures)[i]
+      offset <- glue::glue("offset(log({name}))")     #this does not work :( 
       expo <- c(expo, offset)
     }
   }
   expo <- glue::glue_collapse(expo, sep = "+")
   formula <- glue::glue("{outcome} ~ {expo}")
-
   fit <- stats::glm(stats::as.formula(formula), family = "quasipoisson", data = data)
 
   return(fit)
