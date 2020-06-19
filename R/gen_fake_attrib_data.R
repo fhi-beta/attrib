@@ -6,8 +6,8 @@ gen_fake_attrib_data <- function() {
   start_date <- as.Date("2010-01-01")
   end_date <- as.Date("2020-12-31")
 
-  location_code <- "norge"
-
+  location_code <- unique(fhidata::norway_locations_b2020$county_code)
+  
   skeleton <- expand.grid(
     location_code = location_code,
     date = seq.Date(
@@ -25,7 +25,7 @@ gen_fake_attrib_data <- function() {
   skeleton[, x := fhi::x(week)]
   skeleton[, season := fhi::season(yrwk)]
 
-  x_pop <- fhidata::norway_population_b2020[, .(
+  x_pop <- fhidata::norway_population_b2020[level == "county", .(
     pop = sum(pop)
   ), keyby = .(
     year,
@@ -58,7 +58,7 @@ gen_fake_attrib_data <- function() {
 
   skeleton_weeks_temp <- unique(skeleton[,c("location_code", "week")])
   skeleton_weeks_temp[, mean_temperature := (26 - abs((week- 26)))]
-  skeleton_weeks_temp[, mean_temperature := c(skeleton_weeks_temp[49:53]$mean_temperature, skeleton_weeks_temp[1:48]$mean_temperature) - 5]
+  skeleton_weeks_temp[, mean_temperature := c(skeleton_weeks_temp[(.N-4):.N]$mean_temperature, skeleton_weeks_temp[1:(.N-5)]$mean_temperature) - 5]
 
   skeleton <- merge(
     skeleton,
@@ -83,20 +83,29 @@ gen_fake_attrib_data <- function() {
   skeleton[, is_winter:= 0]
   skeleton[week >= 40 | week <= 20, is_winter:= 1]                          #same weeks as the flue?
 
-
-  # generate deaths
-  skeleton[, mu := exp(-8.8 + 0.05*temperature_high + 0.05 * temperature_low + 0.3 * pr100_ili + 0.1*is_winter + log(pop))] # is the intercept location depentent?
-
   # covid-19
-  skeleton[, covid19:= 0]
-  skeleton[date>="2020-03-01", covid19:= rpois(.N, lambda = 500)]
+  skeleton[, pr100_covid19:= 0]
+  skeleton[date>="2020-03-01", pr100_covid19:= rnorm(.N, mean = 0.0042, sd = 0.001)]
 
+  
+  # generate deaths
+  set.seed(1234)
+  skeleton[, mu := exp(-8.8 + 0.05*temperature_high + 0.05 * temperature_low + 0.3 * pr100_ili + 0.1 * is_winter + 10*pr100_covid19 + log(pop))] # is the intercept location depentent?
+  
   skeleton[, deaths := rpois(n = .N, lambda = mu)]
 
   # test with poisson regression,
   ##### what should I change here?
   fit <- glm(deaths ~ temperature_high + temperature_low + pr100_ili + is_winter + offset(log(pop)), data = skeleton, family = "poisson")           # is it okay to change away from the glm?
   summary(fit)
+  
+  
+  death_tot <- skeleton[, .(
+    death = sum(deaths),
+    year
+  ), keyby = .(
+    date
+  )]
 
   return(skeleton)
 }

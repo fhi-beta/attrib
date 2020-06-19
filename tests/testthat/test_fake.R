@@ -14,14 +14,14 @@ test_that("Model fit", {
       "temperature_low" = "factor",
       "pr100_ili" = "linear",
       "is_winter" = "binary",
+      "pr100_covid19" = "linear",
       "pop" = "offset"
-
     )
   )
-
+ #compleatly wrong for now
   testthat::expect_equal(
     round(as.numeric(coef(fit)), 0),
-    c(2.0, 0.0, 2.0)                        #OBSOBS COEFICIANT DEPENDENT!!!!!
+    c(-9, 0, 0, 0, 0, 10)                        #OBSOBS COEFICIANT DEPENDENT!!!!!
   )
 })
 
@@ -35,16 +35,20 @@ test_that("Attributable numbers", {
     data = data,
     outcome = "deaths",
     exposures = list(
-      "influenza" = "linear",
-      "temperature" = "linear"
+      "temperature_high" = "factor", 
+      "temperature_low" = "factor",
+      "pr100_ili" = "linear",
+      "is_winter" = "binary",
+      "pr100_covid19" = "linear",
+      "pop" = "offset"
     )
   )
 
   # create reference datasets
   data_observed <- copy(data)
 
-  data_reference_influenza <- copy(data)
-  data_reference_influenza[, influenza := 0]
+  data_reference_pr100_ili <- copy(data)
+  data_reference_pr100_ili[, pr100_ili := 0]
 
   data_reference_temperature_high <- copy(data)
   data_reference_temperature_high[, temperature_high := 0]
@@ -54,12 +58,15 @@ test_that("Attributable numbers", {
 
   data_reference_is_winter <- copy(data)
   data_reference_is_winter[, is_winter := 0]
+  
+  data_reference_pr100_covid19 <- copy(data)
+  data_reference_pr100_covid19[, pr100_covid19 := 0]
 
   # estimate attrib
-  est_influenza <- est_attrib(
+  est_pr100_ili <- est_attrib(
     fit = fit,
     data_observed = data_observed,
-    data_reference = data_reference_influenza
+    data_reference = data_reference_pr100_ili
   )
 
   est_temperature_high <- est_attrib(
@@ -80,18 +87,25 @@ test_that("Attributable numbers", {
     data_reference = data_reference_is_winter
   )
 
-  data[, attrib_influenza := est_influenza]
+  est_pr100_covid19 <- est_attrib(
+    fit = fit,
+    data_observed = data_observed,
+    data_reference = data_reference_pr100_covid19
+  )
+  
+  data[, attrib_pr100_ili := est_pr100_ili]
   data[, attrib_temperature_high := est_temperature_high]
-
+  data[, attrib_temperature_low := est_temperature_low]
+  data[, attrib_is_winter := est_is_winter]
+  data[, attrib_pr100_covid19 := est_pr100_covid19]
+  
   # verify that your model is giving you results like you expect
   #influenza
-  testthat::expect_equal(sum(est_influenza < 0), 0)
-  testthat::expect_gt(sum(exp((data[year == 2010]$influenza)*0.000004)),600)       #OBSOBS COEFFICIANT DEPENDENT
-  testthat::expect_lt(sum(exp((data[year == 2010]$influenza)*0.000004)),1200)
+  testthat::expect_equal(sum(est_pr100_ili < 0), 0)
 
   testthat::expect_lt(
-    sum(data[week >= 21 & week <= 39]$attrib_influenza),
-    sum(data[week >= 40 | week <= 20]$attrib_influenza)
+    sum(data[week >= 21 & week <= 39]$attrib_pr100_ili),
+    sum(data[week >= 40 | week <= 20]$attrib_pr100_ili)
   )
 
   #heat_wave
@@ -102,5 +116,14 @@ test_that("Attributable numbers", {
 
   # is winter
   testthat::expect_equal(sum(est_is_winter < 0), 0)
+  
+  # covid19
+  testthat::expect_equal(sum(est_pr100_covid19 < 0), 0)
+  
+  #general expect more deaths during wintern no mather the cause
+  testthat::expect_lt(
+    sum(data[week >= 21 & week <= 39]$deaths),
+    sum(data[week >= 40 | week <= 20]$deaths)
+  )
 
 })
