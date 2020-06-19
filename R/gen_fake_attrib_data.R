@@ -13,7 +13,7 @@ gen_fake_attrib_data <- function() {
     date = seq.Date(
       from = start_date,
       to = end_date,
-      by = 1
+      by = 7                                    #to get a weakly base.
     ),
     stringsAsFactors = FALSE
   )
@@ -21,7 +21,9 @@ gen_fake_attrib_data <- function() {
 
   skeleton[, year := fhi::isoyear_n(date)]
   skeleton[, week := fhi::isoweek_n(date)]
+  skeleton[, yrwk := fhi::isoyearweek(date)]
   skeleton[, x := fhi::x(week)]
+  skeleton[, season := fhi::season(yrwk)]
 
   x_pop <- fhidata::norway_population_b2020[, .(
     pop = sum(pop)
@@ -35,35 +37,65 @@ gen_fake_attrib_data <- function() {
     pop := pop
   ]
 
+  ######## seasonbased influenza
+  #### still without any lag.
+  skeleton_season <- unique(skeleton[,c("location_code", "season")])
+  skeleton_season[, peak_center_influenza := round(rnorm(.N, mean = 28, sd = 3 ))  ]
+  skeleton_season[, hight_peak := rnorm(.N, mean = 2, sd = 0.02) ]
 
-  # influenza only happens during weeks 40 -> 20
-  # USE ILI for influenza
-  skeleton[, influenza := rpois(.N, lambda = 50)]
-  skeleton[week >= 40 | week <= 20, influenza := rpois(.N, lambda = 500)]
+  skeleton <- merge(
+    skeleton,
+    skeleton_season,
+    by=c("location_code", "season")
+  )
 
-  # temperature
+  skeleton[, normal_base := dnorm(x, peak_center_influenza, 5)]
+  skeleton[, pr100_ili := 1.2*hight_peak * normal_base]
+  skeleton[pr100_ili< 0, pr100_ili := 0]                                  #should there be some more randomness here??
+  skeleton[, influenza := pr100_ili*pop]
+
+  # temperature high
+
+  skeleton_weeks_temp <- unique(skeleton[,c("location_code", "week")])
+  skeleton_weeks_temp[, mean_temperature := (26 - abs((week- 26)))]
+  skeleton_weeks_temp[, mean_temperature := c(skeleton_weeks_temp[49:53]$mean_temperature, skeleton_weeks_temp[1:48]$mean_temperature) - 5]
+
+  skeleton <- merge(
+    skeleton,
+    skeleton_weeks_temp,
+    by = c("location_code","week")
+  )
   skeleton[, temperature := rnorm(
     n = .N,
-    mean = 1 * (6 - abs(lubridate::month(date) - 6)),
+    mean = mean_temperature,              #temperature span between -5,20 on average
     sd = 5
   )]
+
+  skeleton[, temperature_high := 0]
+  skeleton[temperature > 20 , temperature_high := rbinom(.N, 7, 0.2)]
+
+  # temperature low
+  skeleton[, temperature_low:= 0]
+  skeleton[temperature < -10 , temperature_low := rbinom(.N, 7, 0.2)]        # is -10 an okay threshhold?
+
+
+  # is winter
+  skeleton[, is_winter:= 0]
+  skeleton[week >= 40 | week <= 20, is_winter:= 1]                          #same weeks as the flue?
+
+
+  # generate deaths
+  skeleton[, mu := exp(-8.8 + 0.05*temperature_high + 0.05 * temperature_low + 0.3 * pr100_ili + 0.1*is_winter + log(pop))] # is the intercept location depentent?
 
   # covid-19
   skeleton[, covid19:= 0]
   skeleton[date>="2020-03-01", covid19:= rpois(.N, lambda = 500)]
 
-  # generate deaths
-  skeleton[, mu := exp(
-    3 +
-    0.1 * temperature +
-    0.001 * influenza_lag_0 +
-    0.002 * influenza_lag_1 +
-    0.001 * influenza_lag_2
-    )]
   skeleton[, deaths := rpois(n = .N, lambda = mu)]
 
-  # test with poisson regression
-  fit <- glm(deaths ~ temperature + influenza, data = skeleton, family = "poisson")
+  # test with poisson regression,
+  ##### what should I change here?
+  fit <- glm(deaths ~ temperature_high + temperature_low + pr100_ili + is_winter + offset(log(pop)), data = skeleton, family = "poisson")           # is it okay to change away from the glm?
   summary(fit)
 
   return(skeleton)
