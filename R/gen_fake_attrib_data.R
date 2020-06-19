@@ -87,6 +87,10 @@ gen_fake_attrib_data <- function() {
   # generate deaths
   skeleton[, mu := exp(-8.8 + 0.05*temperature_high + 0.05 * temperature_low + 0.3 * pr100_ili + 0.1*is_winter + log(pop))] # is the intercept location depentent?
 
+  # covid-19
+  skeleton[, covid19:= 0]
+  skeleton[date>="2020-03-01", covid19:= rpois(.N, lambda = 500)]
+
   skeleton[, deaths := rpois(n = .N, lambda = mu)]
 
   # test with poisson regression,
