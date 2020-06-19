@@ -6,8 +6,8 @@ gen_fake_attrib_data <- function() {
   start_date <- as.Date("2010-01-01")
   end_date <- as.Date("2020-12-31")
 
-  location_code <- "norge"
-
+  location_code <- unique(fhidata::norway_locations_b2020$county_code)
+  
   skeleton <- expand.grid(
     location_code = location_code,
     date = seq.Date(
@@ -25,7 +25,7 @@ gen_fake_attrib_data <- function() {
   skeleton[, x := fhi::x(week)]
   skeleton[, season := fhi::season(yrwk)]
 
-  x_pop <- fhidata::norway_population_b2020[, .(
+  x_pop <- fhidata::norway_population_b2020[level == "county", .(
     pop = sum(pop)
   ), keyby = .(
     year,
