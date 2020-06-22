@@ -42,7 +42,8 @@ gen_fake_attrib_data <- function() {
   skeleton_season <- unique(skeleton[,c("location_code", "season")])
   skeleton_season[, peak_center_influenza := round(rnorm(.N, mean = 28, sd = 3 ))  ]
   skeleton_season[, hight_peak := rnorm(.N, mean = 2, sd = 0.02) ]
-
+  skeleton_season[, influenza_coef := rnorm(.N, mean = 0.3, sd = 0.02) ]
+  
   skeleton <- merge(
     skeleton,
     skeleton_season,
@@ -51,9 +52,11 @@ gen_fake_attrib_data <- function() {
 
   skeleton[, normal_base := dnorm(x, peak_center_influenza, 5)]
   skeleton[, pr100_ili := 1.2*hight_peak * normal_base]
-  skeleton[pr100_ili< 0, pr100_ili := 0]                                  #should there be some more randomness here??
-  skeleton[, influenza := pr100_ili*pop]
-
+  skeleton[pr100_ili< 0, pr100_ili := 0]  #should there be some more randomness here??
+  
+  skeleton[, pr100_ili_lag_1 := shift(pr100_ili, fill = 0), by = c("location_code")]
+  skeleton[, pr100_ili_lag_2 := shift(pr100_ili, n= 2L, fill = 0), by = c("location_code")]
+  
   # temperature high
 
   skeleton_weeks_temp <- unique(skeleton[,c("location_code", "week")])
@@ -86,17 +89,52 @@ gen_fake_attrib_data <- function() {
   # covid-19
   skeleton[, pr100_covid19:= 0]
   skeleton[date>="2020-03-01", pr100_covid19:= rnorm(.N, mean = 0.0042, sd = 0.001)]
-
+  skeleton[, pr100_covid19_lag_1 := shift(pr100_covid19, fill = 0), by = c("location_code")]
+  skeleton[, pr100_covid19_lag_2 := shift(pr100_covid19, n= 2L, fill = 0), by = c("location_code")]
+  
   
   # generate deaths
   set.seed(1234)
-  skeleton[, mu := exp(-8.8 + 0.05*temperature_high + 0.05 * temperature_low + 0.3 * pr100_ili + 0.1 * is_winter + 10*pr100_covid19 + log(pop))] # is the intercept location depentent?
+  skeleton[, mu := exp(-8.8 + 
+                         0.05*temperature_high + 
+                         0.05 * temperature_low + 
+                         #0.25*influenza_coef * pr100_ili + 
+                         0.5*influenza_coef * pr100_ili_lag_1 +
+                         #0.25*influenza_coef * pr100_ili_lag_2 +
+                         0.1 * is_winter + 
+                         #1*pr100_covid19 + 
+                         8*pr100_covid19_lag_1 + 
+                         #1*pr100_ili_lag_2 + 
+                         log(pop))] # is the intercept location depentent?
   
+  #skeleton[location_code == "county03", mu := exp(-8.4 + 0.05*temperature_high + 0.05 * temperature_low + influenza_coef * pr100_ili + 0.1 * is_winter + 0.25*pr100_covid19 + log(pop))] # is the intercept location depentent?
+  
+
   skeleton[, deaths := rpois(n = .N, lambda = mu)]
 
   # test with poisson regression,
   ##### what should I change here?
-  fit <- glm(deaths ~ temperature_high + temperature_low + pr100_ili + is_winter + offset(log(pop)), data = skeleton, family = "poisson")           # is it okay to change away from the glm?
+  #zero info shaing
+  fit <- glm(deaths ~ location_code + temperature_high + temperature_low + pr100_ili + is_winter + pr100_covid19 + offset(log(pop)), data = skeleton, family = "poisson")           # is it okay to change away from the glm?
+  summary(fit)
+  
+  #partial infosharing for intercept
+  fit <- lme4::glmer(deaths ~ (1|location_code) +temperature_high + temperature_low + pr100_ili + is_winter + pr100_covid19 + offset(log(pop)), data = skeleton, family = "poisson")           # is it okay to change away from the glm?
+  summary(fit)
+  
+  fit <- lme4::glmer(deaths ~ (1|location_code) +
+                       temperature_high +
+                       temperature_low + 
+                       #pr100_ili + 
+                       pr100_ili_lag_1 + 
+                       #pr100_ili_lag_2 + 
+                       #(pr100_ili + pr100_ili_lag_1 + pr100_ili_lag_2|season) + 
+                       (pr100_ili_lag_1|season) +
+                       is_winter + 
+                       #pr100_covid19 + 
+                       pr100_covid19_lag_1 + 
+                       #pr100_covid19_lag_2 + 
+                       offset(log(pop)), data = skeleton, family = "poisson")           # is it okay to change away from the glm?
   summary(fit)
   
   

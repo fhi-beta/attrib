@@ -4,20 +4,31 @@ test_that("Model fit", {
 
   # generate data
   data <- gen_fake_attrib_data()
+  formula <- "deaths ~ (1|location_code) +
+    temperature_high +
+    temperature_low +
+    pr100_ili_lag_1 +
+    (pr100_ili_lag_1|season) +
+    is_winter +
+    pr100_covid19_lag_1 +
+    offset(log(pop))"
 
   # fit initial model
   fit <- fit_attrib(
     data = data,
-    outcome = "deaths",
-    exposures = list(
-      "temperature_high" = "factor", #is it corect to call it this?
-      "temperature_low" = "factor",
-      "pr100_ili" = "linear",
-      "is_winter" = "binary",
-      "pr100_covid19" = "linear",
-      "pop" = "offset"
-    )
-  )
+    formula = formula)
+
+  #   outcome = "deaths",
+  #   exposures = list(
+  #     "temperature_high" = "factor", #is it corect to call it this?
+  #     "temperature_low" = "factor",
+  #     #"pr100_ili" = "linear",
+  #     "pr100_ili_lag_1" = "linear_season",
+  #     "is_winter" = "binary",
+  #     "pr100_covid19_lag_1" = "linear",
+  #     "pop" = "offset"
+  #   )
+  # )
  #compleatly wrong for now
   testthat::expect_equal(
     round(as.numeric(coef(fit)), 0),
@@ -35,7 +46,8 @@ test_that("Attributable numbers", {
     data = data,
     outcome = "deaths",
     exposures = list(
-      "temperature_high" = "factor", 
+      "location_code" = "dummy_location",
+      "temperature_high" = "factor",
       "temperature_low" = "factor",
       "pr100_ili" = "linear",
       "is_winter" = "binary",
@@ -58,7 +70,7 @@ test_that("Attributable numbers", {
 
   data_reference_is_winter <- copy(data)
   data_reference_is_winter[, is_winter := 0]
-  
+
   data_reference_pr100_covid19 <- copy(data)
   data_reference_pr100_covid19[, pr100_covid19 := 0]
 
@@ -92,13 +104,13 @@ test_that("Attributable numbers", {
     data_observed = data_observed,
     data_reference = data_reference_pr100_covid19
   )
-  
+
   data[, attrib_pr100_ili := est_pr100_ili]
   data[, attrib_temperature_high := est_temperature_high]
   data[, attrib_temperature_low := est_temperature_low]
   data[, attrib_is_winter := est_is_winter]
   data[, attrib_pr100_covid19 := est_pr100_covid19]
-  
+
   # verify that your model is giving you results like you expect
   #influenza
   testthat::expect_equal(sum(est_pr100_ili < 0), 0)
@@ -116,10 +128,10 @@ test_that("Attributable numbers", {
 
   # is winter
   testthat::expect_equal(sum(est_is_winter < 0), 0)
-  
+
   # covid19
   testthat::expect_equal(sum(est_pr100_covid19 < 0), 0)
-  
+
   #general expect more deaths during wintern no mather the cause
   testthat::expect_lt(
     sum(data[week >= 21 & week <= 39]$deaths),
