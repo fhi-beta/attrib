@@ -42,7 +42,7 @@ gen_fake_attrib_data <- function() {
   skeleton_season <- unique(skeleton[,c("location_code", "season")])
   skeleton_season[, peak_center_influenza := round(rnorm(.N, mean = 28, sd = 3 ))  ]
   skeleton_season[, hight_peak := rnorm(.N, mean = 2, sd = 0.02) ]
-  skeleton_season[, influenza_coef := rnorm(.N, mean = 0.3, sd = 0.02) ]
+  skeleton_season[, influenza_coef := rnorm(.N, mean = 0.03, sd = 0.02) ]
 
   skeleton <- merge(
     skeleton,
@@ -51,7 +51,7 @@ gen_fake_attrib_data <- function() {
   )
 
   skeleton[, normal_base := dnorm(x, peak_center_influenza, 5)]
-  skeleton[, pr100_ili := 1.2*hight_peak * normal_base]
+  skeleton[, pr100_ili := 10*1.2*hight_peak * normal_base]            #something strange doing on her but this gives pr100ili around 2
   skeleton[pr100_ili< 0, pr100_ili := 0]  #should there be some more randomness here??
 
   skeleton[, pr100_ili_lag_1 := shift(pr100_ili, fill = 0), by = c("location_code")]
@@ -96,7 +96,7 @@ gen_fake_attrib_data <- function() {
   # generate deaths
   #set.seed(1234)
   skeleton[, mu := exp(-8.8 +
-                         0.05*temperature_high +
+                         0.08*temperature_high +
                          #0.05 * temperature_low +
                          #0.25*influenza_coef * pr100_ili +
                          influenza_coef * pr100_ili_lag_1 +
@@ -104,7 +104,7 @@ gen_fake_attrib_data <- function() {
                          #0.1 * is_winter +
                          #1*pr100_covid19 +
                          10*pr100_covid19_lag_1 +
-                         3*sin(2 * pi * (week - 1) / 52) + 7*cos(2 * pi * (week - 1) / 52)+ #finn a og b
+                         0.02*sin(2 * pi * (week - 1) / 52) + 0.07*cos(2 * pi * (week - 1) / 52)+ #finn a og b
                          #1*pr100_ili_lag_2 +
                          log(pop))]
 
@@ -149,6 +149,7 @@ gen_fake_attrib_data <- function() {
   ), keyby = .(
     date
   )]
-
+  min(death_tot$death)
+  max(death_tot$death)
   return(skeleton)
 }
