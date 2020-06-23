@@ -4,14 +4,7 @@ test_that("Model fit", {
 
   # generate data
   data <- gen_fake_attrib_data()
-  formula <- "deaths ~ (1|location_code) +
-    temperature_high +
-    temperature_low +
-    pr100_ili_lag_1 +
-    (pr100_ili_lag_1|season) +
-    is_winter +
-    pr100_covid19_lag_1 +
-    offset(log(pop))"
+  formula <- "deaths ~ (1|location_code) + temperature_high + pr100_ili_lag_1 + (pr100_ili_lag_1|season) + is_winter + pr100_covid19_lag_1 + offset(log(pop))"
 
   # fit initial model
   fit <- fit_attrib(
@@ -32,7 +25,7 @@ test_that("Model fit", {
  #compleatly wrong for now
   testthat::expect_equal(
     round(as.numeric(coef(fit)), 0),
-    c(-9, 0, 0, 0, 0, 10)                        #OBSOBS COEFICIANT DEPENDENT!!!!!
+    c(-9, 0, 0, 0, 0, 8)                        #OBSOBS COEFICIANT DEPENDENT!!!!!
   )
 })
 
@@ -46,11 +39,11 @@ test_that("Attributable numbers", {
     data = data,
     outcome = "deaths",
     exposures = list(
-      "location_code" = "dummy_location",
-      "temperature_high" = "factor",
-      "temperature_low" = "factor",
+      "location_code" = "location",
+      "temperature_high" = "linear",
+      "temperature_low" = "linear",
       "pr100_ili" = "linear",
-      "is_winter" = "binary",
+      "is_winter" = "linear",
       "pr100_covid19" = "linear",
       "pop" = "offset"
     )

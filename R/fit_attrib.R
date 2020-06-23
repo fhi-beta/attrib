@@ -1,7 +1,6 @@
 #' fit_attrib
 #' @param data x
-#' @param outcome x
-#' @param exposures a
+#' @param formula x
 #' @export
 fit_attrib <- function(
                        data,
