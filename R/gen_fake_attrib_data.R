@@ -83,8 +83,8 @@ gen_fake_attrib_data <- function() {
 
 
   # is winter
-  skeleton[, is_winter:= 0]
-  skeleton[week >= 40 | week <= 20, is_winter:= 1]                          #same weeks as the flue?
+  #skeleton[, is_winter:= 0]
+  #skeleton[, is_winter:= sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)]                          #same weeks as the flue?
 
   # covid-19
   skeleton[, pr100_covid19:= 0]
@@ -94,16 +94,17 @@ gen_fake_attrib_data <- function() {
 
 
   # generate deaths
-  set.seed(1234)
+  #set.seed(1234)
   skeleton[, mu := exp(-8.8 +
                          0.05*temperature_high +
                          #0.05 * temperature_low +
                          #0.25*influenza_coef * pr100_ili +
                          influenza_coef * pr100_ili_lag_1 +
                          #0.25*influenza_coef * pr100_ili_lag_2 +
-                         0.1 * is_winter +
+                         #0.1 * is_winter +
                          #1*pr100_covid19 +
                          10*pr100_covid19_lag_1 +
+                         3*sin(2 * pi * (week - 1) / 52) + 7*cos(2 * pi * (week - 1) / 52)+ #finn a og b
                          #1*pr100_ili_lag_2 +
                          log(pop))]
 
@@ -131,9 +132,10 @@ gen_fake_attrib_data <- function() {
                        #pr100_ili_lag_2 +
                        #(pr100_ili + pr100_ili_lag_1 + pr100_ili_lag_2|season) +
                        (pr100_ili_lag_1|season) +
-                       is_winter +
+                       #is_winter +
                        #pr100_covid19 +
                        pr100_covid19_lag_1 +
+                       sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)+
                        #pr100_covid19_lag_2 +
                        offset(log(pop)),
                      data = skeleton,
