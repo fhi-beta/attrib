@@ -76,66 +76,68 @@ test_that("Attributable numbers", {
     data = data,
     formula = formula)
 
+  exposures = c("pr100_ili_lag_1", "temperature_high", "pr100_covid19_lag_1")
+  data <- est_attrib(fit, data, exposures = c("pr100_ili_lag_1", "temperature_high", "pr100_covid19_lag_1") )
   # create reference datasets
-  data_observed <- copy(data)
+  # data_observed <- copy(data)
+  # 
+  # data_reference_pr100_ili_lag_1 <- copy(data)
+  # data_reference_pr100_ili_lag_1[, pr100_ili_lag_1 := 0]
+  # 
+  # data_reference_temperature_high <- copy(data)
+  # data_reference_temperature_high[, temperature_high := 0]
+  # 
+  # data_reference_temperature_low <- copy(data)
+  # data_reference_temperature_high[, temperature_low := 0]
+  # 
+  # data_reference_is_winter <- copy(data)
+  # data_reference_is_winter[, is_winter := 0]
+  # 
+  # data_reference_pr100_covid19_lag_1 <- copy(data)
+  # data_reference_pr100_covid19_lag_1[, pr100_covid19_lag_1 := 0]
 
-  data_reference_pr100_ili_lag_1 <- copy(data)
-  data_reference_pr100_ili_lag_1[, pr100_ili_lag_1 := 0]
+  # # estimate attrib
+  # est_pr100_ili_lag_1 <- est_attrib(
+  #   fit = fit,
+  #   data_observed = data_observed,
+  #   data_reference = data_reference_pr100_ili_lag_1
+  # )
+  # 
+  # est_temperature_high <- est_attrib(
+  #   fit = fit,
+  #   data_observed = data_observed,
+  #   data_reference = data_reference_temperature_high
+  # )
+  # 
+  # 
+  # est_pr100_covid19_lag_1 <- est_attrib(
+  #   fit = fit,
+  #   data_observed = data_observed,
+  #   data_reference = data_reference_pr100_covid19_lag_1
+  # )
 
-  data_reference_temperature_high <- copy(data)
-  data_reference_temperature_high[, temperature_high := 0]
-
-  data_reference_temperature_low <- copy(data)
-  data_reference_temperature_high[, temperature_low := 0]
-
-  data_reference_is_winter <- copy(data)
-  data_reference_is_winter[, is_winter := 0]
-
-  data_reference_pr100_covid19_lag_1 <- copy(data)
-  data_reference_pr100_covid19_lag_1[, pr100_covid19_lag_1 := 0]
-
-  # estimate attrib
-  est_pr100_ili_lag_1 <- est_attrib(
-    fit = fit,
-    data_observed = data_observed,
-    data_reference = data_reference_pr100_ili_lag_1
-  )
-
-  est_temperature_high <- est_attrib(
-    fit = fit,
-    data_observed = data_observed,
-    data_reference = data_reference_temperature_high
-  )
-
-
-  est_pr100_covid19_lag_1 <- est_attrib(
-    fit = fit,
-    data_observed = data_observed,
-    data_reference = data_reference_pr100_covid19_lag_1
-  )
-
-  data[, attrib_pr100_ili_lag_1 := est_pr100_ili_lag_1]
-  data[, attrib_temperature_high := est_temperature_high]
-  data[, attrib_temperature_low := est_temperature_low]
-  data[, attrib_pr100_covid19_lag_1 := est_pr100_covid19_lag_1]
+  # data[, attrib_pr100_ili_lag_1 := est_pr100_ili_lag_1]
+  # data[, attrib_temperature_high := est_temperature_high]
+  # data[, attrib_temperature_low := est_temperature_low]
+  # data[, attrib_pr100_covid19_lag_1 := est_pr100_covid19_lag_1]
 
   # verify that your model is giving you results like you expect
   #influenza
-  testthat::expect_equal(sum(est_pr100_ili_lag_1 < 0), 0)
+  testthat::expect_equal(sum(data$attr_pr100_ili_lag_1 < 0), 0)
 
   testthat::expect_lt(
-    sum(data[week >= 21 & week <= 39]$attrib_pr100_ili_lag_1),
-    sum(data[week >= 40 | week <= 20]$attrib_pr100_ili_lag_1)
+    sum(data[week >= 21 & week <= 39]$attr_pr100_ili_lag_1),
+    sum(data[week >= 40 | week <= 20]$attr_pr100_ili_lag_1)
   )
 
   #heat_wave
-  testthat::expect_equal(sum(est_temperature_high < 0), 0)
+  testthat::expect_equal(sum(data$attr_temperature_high < 0), 0)
 
   # is winter #må endres
   #testthat::expect_equal(sum(est_is_winter < 0), 0)
 
   # covid19
-  testthat::expect_equal(sum(est_pr100_covid19 < 0), 0)
+  testthat::expect_equal(sum(data$attr_pr100_covid19 < 0), 0)
 
   #general expect more deaths during wintern no mather the cause
   testthat::expect_lt(
