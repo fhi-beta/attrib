@@ -63,7 +63,7 @@ test_that("Attributable numbers", {
   data <- gen_fake_attrib_data()
   formula <- "deaths ~
   (1|location_code) +
-  temperature_high +
+  splines::ns(temperature, knots = 3) +
   pr100_ili_lag_1 +
   (pr100_ili_lag_1|season) +
   pr100_covid19_lag_1 +
@@ -76,50 +76,12 @@ test_that("Attributable numbers", {
     data = data,
     formula = formula)
 
-  exposures = c("pr100_ili_lag_1", "temperature_high", "pr100_covid19_lag_1")
-  data <- est_attrib(fit, data, exposures = c("pr100_ili_lag_1", "temperature_high", "pr100_covid19_lag_1") )
-  # create reference datasets
-  # data_observed <- copy(data)
-  # 
-  # data_reference_pr100_ili_lag_1 <- copy(data)
-  # data_reference_pr100_ili_lag_1[, pr100_ili_lag_1 := 0]
-  # 
-  # data_reference_temperature_high <- copy(data)
-  # data_reference_temperature_high[, temperature_high := 0]
-  # 
-  # data_reference_temperature_low <- copy(data)
-  # data_reference_temperature_high[, temperature_low := 0]
-  # 
-  # data_reference_is_winter <- copy(data)
-  # data_reference_is_winter[, is_winter := 0]
-  # 
-  # data_reference_pr100_covid19_lag_1 <- copy(data)
-  # data_reference_pr100_covid19_lag_1[, pr100_covid19_lag_1 := 0]
+  exposures = list("pr100_ili_lag_1" =  0  ,"temperature" = 12, "pr100_covid19_lag_1" = 0)
+  data <- est_attrib(fit, data, exposures = exposures )
 
-  # # estimate attrib
-  # est_pr100_ili_lag_1 <- est_attrib(
-  #   fit = fit,
-  #   data_observed = data_observed,
-  #   data_reference = data_reference_pr100_ili_lag_1
-  # )
-  # 
-  # est_temperature_high <- est_attrib(
-  #   fit = fit,
-  #   data_observed = data_observed,
-  #   data_reference = data_reference_temperature_high
-  # )
-  # 
-  # 
-  # est_pr100_covid19_lag_1 <- est_attrib(
-  #   fit = fit,
-  #   data_observed = data_observed,
-  #   data_reference = data_reference_pr100_covid19_lag_1
-  # )
-
-  # data[, attrib_pr100_ili_lag_1 := est_pr100_ili_lag_1]
-  # data[, attrib_temperature_high := est_temperature_high]
-  # data[, attrib_temperature_low := est_temperature_low]
-  # data[, attrib_pr100_covid19_lag_1 := est_pr100_covid19_lag_1]
+  data[,.(attrib_pr100_ili_lag_1 = sum(attr_pr100_ili_lag_1),
+               attrib_pr100_covid19_lag_1 = sum(attr_pr100_covid19_lag_1),
+               attrib_heatwave = sum(temperature)), keyby=.(season, location_code)]
 
   # verify that your model is giving you results like you expect
   #influenza
