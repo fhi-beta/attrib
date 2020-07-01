@@ -103,7 +103,7 @@ gen_fake_attrib_data <- function() {
                          #0.25*influenza_coef * pr100_ili_lag_2 +
                          #0.1 * is_winter +
                          #1*pr100_covid19 +
-                         10*pr100_covid19_lag_1 +
+                         1*pr100_covid19_lag_1 +
                          0.02*sin(2 * pi * (week - 1) / 52) + 0.07*cos(2 * pi * (week - 1) / 52)+ #finn a og b
                          #1*pr100_ili_lag_2 +
                          log(pop))]
