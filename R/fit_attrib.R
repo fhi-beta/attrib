@@ -62,6 +62,7 @@
 fit_attrib <- function(
   data,
   formula){
+  is_data_table(data)
   # for ( i in splines){
   #   i <- splines[1]
   #   sp <- splines::ns(data[[i]], knots = 3)
