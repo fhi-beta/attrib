@@ -4,14 +4,14 @@
 \alias{est_attrib}
 \title{Estimates attributable mortality}
 \usage{
-est_attrib(fit, data_observed, data_reference)
+est_attrib(fit, data, exposures)
 }
 \arguments{
 \item{fit}{A model fit}
 
-\item{data_observed}{The observed data}
+\item{data}{The observed data}
 
-\item{data_reference}{The data with reference values}
+\item{exposures}{The exposures that will be given attributable deaths}
 }
 \description{
 Estimates attributable mortality

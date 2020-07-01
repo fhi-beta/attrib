@@ -4,18 +4,12 @@
 \alias{fit_attrib}
 \title{fit_attrib}
 \usage{
-fit_attrib(
-  data,
-  outcome = "deaths",
-  exposures = list(influenza = "linear", temperature = "linear")
-)
+fit_attrib(data, formula)
 }
 \arguments{
 \item{data}{x}
 
-\item{outcome}{x}
-
-\item{exposures}{a}
+\item{formula}{x}
 }
 \description{
 fit_attrib
