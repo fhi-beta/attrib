@@ -18,10 +18,10 @@ est_attrib <- function(
     data_reference <- data_reference[, glue::glue({names(exposures)[i]}) := exposures[[i]]]
 
 
-    sim_observed <- simulate(fit, newdata=data, nsim=10000, family="poisson", re.form=NULL)
+    sim_observed <- simulate(fit, newdata=data, nsim=100, family="poisson", re.form=NULL)
     setDT(sim_observed)
 
-    sim_reference <- simulate(fit, newdata=data_reference, nsim=10000, family="poisson", re.form=NULL)
+    sim_reference <- simulate(fit, newdata=data_reference, nsim=100, family="poisson", re.form=NULL)
     setDT(sim_reference)
 
     sim_attr <- sim_observed- sim_reference
