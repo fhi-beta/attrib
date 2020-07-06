@@ -7,22 +7,35 @@ test_that("Model fit", {
 
   pb <- txtProgressBar(min = 0, max = rep, style = 3)
   retval <- vector("list", length= rep)
-  formula <- "deaths ~
-  (1|location_code) +
-  temperature_high +
+  # formula <- "deaths ~
+  # (1|location_code) +
+  # temperature_high +
+  # pr100_ili_lag_1 +
+  # (pr100_ili_lag_1|season) +
+  # pr100_covid19_lag_1 +
+  # sin(2 * pi * (week - 1) / 52) +
+  # cos(2 * pi * (week - 1) / 52) +
+  # offset(log(pop))"
+  
+  fixef <- "deaths ~
+  splines::ns(temperature, df=3) +
   pr100_ili_lag_1 +
-  (pr100_ili_lag_1|season) +
   pr100_covid19_lag_1 +
   sin(2 * pi * (week - 1) / 52) +
   cos(2 * pi * (week - 1) / 52) +
   offset(log(pop))"
+  
+  # take in the random effects
+  ranef <- "(1|location_code) +
+  (pr100_ili_lag_1|season)"
 
   for(i in 1:rep){
     setTxtProgressBar(pb, i)
     data <- gen_fake_attrib_data()
     fit <- fit_attrib(
       data = data,
-      formula = formula)
+      fixef = fixef,
+      ranef = ranef)
     temp <- colMeans(x=coef(fit)$season, na.rm = TRUE)
     temp = as.data.frame(temp)
     temp$var = row.names(temp)
@@ -133,24 +146,29 @@ test_that("irr", {
   
   fit <- fit_attrib(data, fixef = fixef, ranef = ranef)
   
-  est_mean_data <- est_mean(fit, data)
+  exposures <- list("pr100_ili_lag_1" = 0, "pr100_covid19_lag_1" = 0)
+  est_mort <- est_attrib(fit, data, exposures)
+  #est_mean_data <- est_mean(fit, data)
   
 
   #newdata <- data[10:1000,]
 
   # predict mean
   pred <- exp(lme4:::predict.merMod(fit, data))
-  est_mean <- unique(est_mean_data$sim_mean)
+  est_mean <- est_mort[,.(exp_mort_median = median(exp_mort_observed)), keyby = .(id, location_code, week, season, yrwk, pop, deaths)]
+  
+  
+  #est_mean <- unique(est_mean_data$sim_mean)
 
-  dif_mean <- pred - est_mean  #apply(expected,2,median)
+  dif_mean <- pred - est_mean$exp_mort_median  #apply(expected,2,median)
   mean(dif_mean)
   median(dif_mean)
   
-  dif_obs <- est_mean_data$deaths - est_mean #apply(expected,2,median)
+  dif_obs <- est_mean$deaths - est_mean$exp_mort_median #apply(expected,2,median)
   mean(dif_obs)
   median(dif_obs)
   
-  dif <- newdata$deaths - pred
+  dif <- est_mean$deaths - pred
   median(dif)
   
   # median(apply(expected,2,mean))

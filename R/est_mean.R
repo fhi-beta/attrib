@@ -15,7 +15,7 @@ est_mean <- function(
   x <- arm::sim(fit, n.sims=n_sim)
 
   # get the design matrix for the fixed effects
-  data_fix <- model.frame(fit_fix, data=data)
+  data_fix <- model.frame(fix_eff, data=data)
 
   # multiply it out
   expected_fix <- cbind(as.matrix(x@fixef),1) %*% rbind(1,as.matrix(t(data_fix[,-1]))) # 1 HØRER TIL INTERCEPT
@@ -44,28 +44,24 @@ est_mean <- function(
   expected <- as.data.table(exp(expected_fix + expected_ran))
 
   expected_t <- data.table::transpose(expected)
-  expected_t$id <- 1:nrow(data)
-  data$id <- 1:nrow(data)
+  expected_t$id_row <-1:nrow(data)
+  data$id_row <- 1:nrow(data)
 
-  new_data<- merge(data, expected_t, by = "id", all = TRUE)
-  new_data<- data.table::melt(new_data, id.vars = c(col_names, "id"))
+  new_data<- merge(data, expected_t, by = "id_row", all = TRUE)
+  new_data<- data.table::melt(new_data, id.vars = c(col_names, "id_row"))
 
   setnames(new_data, "variable", "sim_id")
-  new_data$sim <- as.numeric(as.factor(new_data$sim))
-
+  new_data$sim_id <- as.numeric(as.factor(new_data$sim_id))
   setnames(new_data, "value", "expected_mort")
-  setkeyv(new_data, c(col_names, "id"))
-  
- 
-  
-  mean_data<- new_data[,.(mort_mean = mean(expected_mort),
-              mort_quantile_025 = quantile(expected_mort, 0.025),
-              mort_quantile_975 = quantile(expected_mort, 0.9755)),
-           keyby = key(new_data)]
-
-  #NOT ADDED THE QUANTILES SINSE ALL THE DATA IS ALREADDY THERE. 
-  new_data[mean_data, on = c("id"), sim_mean := mort_mean]
-  
+  #setkeyv(new_data, c(col_names, "id"))
+  # mean_data<- new_data[,.(mort_mean = mean(expected_mort),
+  #             mort_quantile_025 = quantile(expected_mort, 0.025),
+  #             mort_quantile_975 = quantile(expected_mort, 0.9755)),
+  #          keyby = key(new_data)]
+  # 
+  # #NOT ADDED THE QUANTILES SINSE ALL THE DATA IS ALREADDY THERE. 
+  # new_data[mean_data, on = c("id"), sim_mean := mort_mean]
+  # 
   return (new_data)
   
   # data_obs <- new_data[tag == "obs"]

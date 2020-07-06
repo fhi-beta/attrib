@@ -18,8 +18,6 @@ est_attrib <- function(
     data_reference <- data_reference[, glue::glue({names(exposures)[i]}) := exposures[[i]]]
 
   }
-
-  )
   setnames(data_ret_val, "variable", "sim")
   data_ret_val[, sim:= as.numeric(as.factor(sim))]
   return(data_ret_val)
