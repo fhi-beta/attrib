@@ -57,7 +57,7 @@ gen_fake_attrib_data <- function() {
   skeleton[, pr100_ili_lag_1 := shift(pr100_ili, fill = 0), by = c("location_code")]
   skeleton[, pr100_ili_lag_2 := shift(pr100_ili, n= 2L, fill = 0), by = c("location_code")]
 
-  # temperature high
+  # temperature
 
   skeleton_weeks_temp <- unique(skeleton[,c("location_code", "week")])
   skeleton_weeks_temp[, mean_temperature := (26 - abs((week- 26)))]
@@ -76,6 +76,10 @@ gen_fake_attrib_data <- function() {
 
   skeleton[, temperature_high := 0]
   skeleton[temperature > 20 , temperature_high := rbinom(.N, 7, 0.2)]
+  
+  skeleton[, temperature_spline_1 := splines::ns(skeleton$temperature, df=3)[,1]]
+  skeleton[, temperature_spline_2 := splines::ns(skeleton$temperature, df=3)[,2]]
+  skeleton[, temperature_spline_3 := splines::ns(skeleton$temperature, df=3)[,3]]
 
   # temperature low
   # skeleton[, temperature_low:= 0]
@@ -96,14 +100,16 @@ gen_fake_attrib_data <- function() {
   # generate deaths
   #set.seed(1234)
   skeleton[, mu := exp(-8.8 +
-                         0.08*temperature_high +
-                         #0.05 * temperature_low +
+                         0.08*temperature_spline_1 +
+                         0.08*temperature_spline_2 +
+                         0.08*temperature_spline_3 +
+                         #0.08 * temperature_high +
                          #0.25*influenza_coef * pr100_ili +
                          influenza_coef * pr100_ili_lag_1 +
                          #0.25*influenza_coef * pr100_ili_lag_2 +
                          #0.1 * is_winter +
                          #1*pr100_covid19 +
-                         1*pr100_covid19_lag_1 +
+                         10*pr100_covid19_lag_1 +
                          0.02*sin(2 * pi * (week - 1) / 52) + 0.07*cos(2 * pi * (week - 1) / 52)+ #finn a og b
                          #1*pr100_ili_lag_2 +
                          log(pop))]
@@ -126,7 +132,8 @@ gen_fake_attrib_data <- function() {
   # summary(fit)
 
   fit <- lme4::glmer(deaths ~ (1|location_code) +
-                       temperature_high +
+                       splines::ns(skeleton$temperature, df=3) +
+                       #temperature_high +
                        #pr100_ili +
                        pr100_ili_lag_1 +
                        #pr100_ili_lag_2 +
