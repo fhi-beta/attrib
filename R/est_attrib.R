@@ -9,17 +9,44 @@ est_attrib <- function(
   data,
   exposures) {
 
+  
   data_ret_val = copy(data)
   data_ret_val[, id := 1:.N]
-
-  data_ret_val_2 = copy(data)
+  
+  col_names_orig<- colnames(data)
+  
+  data_observed <- copy(data)
+  data_observed[, id:= 1:.N]
+  data_observed$tag <- "observed"
+  #data_ret_val_2 = copy(data)
+  data_tot <- data_observed
   for (i in seq_along(exposures)){
     data_reference <- copy(data)
+    data_reference[, id:= 1:.N]
     data_reference <- data_reference[, glue::glue({names(exposures)[i]}) := exposures[[i]]]
-
+    data_reference$tag <- as.character(glue::glue("ref_{names(exposures)[i]}"))
+    data_tot <- rbindlist(list(data_tot, data_reference))
+    
   }
-  setnames(data_ret_val, "variable", "sim")
-  data_ret_val[, sim:= as.numeric(as.factor(sim))]
+  
+  
+  data_tot_ret <- est_mean(fit, data_tot)
+  
+  data_ret_val <- data_tot_ret[tag == "observed"]
+  setnames(data_ret_val, "expected_mort", "exp_mort_observed")
+  #this works but is a bit sslow
+  for (i in seq_along(exposures)){
+    data_ret_temp <- data_tot_ret[tag == glue::glue("ref_{names(exposures)[i]}")]
+    data_ret_val[data_ret_temp, on= c("sim_id", "id"), 
+                glue::glue("exp_mort_{names(exposures)[i]}={(exposures)[i]}") := data_ret_temp$expected_mort]
+  }
+  
+  # cur_col_names <- c(col_names_orig[1:12], "sim_id", "id") #need to remove the exposures
+  # formula_cast <- paste(c(paste(cur_col_names, collapse = " + "),  "~ tag"), collapse = " ")
+  # data_ret_val <- data.table::dcast.data.table(data_tot_ret, 
+  #                                              as.formula(formula_cast), value.var = "expected_mort")
+  # 
+  
   return(data_ret_val)
 }
 
