@@ -20,7 +20,9 @@ Imports: data.table,
     lubridate,
     mvmeta,
     tsModel,
-    stats
+    stats,
+    lme4,
+    arm
 Suggests: testthat,
     knitr,
     rmarkdown
