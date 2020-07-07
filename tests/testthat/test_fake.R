@@ -159,15 +159,18 @@ test_that("simmulations", {
   offset(log(pop))"
   
   # take in the random effects
-  ranef <- "(1|location_code) +
-  (pr100_ili_lag_1|season)"
+  # ranef <- "(1|location_code) +
+  # (pr100_ili_lag_1|season)"
+  # 
+  ranef <- "(pr100_ili_lag_1|season)"
+  
   
   suppressWarnings(
     fit <- fit_attrib(data, fixef = fixef, ranef = ranef)
   )
   
-  exposures <- list("pr100_ili_lag_1" = 0, "pr100_covid19_lag_1" = 0)
-  est_mort <- est_attrib(fit, data, exposures)
+  exposures <- list("pr100_ili_lag_1" = 0, "pr100_covid19_lag_1" = 0, "temperature" = 7)
+  est_mort <- est_attrib(fit, data, exposures, response = "deaths")
 
   # predict mean
   pred <- exp(lme4:::predict.merMod(fit, data))

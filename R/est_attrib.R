@@ -3,11 +3,13 @@
 #' @param fit A model fit
 #' @param data The observed data
 #' @param exposures The exposures that will be given attributable deaths
+#' @param response The name of the response column
 #' @export
 est_attrib <- function(
   fit,
   data,
-  exposures) {
+  exposures, 
+  response) {
 
   
   data_ret_val = copy(data)
@@ -30,7 +32,7 @@ est_attrib <- function(
   }
   data_tot <- rbindlist(data_tot)
   
-  data_tot_ret <- est_mean(fit, data_tot)
+  data_tot_ret <- est_mean(fit, data_tot, response = response)
   
   data_ret_val <- data_tot_ret[tag == "observed"]
   setnames(data_ret_val, "expected_mort", "exp_mort_observed")

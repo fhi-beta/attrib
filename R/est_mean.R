@@ -1,11 +1,16 @@
 #' Estimates the mean of the simmulations of expected mortality
 #' @param fit A model fit, OBS: offset must be the last element
 #' @param data The observed data. OBS: mortality must be the first column
+#' @param response Name of response column
 #' @export
 est_mean <- function(
   fit,
-  data) {
-
+  data, 
+  response) {
+  
+  if (length(which(is.na(data))) != 0){
+    stop("The dataset has NA values")
+  }
   col_names <- colnames(data)
 
   n_sim <- 500
@@ -16,9 +21,11 @@ est_mean <- function(
 
   # get the design matrix for the fixed effects
   data_fix <- model.frame(fix_eff, data=data)
+  data_fix_copy <- as.data.table(data_fix)
+  data_fix_copy[, (response) := NULL]
 
   # multiply it out
-  expected_fix <- cbind(as.matrix(x@fixef),1) %*% rbind(1,as.matrix(t(data_fix[,-1]))) # 1 HØRER TIL INTERCEPT
+  expected_fix <- cbind(as.matrix(x@fixef),1) %*% rbind(1,as.matrix(t(data_fix_copy)))#[,-1]))) # 1 HØRER TIL INTERCEPT
   #expected_fix
 
   # set up the results for random effects
