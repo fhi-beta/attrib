@@ -4,7 +4,10 @@
 \alias{gen_fake_attrib_data}
 \title{Generates fake attributable data}
 \usage{
-gen_fake_attrib_data()
+gen_fake_attrib_data(n_locations = 11)
+}
+\arguments{
+\item{n_locations}{Telling how many locations one watns in the output data}
 }
 \description{
 This function generates one dataset

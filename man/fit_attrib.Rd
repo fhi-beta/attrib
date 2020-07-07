@@ -4,12 +4,14 @@
 \alias{fit_attrib}
 \title{fit_attrib}
 \usage{
-fit_attrib(data, formula)
+fit_attrib(data, fixef, ranef)
 }
 \arguments{
 \item{data}{x}
 
-\item{formula}{x}
+\item{fixef}{x}
+
+\item{ranef}{x}
 }
 \description{
 fit_attrib

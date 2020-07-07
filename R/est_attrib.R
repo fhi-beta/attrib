@@ -19,16 +19,16 @@ est_attrib <- function(
   data_observed[, id:= 1:.N]
   data_observed$tag <- "observed"
   #data_ret_val_2 = copy(data)
-  data_tot <- data_observed
+  data_tot <- vector("list", length = length(exposures)+1 )
+  data_tot[[1]] <- data_observed
   for (i in seq_along(exposures)){
     data_reference <- copy(data)
     data_reference[, id:= 1:.N]
     data_reference <- data_reference[, glue::glue({names(exposures)[i]}) := exposures[[i]]]
     data_reference$tag <- as.character(glue::glue("ref_{names(exposures)[i]}"))
-    data_tot <- rbindlist(list(data_tot, data_reference))
-    
+    data_tot [[i+1]]<- data_reference
   }
-  
+  data_tot <- rbindlist(data_tot)
   
   data_tot_ret <- est_mean(fit, data_tot)
   

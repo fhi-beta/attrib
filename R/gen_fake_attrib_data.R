@@ -1,8 +1,9 @@
 #' Generates fake attributable data
 #'
 #' This function generates one dataset
+#' @param n_locations Telling how many locations one watns in the output data
 #' @export
-gen_fake_attrib_data <- function() {
+gen_fake_attrib_data <- function(n_locations = 11 ) {
   start_date <- as.Date("2010-01-01")
   end_date <- as.Date("2020-12-31")
 
@@ -158,5 +159,9 @@ gen_fake_attrib_data <- function() {
   )]
   min(death_tot$death)
   max(death_tot$death)
-  return(skeleton)
+  #get unique loctation codes, return n first. 
+  
+  locations <- unique(skeleton$location_code)
+  locations_current <- locations[1:n_locations]
+  return(skeleton[location_code %in% locations_current])
 }
