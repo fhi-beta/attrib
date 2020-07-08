@@ -4,12 +4,14 @@
 \alias{est_mean}
 \title{Estimates the mean of the simmulations of expected mortality}
 \usage{
-est_mean(fit, data)
+est_mean(fit, data, response)
 }
 \arguments{
 \item{fit}{A model fit, OBS: offset must be the last element}
 
 \item{data}{The observed data. OBS: mortality must be the first column}
+
+\item{response}{Name of response column}
 }
 \description{
 Estimates the mean of the simmulations of expected mortality

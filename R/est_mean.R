@@ -25,7 +25,7 @@ est_mean <- function(
   data_fix_copy[, (response) := NULL]
 
   # multiply it out
-  expected_fix <- cbind(as.matrix(x@fixef),1) %*% rbind(1,as.matrix(t(data_fix_copy)))#[,-1]))) # 1 HØRER TIL INTERCEPT
+  expected_fix <- cbind(as.matrix(x@fixef),1) %*% rbind(1,as.matrix(t(data_fix_copy))) # This crashes when the dataset does not contain covid. Need to add a 1 column correpsonding to covid
 
   # set up the results for random effects
   expected_ran <- matrix(0, ncol=ncol(expected_fix), nrow=nrow(expected_fix))
@@ -39,8 +39,12 @@ est_mean <- function(
       variable <- dimnames(x@ranef[[i]])[[3]][j]
       coefficients <- x@ranef[[i]][,,j]
       if(variable=="(Intercept)"){
+        print(dim(expected_ran))
+        print(dim(coefficients[,data[[grouping]]]))
         expected_ran <- expected_ran + coefficients[,data[[grouping]]]
       } else {
+        print(dim(expected_ran))
+        print(dim(coefficients[,data[[grouping]]]))
         expected_ran <- expected_ran + coefficients[,data[[grouping]]] %*% diag(data[[variable]])
       }
     }

@@ -6,6 +6,9 @@
 \usage{
 is_data_table(data)
 }
+\arguments{
+\item{data}{Data to be checked}
+}
 \description{
 Check is data is a data table
 }

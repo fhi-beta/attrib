@@ -1,4 +1,4 @@
-#' Estimates attributable mortality
+#' Estimates attributable mortality and irr
 #'
 #' @param data The observed data
 #' @param exposures The exposures that will be given attributable deaths, must exict as exp_mort + exposure in the data 
@@ -9,11 +9,11 @@ est_attrib <- function(
   exposures, 
   response) {
   
-  data_copy <- copy(est_mort) #data
+  data_copy <- copy(data) 
   
-  data_copy[, c("id_row", "tag") := NULL]
+  try(data_copy[, c("id_row", "tag") := NULL], silent = TRUE)
   col_names <- colnames(data_copy)
-
+  
   
   exp_col <- rep(0, length(exposures)*3 +1)
   for ( i in seq_along(exposures)){
