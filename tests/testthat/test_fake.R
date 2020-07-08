@@ -109,7 +109,7 @@ test_that("Attributable numbers", {
   )
   exposures = list("pr100_ili_lag_1" =  0  ,"temperature" = 7, "pr100_covid19_lag_1" = 0)
   #data_one <- data[1]
-  data <- est_attrib(fit, data, exposures = exposures )
+  data <- est_mort(fit, data, exposures = exposures )
 
   data_copy <- copy(data)
   data_copy <-data_copy[,.(attr_pr100_ili_lag_1 = median(exp_mort_observed - `exp_mort_pr100_ili_lag_1=0`),
@@ -170,7 +170,7 @@ test_that("simmulations", {
   )
   
   exposures <- list("pr100_ili_lag_1" = 0, "pr100_covid19_lag_1" = 0, "temperature" = 7)
-  est_mort <- est_attrib(fit, data, exposures, response = "deaths")
+  est_mort <- est_mort(fit, data, exposures, response = "deaths")
 
   # predict mean
   pred <- exp(lme4:::predict.merMod(fit, data))
