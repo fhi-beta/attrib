@@ -149,15 +149,18 @@ test_that("simmulations", {
   set.seed(40)
   data <- gen_fake_attrib_data(2)
   
+  data <- data[season != c("2019/2020", "2020/2021")]
+  data <- data[, pr100_covid19_lag_1 := 0 ]
+  data <- data[, pr100_covid19_lag_2 := 0 ]
   # take in the fixed effects
   fixef <- "deaths ~
   splines::ns(temperature, df=3) +
   pr100_ili_lag_1 +
   pr100_covid19_lag_1 +
   sin(2 * pi * (week - 1) / 52) +
-  cos(2 * pi * (week - 1) / 52) +
-  offset(log(pop))"
+  cos(2 * pi * (week - 1) / 52)"
   
+  offset <- "log(pop)"
   # take in the random effects
   # ranef <- "(1|location_code) +
   # (pr100_ili_lag_1|season)"
@@ -166,7 +169,7 @@ test_that("simmulations", {
   
   
   suppressWarnings(
-    fit <- fit_attrib(data, fixef = fixef, ranef = ranef)
+    fit <- fit_attrib(data, fixef = fixef, ranef = ranef, offset = offset)
   )
   
   exposures <- list("pr100_ili_lag_1" = 0, "pr100_covid19_lag_1" = 0, "temperature" = 7)

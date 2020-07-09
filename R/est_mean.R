@@ -16,7 +16,7 @@ est_mean <- function(
   n_sim <- 500
 
   fix_eff <- attr(fit, "fit_fix")
-
+  offset <- attr(fit, "offset")
   x <- arm::sim(fit, n.sims=n_sim)
 
   # get the design matrix for the fixed effects
@@ -24,8 +24,53 @@ est_mean <- function(
   data_fix_copy <- as.data.table(data_fix)
   data_fix_copy[, (response) := NULL]
 
+  x_fix <- as.data.frame(as.matrix(x@fixef))
+
+  r_names <- rownames(rbind(1,as.matrix(t(data_fix_copy))))
+  c_names <- colnames(as.matrix(x@fixef))
+  count = 0
+  for (i in (2:(length(r_names)-1))){
+    # print(i)
+    r_cur <- r_names[i]
+    c_cur <- c_names[i- count]
+    
+    check = FALSE
+    
+    c_check <- stringr::str_replace_all(c_cur, "[:(, =)*/-]", ".")
+    # print(c_check == r_cur)
+    # print(r_cur)
+    # print(c_check)
+    
+    if(c_check == r_cur){
+      check = TRUE
+      next
+    }
+    
+    split <- strsplit(c_check, "")[[1]]
+    if(split[length(split)-1] == "."){
+      p<- paste0(substr(c_check, 1, (nchar(c_check)-1)),".", substr(c_check, nchar(c_check), nchar(c_check)), collapse = NULL)
+      if( p == r_cur){
+        check = TRUE
+        next
+      }
+    }
+    
+    if(check == FALSE){
+      x_fix<- tibble::add_column(x_fix, extra = 0, .after = (i-1 + count))
+      count <- count + 1
+    }
+    
+  }
+  
   # multiply it out
-  expected_fix <- cbind(as.matrix(x@fixef),1) %*% rbind(1,as.matrix(t(data_fix_copy))) # This crashes when the dataset does not contain covid. Need to add a 1 column correpsonding to covid
+
+  dim(cbind(as.matrix(x_fix),1))
+  dim(rbind(1,as.matrix(t(data_fix_copy))))
+  
+  colnames(cbind(as.matrix(x_fix),1))
+  rownames(rbind(1,as.matrix(t(data_fix_copy))))
+  
+  expected_fix <- cbind(as.matrix(x_fix),1) %*% rbind(1,as.matrix(t(data_fix_copy))) # This crashes when the dataset does not contain covid. Need to add a 1 column correpsonding to covid
 
   # set up the results for random effects
   expected_ran <- matrix(0, ncol=ncol(expected_fix), nrow=nrow(expected_fix))
