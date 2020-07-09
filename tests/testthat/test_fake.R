@@ -7,23 +7,15 @@ test_that("Model fit", {
 
   pb <- txtProgressBar(min = 0, max = rep, style = 3)
   retval <- vector("list", length= rep)
-  # formula <- "deaths ~
-  # (1|location_code) +
-  # temperature_high +
-  # pr100_ili_lag_1 +
-  # (pr100_ili_lag_1|season) +
-  # pr100_covid19_lag_1 +
-  # sin(2 * pi * (week - 1) / 52) +
-  # cos(2 * pi * (week - 1) / 52) +
-  # offset(log(pop))"
-  
+ 
   fixef <- "deaths ~
   splines::ns(temperature, df=3) +
   pr100_ili_lag_1 +
   pr100_covid19_lag_1 +
   sin(2 * pi * (week - 1) / 52) +
-  cos(2 * pi * (week - 1) / 52) +
-  offset(log(pop))"
+  cos(2 * pi * (week - 1) / 52)"
+  
+  offset <- "log(pop)"
   
   # take in the random effects
   ranef <- "(1|location_code) +
@@ -32,12 +24,13 @@ test_that("Model fit", {
   for(i in 1:rep){
     setTxtProgressBar(pb, i)
     
-    data <- gen_fake_attrib_data(4)
+    data <- gen_fake_attrib_data()
     suppressWarnings(
       fit <- fit_attrib(
         data = data,
         fixef = fixef,
-        ranef = ranef)
+        ranef = ranef, 
+        offset = offset)
     )
     temp <- colMeans(x=coef(fit)$season, na.rm = TRUE)
     temp = as.data.frame(temp)
@@ -83,38 +76,29 @@ test_that("Attributable numbers", {
   pr100_ili_lag_1 +
   pr100_covid19_lag_1 +
   sin(2 * pi * (week - 1) / 52) +
-  cos(2 * pi * (week - 1) / 52) +
-  offset(log(pop))"
+  cos(2 * pi * (week - 1) / 52)"
   
+  offset <- "log(pop)"
   # take in the random effects
   ranef <- "(1|location_code) +
   (pr100_ili_lag_1|season)"
-  
-  # formula <- "deaths ~
-  # (1|location_code) +
-  # splines::ns(temperature, knots = 3) +
-  # pr100_ili_lag_1 +
-  # (pr100_ili_lag_1|season) +
-  # pr100_covid19_lag_1 +
-  # sin(2 * pi * (week - 1) / 52) +
-  # cos(2 * pi * (week - 1) / 52) +
-  # offset(log(pop))"
 
   # fit initial model
   suppressWarnings(
     fit <- fit_attrib(
       data = data,
       fixef = fixef,
-      ranef = ranef)
+      ranef = ranef, 
+      offset = offset)
   )
   exposures = list("pr100_ili_lag_1" =  0  ,"temperature" = 7, "pr100_covid19_lag_1" = 0)
   #data_one <- data[1]
-  data <- est_mort(fit, data, exposures = exposures )
+  data <- est_mort(fit, data, exposures = exposures, response = "deaths" )
 
   data_copy <- copy(data)
   data_copy <-data_copy[,.(attr_pr100_ili_lag_1 = median(exp_mort_observed - `exp_mort_pr100_ili_lag_1=0`),
                attr_pr100_covid19_lag_1 = median(exp_mort_observed - `exp_mort_pr100_covid19_lag_1=0`),
-               attr_heatwave = median(exp_mort_observed - `exp_mort_temperature=7`)), 
+               attr_temperature = median(exp_mort_observed - `exp_mort_temperature=7`)), 
           keyby=.(season, location_code, id, week)]
 
   # verify that your model is giving you results like you expect
@@ -149,9 +133,10 @@ test_that("simmulations", {
   set.seed(40)
   data <- gen_fake_attrib_data(2)
   
-  data <- data[season != c("2019/2020", "2020/2021")]
-  data <- data[, pr100_covid19_lag_1 := 0 ]
-  data <- data[, pr100_covid19_lag_2 := 0 ]
+  # data <- data[season != c("2019/2020", "2020/2021")]
+  # data <- data[, pr100_covid19_lag_1 := 0 ]
+  # data <- data[, pr100_covid19_lag_2 := 0 ]
+  
   # take in the fixed effects
   fixef <- "deaths ~
   splines::ns(temperature, df=3) +
