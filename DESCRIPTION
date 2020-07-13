@@ -22,7 +22,9 @@ Imports: data.table,
     tsModel,
     stats,
     lme4,
-    arm
+    arm, 
+    tibble,
+    stringr
 Suggests: testthat,
     knitr,
     rmarkdown

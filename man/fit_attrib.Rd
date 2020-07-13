@@ -4,7 +4,7 @@
 \alias{fit_attrib}
 \title{fit_attrib}
 \usage{
-fit_attrib(data, fixef, ranef)
+fit_attrib(data, fixef, ranef, offset = NULL)
 }
 \arguments{
 \item{data}{x}
@@ -12,6 +12,8 @@ fit_attrib(data, fixef, ranef)
 \item{fixef}{x}
 
 \item{ranef}{x}
+
+\item{offset}{x}
 }
 \description{
 fit_attrib

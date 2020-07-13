@@ -2,6 +2,7 @@
 #' @param data x
 #' @param fixef x
 #' @param ranef x
+#' @param offset x
 #' @export
 fit_attrib <- function(
   data,

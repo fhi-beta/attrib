@@ -7,29 +7,29 @@ test_that("Model fit", {
 
   pb <- txtProgressBar(min = 0, max = rep, style = 3)
   retval <- vector("list", length= rep)
- 
+
   fixef <- "deaths ~
   splines::ns(temperature, df=3) +
   pr100_ili_lag_1 +
   pr100_covid19_lag_1 +
   sin(2 * pi * (week - 1) / 52) +
   cos(2 * pi * (week - 1) / 52)"
-  
+
   offset <- "log(pop)"
-  
+
   # take in the random effects
   ranef <- "(1|location_code) +
   (pr100_ili_lag_1|season)"
 
   for(i in 1:rep){
     setTxtProgressBar(pb, i)
-    
+
     data <- gen_fake_attrib_data()
     suppressWarnings(
       fit <- fit_attrib(
         data = data,
         fixef = fixef,
-        ranef = ranef, 
+        ranef = ranef,
         offset = offset)
     )
     temp <- colMeans(x=coef(fit)$season, na.rm = TRUE)
@@ -70,14 +70,14 @@ test_that("Attributable numbers", {
 
   # generate data
   data <- gen_fake_attrib_data(2)
-  
+
   fixef <- "deaths ~
   splines::ns(temperature, df=3) +
   pr100_ili_lag_1 +
   pr100_covid19_lag_1 +
   sin(2 * pi * (week - 1) / 52) +
   cos(2 * pi * (week - 1) / 52)"
-  
+
   offset <- "log(pop)"
   # take in the random effects
   ranef <- "(1|location_code) +
@@ -88,7 +88,7 @@ test_that("Attributable numbers", {
     fit <- fit_attrib(
       data = data,
       fixef = fixef,
-      ranef = ranef, 
+      ranef = ranef,
       offset = offset)
   )
   exposures = list("pr100_ili_lag_1" =  0  ,"temperature" = 7, "pr100_covid19_lag_1" = 0)
@@ -98,7 +98,7 @@ test_that("Attributable numbers", {
   data_copy <- copy(data)
   data_copy <-data_copy[,.(attr_pr100_ili_lag_1 = median(exp_mort_observed - `exp_mort_pr100_ili_lag_1=0`),
                attr_pr100_covid19_lag_1 = median(exp_mort_observed - `exp_mort_pr100_covid19_lag_1=0`),
-               attr_temperature = median(exp_mort_observed - `exp_mort_temperature=7`)), 
+               attr_temperature = median(exp_mort_observed - `exp_mort_temperature=7`)),
           keyby=.(season, location_code, id, week)]
 
   # verify that your model is giving you results like you expect
@@ -111,7 +111,7 @@ test_that("Attributable numbers", {
   )
 
   #heat_wave
-  #testthat::expect_gt(mean(data$attr_temperature), 0) # thisi is now for temperature not heatwaves!! 
+  #testthat::expect_gt(mean(data$attr_temperature), 0) # thisi is now for temperature not heatwaves!!
 
   # is winter #må endres
   #testthat::expect_equal(sum(est_is_winter < 0), 0)
@@ -132,32 +132,32 @@ test_that("simmulations", {
 
   set.seed(40)
   data <- gen_fake_attrib_data(2)
-  
-  # data <- data[season != c("2019/2020", "2020/2021")]
-  # data <- data[, pr100_covid19_lag_1 := 0 ]
-  # data <- data[, pr100_covid19_lag_2 := 0 ]
-  
+
+   data <- data[season != c("2019/2020", "2020/2021")]
+   data <- data[, pr100_covid19_lag_1 := 0 ]
+   data <- data[, pr100_covid19_lag_2 := 0 ]
+
   # take in the fixed effects
   fixef <- "deaths ~
-  splines::ns(temperature, df=3) +
+  temperature_high +
   pr100_ili_lag_1 +
   pr100_covid19_lag_1 +
   sin(2 * pi * (week - 1) / 52) +
   cos(2 * pi * (week - 1) / 52)"
-  
+
   offset <- "log(pop)"
   # take in the random effects
   # ranef <- "(1|location_code) +
   # (pr100_ili_lag_1|season)"
-  # 
+  #
   ranef <- "(pr100_ili_lag_1|season)"
-  
-  
+
+  data[,temperature_high:= 0]
   suppressWarnings(
     fit <- fit_attrib(data, fixef = fixef, ranef = ranef, offset = offset)
   )
-  
-  exposures <- list("pr100_ili_lag_1" = 0, "pr100_covid19_lag_1" = 0, "temperature" = 7)
+
+  exposures <- list("pr100_ili_lag_1" = 0, "pr100_covid19_lag_1" = 0, "temperature_high" = 0)
   est_mort <- est_mort(fit, data, exposures, response = "deaths")
 
   # predict mean
@@ -167,24 +167,24 @@ test_that("simmulations", {
   dif_mean <- pred - est_mean$exp_mort_median  #apply(expected,2,median)
   mean(dif_mean)
   median(dif_mean)
-  
+
   testthat::expect_equal(
     round(as.numeric(median(dif_mean), 0)),
     c(0)
   )
-  
+
   dif_obs <- est_mean$deaths - est_mean$exp_mort_median #apply(expected,2,median)
   mean(dif_obs)
   median(dif_obs)
-  
+
   testthat::expect_equal(
     round(as.numeric(median(dif_obs), 0)),
     c(0)
   )
-  
+
   dif <- est_mean$deaths - pred
   median(dif)
-  
+
   testthat::expect_equal(
     round(as.numeric(median(dif), 0)),
     c(0)

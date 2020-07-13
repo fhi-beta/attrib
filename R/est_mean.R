@@ -5,9 +5,9 @@
 #' @export
 est_mean <- function(
   fit,
-  data, 
+  data,
   response) {
-  
+
   if (length(which(is.na(data))) != 0){
     stop("The dataset has NA values")
   }
@@ -33,45 +33,49 @@ est_mean <- function(
     # print(i)
     r_cur <- r_names[i]
     c_cur <- c_names[i- count]
-    
+
     check = FALSE
-    
+
     c_check <- stringr::str_replace_all(c_cur, "[:(, =)*/-]", ".")
+    r_check <- stringr::str_replace_all(r_cur, "[:(, =)*/-]", ".")
     # print(c_check == r_cur)
     # print(r_cur)
     # print(c_check)
-    
-    if(c_check == r_cur){
+
+    if(c_check == r_check){
       check = TRUE
       next
     }
-    
+
     split <- strsplit(c_check, "")[[1]]
     if(split[length(split)-1] == "."){
       p<- paste0(substr(c_check, 1, (nchar(c_check)-1)),".", substr(c_check, nchar(c_check), nchar(c_check)), collapse = NULL)
-      if( p == r_cur){
+      if( p == r_check){
         check = TRUE
         next
       }
     }
-    
+
     if(check == FALSE){
       x_fix<- tibble::add_column(x_fix, extra = 0, .after = (i-1 + count))
       count <- count + 1
     }
-    
   }
-  
+
   # multiply it out
 
   dim(cbind(as.matrix(x_fix),1))
   dim(rbind(1,as.matrix(t(data_fix_copy))))
-  
+
   colnames(cbind(as.matrix(x_fix),1))
   rownames(rbind(1,as.matrix(t(data_fix_copy))))
-  
-  expected_fix <- cbind(as.matrix(x_fix),1) %*% rbind(1,as.matrix(t(data_fix_copy))) # This crashes when the dataset does not contain covid. Need to add a 1 column correpsonding to covid
 
+  # add the offset!!
+  if (is.null(offset)){
+    cbind(as.matrix(x_fix)) %*% rbind(1,as.matrix(t(data_fix_copy))) # This crashes when the dataset does not contain covid. Need to add a 1 column correpsonding to covid
+  } else{
+    expected_fix <- cbind(as.matrix(x_fix),1) %*% rbind(1,as.matrix(t(data_fix_copy))) # This crashes when the dataset does not contain covid. Need to add a 1 column correpsonding to covid
+  }
   # set up the results for random effects
   expected_ran <- matrix(0, ncol=ncol(expected_fix), nrow=nrow(expected_fix))
 
@@ -90,12 +94,15 @@ est_mean <- function(
       } else {
         print(dim(expected_ran))
         print(dim(coefficients[,data[[grouping]]]))
+        print("non_intercept")
         expected_ran <- expected_ran + coefficients[,data[[grouping]]] %*% diag(data[[variable]])
       }
     }
   }
-
+  print("loop over")
   # add together the coefficients for the fixed and random effects
+
+
   expected <- as.data.table(exp(expected_fix + expected_ran))
 
   expected_t <- data.table::transpose(expected)
