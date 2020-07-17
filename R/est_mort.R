@@ -4,21 +4,22 @@
 #' @param data The observed data
 #' @param exposures The exposures that will get reference expected mortalities
 #' @param response The name of the response column
-#' @export
 est_mort <- function(
   fit,
   data,
-  exposures, 
+  exposures,
   response) {
   if (length(which(is.na(data))) != 0){
     stop("The dataset has NA values")
   }
-  
+
+  id = NULL
+  tag = NULL
   data_ret_val = copy(data)
   data_ret_val[, id := 1:.N]
-  
+
   col_names_orig<- colnames(data)
-  
+
   data_observed <- copy(data)
   data_observed[, id:= 1:.N]
   data_observed$tag <- "observed"
@@ -33,23 +34,23 @@ est_mort <- function(
     data_tot [[i+1]]<- data_reference
   }
   data_tot <- rbindlist(data_tot)
-  
+
   data_tot_ret <- est_mean(fit, data_tot, response = response)
-  
+
   data_ret_val <- data_tot_ret[tag == "observed"]
   setnames(data_ret_val, "expected_mort", "exp_mort_observed")
   #this works but is a bit sslow
   for (i in seq_along(exposures)){
     data_ret_temp <- data_tot_ret[tag == glue::glue("ref_{names(exposures)[i]}")]
-    data_ret_val[data_ret_temp, on= c("sim_id", "id"), 
+    data_ret_val[data_ret_temp, on= c("sim_id", "id"),
                 glue::glue("exp_mort_{names(exposures)[i]}={(exposures)[i]}") := data_ret_temp$expected_mort]
   }
-  
+
   # cur_col_names <- c(col_names_orig[1:12], "sim_id", "id") #need to remove the exposures
   # formula_cast <- paste(c(paste(cur_col_names, collapse = " + "),  "~ tag"), collapse = " ")
-  # data_ret_val <- data.table::dcast.data.table(data_tot_ret, 
+  # data_ret_val <- data.table::dcast.data.table(data_tot_ret,
   #                                              as.formula(formula_cast), value.var = "expected_mort")
-  # 
-  
+  #
+
   return(data_ret_val)
 }

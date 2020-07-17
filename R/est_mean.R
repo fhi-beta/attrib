@@ -20,7 +20,7 @@ est_mean <- function(
   x <- arm::sim(fit, n.sims=n_sim)
 
   # get the design matrix for the fixed effects
-  data_fix <- model.frame(fix_eff, data=data)
+  data_fix <- stats::model.frame(fix_eff, data=data)
   data_fix_copy <- as.data.table(data_fix)
   data_fix_copy[, (response) := NULL]
 
