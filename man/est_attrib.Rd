@@ -4,14 +4,10 @@
 \alias{est_attrib}
 \title{Estimates attributable mortality and irr}
 \usage{
-est_attrib(data, exposures, response)
+est_attrib(data)
 }
 \arguments{
-\item{data}{The observed data}
-
-\item{exposures}{The exposures that will be given attributable deaths, must exict as exp_mort + exposure in the data}
-
-\item{response}{The name of the response column}
+\item{data}{The output data from est_mort on long format with all attr in one colum with there values in clumn "value"}
 }
 \description{
 Estimates attributable mortality and irr
