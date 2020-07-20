@@ -28,3 +28,4 @@ LICENSE
 cran-comments.md
 ^.*\.Rcheck
 data-raw/*
+^vignettes/articles$

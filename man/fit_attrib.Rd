@@ -4,10 +4,12 @@
 \alias{fit_attrib}
 \title{fit_attrib}
 \usage{
-fit_attrib(data, fixef, ranef, offset = NULL)
+fit_attrib(data, response, fixef, ranef, offset = NULL)
 }
 \arguments{
 \item{data}{x}
+
+\item{response}{x}
 
 \item{fixef}{x}
 

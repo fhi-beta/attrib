@@ -72,9 +72,9 @@ est_mean <- function(
 
   # add the offset!!
   if (is.null(offset)){
-    cbind(as.matrix(x_fix)) %*% rbind(1,as.matrix(t(data_fix_copy))) # This crashes when the dataset does not contain covid. Need to add a 1 column correpsonding to covid
+    cbind(as.matrix(x_fix)) %*% rbind(1,as.matrix(t(data_fix_copy)))
   } else{
-    expected_fix <- cbind(as.matrix(x_fix),1) %*% rbind(1,as.matrix(t(data_fix_copy))) # This crashes when the dataset does not contain covid. Need to add a 1 column correpsonding to covid
+    expected_fix <- cbind(as.matrix(x_fix),1) %*% rbind(1,as.matrix(t(data_fix_copy)))
   }
   # set up the results for random effects
   expected_ran <- matrix(0, ncol=ncol(expected_fix), nrow=nrow(expected_fix))

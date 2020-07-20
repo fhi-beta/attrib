@@ -1,11 +1,13 @@
 #' fit_attrib
 #' @param data x
+#' @param response x
 #' @param fixef x
 #' @param ranef x
 #' @param offset x
 #' @export
 fit_attrib <- function(
   data,
+  response,
   fixef,
   ranef,
   offset = NULL){
@@ -13,11 +15,11 @@ fit_attrib <- function(
 
   #fix this with offset
   if(is.null(offset)){
-    formula <- paste0(fixef,"+",ranef)
-    fit_fix <- stats::lm(stats::as.formula(fixef), data=data)
+    formula <- paste0(response, "~",fixef,"+",ranef)
+    fit_fix <- stats::lm(stats::as.formula(paste0(response, "~" ,fixef)), data=data)
   } else {
-    formula <- paste0(fixef,"+ offset(",offset, ")+", ranef)
-    fit_fix <- stats::lm(stats::as.formula(paste0(fixef,"+ offset(",offset, ")")), data=data)
+    formula <- paste0(response, "~", fixef,"+ offset(",offset, ")+", ranef)
+    fit_fix <- stats::lm(stats::as.formula(paste0(response, "~" , fixef,"+ offset(",offset, ")")), data=data)
   }
 
 

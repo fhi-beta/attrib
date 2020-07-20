@@ -8,8 +8,8 @@ test_that("Model fit", {
   pb <- txtProgressBar(min = 0, max = rep, style = 3)
   retval <- vector("list", length= rep)
 
-  fixef <- "deaths ~
-  temperature_high +
+  response <- "deaths"
+  fixef <- " temperature_high +
   pr100_ili_lag_1 +
   sin(2 * pi * (week - 1) / 52) +
   cos(2 * pi * (week - 1) / 52)"
@@ -27,6 +27,7 @@ test_that("Model fit", {
     suppressWarnings(
       fit <- fit_attrib(
         data = data,
+        response = response,
         fixef = fixef,
         ranef = ranef,
         offset = offset)
@@ -56,9 +57,9 @@ test_that("Attributable numbers", {
   # generate data
   data <- gen_fake_attrib_data(2)
 
+  response = "deaths"
   #take in fixed effects
-  fixef <- "deaths ~
-  temperature_high +
+  fixef <- "temperature_high +
   pr100_ili_lag_1 +
   sin(2 * pi * (week - 1) / 52) +
   cos(2 * pi * (week - 1) / 52)"
@@ -74,6 +75,7 @@ test_that("Attributable numbers", {
   suppressWarnings(
     fit <- fit_attrib(
       data = data,
+      response = response,
       fixef = fixef,
       ranef = ranef,
       offset = offset)
@@ -111,12 +113,11 @@ test_that("Attributable numbers", {
 
 test_that("simmulations", {
 
-  set.seed(40)
   data <- gen_fake_attrib_data(2)
 
+  response = "deaths"
   # take in the fixed effects
-  fixef <- "deaths ~
-  temperature_high +
+  fixef <- "temperature_high +
   pr100_ili_lag_1 +
   sin(2 * pi * (week - 1) / 52) +
   cos(2 * pi * (week - 1) / 52)"
@@ -130,7 +131,7 @@ test_that("simmulations", {
 
   data[,temperature_high:= 0]
   suppressWarnings(
-    fit <- fit_attrib(data, fixef = fixef, ranef = ranef, offset = offset)
+    fit <- fit_attrib(data, response = response, fixef = fixef, ranef = ranef, offset = offset)
   )
 
   exposures <- list("pr100_ili_lag_1" = 0, "temperature_high" = 0)
