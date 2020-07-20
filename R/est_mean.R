@@ -1,40 +1,81 @@
-#'
+#' Estimates the mean of the simmulations of expected mortality
 #' @param fit A model fit, OBS: offset must be the last element
 #' @param data The observed data. OBS: mortality must be the first column
-#' @param data_reference The reference data
+#' @param response Name of response column
 #' @export
 est_mean <- function(
   fit,
-  data) {
+  data,
+  response) {
 
-  #data_test <- data
-  data <- data_test[1:1000,]
-  #data_reference <- copy(data) #[location_code == "county03" & week== 8][1:5,]
-  #data_reference$pr100_ili_lag_1 <- 0
-  #data <- data[location_code == "county03" & week == 8][1:5,]
-
+  if (length(which(is.na(data))) != 0){
+    stop("The dataset has NA values")
+  }
   col_names <- colnames(data)
-
-  data$tag <- "obs"
-  data_reference$tag <- "ref"
-
-
-  #data_tot <- rbindlist(list(data, data_reference))
-  data_tot <- data
 
   n_sim <- 500
 
   fix_eff <- attr(fit, "fit_fix")
-
+  offset <- attr(fit, "offset")
   x <- arm::sim(fit, n.sims=n_sim)
 
   # get the design matrix for the fixed effects
-  data_fix <- model.frame(fit_fix, data=data_tot)
+  data_fix <- stats::model.frame(fix_eff, data=data)
+  data_fix_copy <- as.data.table(data_fix)
+  data_fix_copy[, (response) := NULL]
+
+  x_fix <- as.data.frame(as.matrix(x@fixef))
+
+  r_names <- rownames(rbind(1,as.matrix(t(data_fix_copy))))
+  c_names <- colnames(as.matrix(x@fixef))
+  count = 0
+  for (i in (2:(length(r_names)-1))){
+    # print(i)
+    r_cur <- r_names[i]
+    c_cur <- c_names[i- count]
+
+    check = FALSE
+
+    c_check <- stringr::str_replace_all(c_cur, "[:(, =)*/-]", ".")
+    r_check <- stringr::str_replace_all(r_cur, "[:(, =)*/-]", ".")
+    # print(c_check == r_cur)
+    # print(r_cur)
+    # print(c_check)
+
+    if(c_check == r_check){
+      check = TRUE
+      next
+    }
+
+    split <- strsplit(c_check, "")[[1]]
+    if(split[length(split)-1] == "."){
+      p<- paste0(substr(c_check, 1, (nchar(c_check)-1)),".", substr(c_check, nchar(c_check), nchar(c_check)), collapse = NULL)
+      if( p == r_check){
+        check = TRUE
+        next
+      }
+    }
+
+    if(check == FALSE){
+      x_fix<- tibble::add_column(x_fix, extra = 0, .after = (i-1 + count))
+      count <- count + 1
+    }
+  }
 
   # multiply it out
-  expected_fix <- cbind(as.matrix(x@fixef),1) %*% rbind(1,as.matrix(t(data_fix[,-1]))) # 1 HØRER TIL INTERCEPT
-  #expected_fix
 
+  dim(cbind(as.matrix(x_fix),1))
+  dim(rbind(1,as.matrix(t(data_fix_copy))))
+
+  colnames(cbind(as.matrix(x_fix),1))
+  rownames(rbind(1,as.matrix(t(data_fix_copy))))
+
+  # add the offset!!
+  if (is.null(offset)){
+    cbind(as.matrix(x_fix)) %*% rbind(1,as.matrix(t(data_fix_copy))) # This crashes when the dataset does not contain covid. Need to add a 1 column correpsonding to covid
+  } else{
+    expected_fix <- cbind(as.matrix(x_fix),1) %*% rbind(1,as.matrix(t(data_fix_copy))) # This crashes when the dataset does not contain covid. Need to add a 1 column correpsonding to covid
+  }
   # set up the results for random effects
   expected_ran <- matrix(0, ncol=ncol(expected_fix), nrow=nrow(expected_fix))
 
@@ -47,52 +88,33 @@ est_mean <- function(
       variable <- dimnames(x@ranef[[i]])[[3]][j]
       coefficients <- x@ranef[[i]][,,j]
       if(variable=="(Intercept)"){
-        expected_ran <- expected_ran + coefficients[,data_tot[[grouping]]]
+        print(dim(expected_ran))
+        print(dim(coefficients[,data[[grouping]]]))
+        expected_ran <- expected_ran + coefficients[,data[[grouping]]]
       } else {
-        expected_ran <- expected_ran + coefficients[,data_tot[[grouping]]] %*% diag(data_tot[[variable]])
+        print(dim(expected_ran))
+        print(dim(coefficients[,data[[grouping]]]))
+        print("non_intercept")
+        expected_ran <- expected_ran + coefficients[,data[[grouping]]] %*% diag(data[[variable]])
       }
     }
   }
-
+  print("loop over")
   # add together the coefficients for the fixed and random effects
+
+
   expected <- as.data.table(exp(expected_fix + expected_ran))
 
   expected_t <- data.table::transpose(expected)
-  expected_t$id <- 1:nrow(data_tot)
-  data_tot$id <- 1:nrow(data_tot)
+  expected_t$id_row <-1:nrow(data)
+  data$id_row <- 1:nrow(data)
 
-  new_data<- merge(data_tot, expected_t, by = "id", all = TRUE)
-  new_data<- data.table::melt(new_data, id.vars = c(col_names, "id", "tag"))
+  new_data<- merge(data, expected_t, by = "id_row", all = TRUE)
+  new_data<- data.table::melt(new_data, id.vars = c(col_names, "id_row"))
 
-  setnames(new_data, "variable", "sim")
-  new_data$sim <- as.numeric(as.factor(new_data$sim))
-
+  setnames(new_data, "variable", "sim_id")
+  new_data$sim_id <- as.numeric(as.factor(new_data$sim_id))
   setnames(new_data, "value", "expected_mort")
-  setkeyv(new_data, c(col_names, "id", "tag"))
-  new_data[,.(mort_mean = mean(expected_mort),
-              mort_quantile_025 = quantile(expected_mort, 0.025),
-              mort_quantile_975 = quantile(expected_mort, 0.9755)),
-           keyby = key(new_data)]
 
-
-  new_data
-
-  data_obs <- new_data[tag == "obs"]
-  data_ref <- new_data[tag == "ref"]
-
-  diff <- data_obs$expected_mort - data_ref$expected_mort
-  ratio <- data_obs$expected_mort/data_ref$expected_mort
-
-  data_final <- new_data[tag == "obs"]
-  data_final$diff <- diff
-  data_final$ratio <- ratio
-
-  setkeyv(data_final, c(col_names, "id", "tag"))
-  data_final[,.(attrib_mean = mean(diff),
-                attrib_mean_quantile_025 = quantile(diff, 0.025),
-                attrib_mean_quantile_025 = quantile(diff, 0.9755),
-                irr_mean = mean(ratio),
-                irr_mean_quantile_025 = quantile(ratio, 0.025),
-                irr_mean_quantile_025 = quantile(ratio, 0.9755)),
-           keyby = .(id)]
-di}
+  return (new_data)
+}

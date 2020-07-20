@@ -2,17 +2,13 @@
 % Please edit documentation in R/est_attrib.R
 \name{est_attrib}
 \alias{est_attrib}
-\title{Estimates attributable mortality}
+\title{Estimates attributable mortality and irr}
 \usage{
-est_attrib(fit, data, exposures)
+est_attrib(data)
 }
 \arguments{
-\item{fit}{A model fit}
-
-\item{data}{The observed data}
-
-\item{exposures}{The exposures that will be given attributable deaths}
+\item{data}{The output data from est_mort on long format with all attr in one colum with there values in clumn "value"}
 }
 \description{
-Estimates attributable mortality
+Estimates attributable mortality and irr
 }

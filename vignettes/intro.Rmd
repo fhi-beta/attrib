@@ -1,0 +1,272 @@
+---
+title: "Introduction to Attrib"
+author: "Aurora Hofman"
+date: "2020-02-20"
+output: rmarkdown::html_vignette
+vignette: >
+ %\VignetteIndexEntry{Introduction to Attrib}
+ %\VignetteEncoding{UTF-8}
+ %\VignetteEngine{knitr::rmarkdown}
+editor_options:
+chunk_output_type: console
+---
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(attrib)
+```
+
+# Introduciton
+Attrib provides a way of estimating what the mortality would have been it some given exposures are set to a referance value. 
+
+This example will go throug how to use fit_attrib to fit the datam how to use est_attrib to estimate the mortality given exposures and referance values and some examples of usages of the resulting dataset. 
+
+## Data example
+
+We will use the dataset fake_data which consists of fake date of mortalities for all municipalities of Norway on a weekly basis from 2010 untill 2020. The dataset consists of the followig variables:
+
+* location_code: Location code of the differend municipalities
+* week: Week number
+* season: Years of the season
+* x: Number of weeks from the start of the season
+* pop: Population size
+* pr100_ili: Percentage of doctorsconsultations diagnosed with influenza like ilnesses 
+* pr100_ili_lag_1: pr_100_ili lagged wiht one week
+* temperature: Temperature
+* temperature_high: number of heatwaves
+* deaths: number of mortalities 
+
+
+
+```{r}
+data_fake <- attrib::data_fake
+head(data_fake, 5)
+```
+
+In this example we will look at the exposures pr100_ili_lag_1 and temperature_high and calculate the attributable mortalities due to these exposures. 
+
+# Fitting using fit_attrib
+
+We want to estimate the attributable mortality due to ILI and heatwaves. Attrib lets one fit models with both fixed and random effect and offsets. This means one must specify which are the offset, the fixed effects and the random effects. The response will be given with the fixed effexts. In our case we will model *deaths* as a function of:
+
+* the fixed effects:
+  * temperature_high
+  * pr100_ili_lag_1
+  * sin(2 * pi * (week - 1) / 52) 
+  * cos(2 * pi * (week - 1) / 52)
+* the random effects:
+  * (1|location_code)
+  * (pr100_ili_lag_1|season)
+* the offset:
+  * log(pop)
+
+```{r}
+# take in the fixed effects
+fixef <- "deaths ~
+  temperature_high +
+  pr100_ili_lag_1 +
+  sin(2 * pi * (week - 1) / 52) +
+  cos(2 * pi * (week - 1) / 52)"
+
+
+#take in the random effects
+ranef <- "(1|location_code) +
+  (pr100_ili_lag_1|season)"
+
+# take in the offset
+offset <- "log(pop)"
+
+```
+
+Now we fit the model using fit_attrib. 
+
+```{r}
+suppressWarnings(
+  fit <- fit_attrib(data_fake, fixef = fixef, ranef = ranef, offset = offset)
+)
+```
+```{r}
+fit
+```
+
+Note that fit has the added attributes offset, saving the offset name, and fit_fix, the coefficients of the linear model fitted on only the fixed effects. These are needed by est_attrib later on. 
+
+# Estimating referance mortality using est_mort
+
+```{r}
+response <- "deaths"
+exposures <- list( "temperature_high" = 0, "pr100_ili_lag_1" = 0)
+est_mort_sim <- attrib::est_mort(fit, data_fake, exposures = exposures, response = response )
+  
+```
+```{r}
+exp_mort_long<-data.table::melt.data.table(est_mort_sim, id.vars = c("location_code", "season",  "x", "week", "id", "sim_id", "deaths", "exp_mort_observed"),
+                                           measure.vars = c("exp_mort_temperature_high=0", "exp_mort_pr100_ili_lag_1=0")) 
+data.table::setnames(exp_mort_long, "variable", "attr")
+
+head(exp_mort_long, 5)
+```
+
+```{r}
+aggregated_county_to_nation <-  exp_mort_long[, .(
+  exp_mort_observed = sum(exp_mort_observed),
+  value = sum(value), 
+  deaths = sum(deaths)
+), keyby = .(season, x, week, attr, sim_id)]
+
+```
+
+```{r}
+aggregated_county_to_nation[, exp_attr:= (exp_mort_observed - value)]
+aggregated_county_to_nation[, exp_irr:= (exp_mort_observed/value)]
+
+```
+
+```{r}
+#quantile functions
+q05 <- function(x){
+  return(stats::quantile(x, 0.05))
+}
+q95 <- function(x){
+  return(stats::quantile(x, 0.95))
+}
+```
+
+```{r}
+
+col_names <- colnames(aggregated_county_to_nation)
+data.table::setkeyv(aggregated_county_to_nation, col_names[!col_names %in% c("exp_attr", "exp_irr","sim_id", "exposures", "exp_mort_observed", "value")])
+
+aggregated_county_to_nation_weekly <- aggregated_county_to_nation[,
+              unlist(recursive = FALSE, lapply(.(median = median, q05 = q05, q95 = q95),
+                                               function(f) lapply(.SD, f)
+              )), 
+              by=eval(data.table::key(aggregated_county_to_nation)),
+              .SDcols = c("exp_attr", "exp_irr")]
+
+
+aggregated_county_to_nation_weekly[, cumsum := cumsum(median.exp_attr), by = .( attr, season)]
+aggregated_county_to_nation_weekly[, cumsum_q05 := cumsum(q05.exp_attr), by = .( attr, season)]
+aggregated_county_to_nation_weekly[, cumsum_q95 := cumsum(q95.exp_attr), by = .( attr, season)]
+
+```
+
+```{r}
+library(ggplot2)
+q <-ggplot(data = aggregated_county_to_nation_weekly[season %in% c("2015/2016", "2016/2017", "2017/2018", "2018/2019","2019/2020") & attr == "exp_mort_pr100_ili_lag_1=0"], aes(x = x, y = cumsum, group = season, color = season, fill = season)) 
+q <- q +  geom_line() 
+q <- q + geom_ribbon(data = aggregated_county_to_nation_weekly[season %in% c("2019/2020") & attr == "exp_mort_pr100_ili_lag_1=0"],
+                     aes(ymin = cumsum_q05, ymax = cumsum_q95), alpha = 0.4, colour = NA)
+
+q <- q + scale_y_continuous("Estimated attributable mortality", breaks = fhiplot::pretty_breaks(5), labels = fhiplot::format_nor)
+q <- q + fhiplot::scale_color_fhi(name = "Season")
+q <- q + fhiplot::theme_fhi_lines_horizontal()
+q <- q + ggtitle("Estimated mortality due to ILI in Norway")
+q
+
+```
+
+```{r}
+library(ggplot2)
+q <-ggplot(data = aggregated_county_to_nation_weekly[season %in% c("2015/2016", "2016/2017", "2017/2018", "2018/2019","2019/2020") & attr == "exp_mort_temperature_high=0"], aes(x = x, y = cumsum, group = season, color = season, fill = season)) 
+q <- q +  geom_line() 
+q <- q + geom_ribbon(data = aggregated_county_to_nation_weekly[season %in% c("2019/2020") & attr == "exp_mort_temperature_high=0"],
+                     aes(ymin = cumsum_q05, ymax = cumsum_q95), alpha = 0.4, colour = NA)
+
+q <- q + scale_y_continuous("Estimated attributable mortality", breaks = fhiplot::pretty_breaks(5), labels = fhiplot::format_nor)
+q <- q + fhiplot::scale_color_fhi(name = "Season")
+q <- q + fhiplot::theme_fhi_lines_horizontal()
+q <- q + ggtitle("Estimated mortality due to heatwaves in Norway")
+q
+```
+```{r}
+q <- ggplot(data = aggregated_county_to_nation_weekly[attr == "exp_mort_pr100_ili_lag_1=0"], 
+            aes(x = x, y = cumsum, group = season)) 
+q <- q +  geom_line(data = aggregated_county_to_nation_weekly[season != "2019/2020" &attr == "exp_mort_pr100_ili_lag_1=0"], 
+            aes(x = x, y = median.exp_attr, group = season), color = "grey")
+q <- q +  geom_line(data = aggregated_county_to_nation_weekly[season == "2019/2020" &attr == "exp_mort_pr100_ili_lag_1=0"], 
+            aes(x = x, y = median.exp_attr, group = season), color = "blue")
+q <- q +  geom_ribbon(data = aggregated_county_to_nation_weekly[season == "2019/2020" &attr == "exp_mort_pr100_ili_lag_1=0"], 
+              aes(x = x, ymin = q05.exp_attr, ymax = q95.exp_attr), fill = "blue", alpha=0.4)
+
+q <- q + scale_y_continuous("Estimated attributable mortality", breaks = fhiplot::pretty_breaks(5), labels = fhiplot::format_nor)
+q <- q + fhiplot::scale_color_fhi(name = "Season")
+q <- q + fhiplot::theme_fhi_lines_horizontal()
+q <- q + ggtitle("Estimated mortality due to ILI per week")
+q
+```
+
+```{r}
+exp_mort_long[, exp_attr:= (exp_mort_observed - value)]
+exp_mort_long[, exp_irr:= (exp_mort_observed/value)]
+
+
+col_names <- colnames( exp_mort_long)
+data.table::setkeyv(exp_mort_long, col_names[!col_names %in% c( "exp_attr", "exp_irr","sim_id", "exposures", "exp_mort_observed", "value")])
+
+aggregated_sim_weekly_county <- exp_mort_long[,
+                                                                     unlist(recursive = FALSE, lapply(.(median = median, q05 = q05, q95 = q95),
+                                                                                                      function(f) lapply(.SD, f)
+                                                                     )), 
+                                                                     by =eval(data.table::key(exp_mort_long)),
+                                                                     .SDcols = c("exp_attr", "exp_irr")]
+
+```
+
+```{r}
+#aggregated_sim_weekly_county[, cumsum := cumsum(median.exp_attr), by = .( attr, season)]
+
+columns <- c("location_code","season", "x", "week", "attr", "deaths", "median.exp_attr")
+aggregated_weekly_last_weeks <- aggregated_sim_weekly_county[season == "2019/2020", ..columns]
+aggregated_weekly_last_weeks_wide <- data.table::dcast.data.table(aggregated_weekly_last_weeks, 
+                                                                  formula = ...~ attr, fun = mean, value.var = "median.exp_attr")
+
+```
+```{r}
+table_data <- aggregated_weekly_last_weeks_wide[week %in% c(6,7,8)]
+
+#table_data <- table_data[week %in% c(12,13,14)]
+table_data <- table_data[, .(
+  `exp_mort_temperature_high=0_sum` = sum(`exp_mort_temperature_high=0`),
+  `exp_mort_pr100_ili_lag_1=0_sum` = sum(`exp_mort_pr100_ili_lag_1=0`)),
+  keyby = (
+    location_code
+)]
+
+```
+```{r}
+
+cols <- names(table_data)[2:3]
+table_data[,(cols) := round(.SD,0.1), .SDcols=cols]
+
+#test_data <- as.data.table(tibble(location_code, value =seq(1:11)))
+nrow(as.data.frame(fhidata::norway_map_counties_b2020))
+map_data <- merge(as.data.frame(fhidata::norway_map_counties_b2020), table_data, all = TRUE)
+nrow(map_data)
+
+```
+```{r}
+library(ggplot2)
+q <- ggplot2::ggplot(mapping = aes(x = long, y = lat, group = group, fill = `exp_mort_pr100_ili_lag_1=0_sum`))
+q <- q + geom_polygon(
+  data = map_data,
+  aes(fill = `exp_mort_pr100_ili_lag_1=0_sum`),
+  color = "black",
+  #fill = "location_code",
+  size = 0.2
+)
+q <- q + scale_fill_gradient(low="#56B1F7", high="#132B43") 
+q <- q + theme_void()
+q <- q + coord_quickmap()
+q 
+
+
+```
+
