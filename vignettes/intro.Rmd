@@ -87,42 +87,50 @@ offset <- "log(pop)"
 
 Now we fit the model using fit_attrib. 
 
-```{r, message = FALSE}
-fit <- fit_attrib(data_fake, fixef = fixef, ranef = ranef, offset = offset)
+```{r}
+suppressWarnings(
+  fit <- fit_attrib(data_fake, fixef = fixef, ranef = ranef, offset = offset)
+)
+```
+```{r}
 fit
 ```
 
 Note that fit has the added attributes offset, saving the offset name, and fit_fix, the coefficients of the linear model fitted on only the fixed effects. These are needed by est_attrib later on. 
 
-# Estimating referance mortality using est_attrib
+# Estimating referance mortality using est_mort
 
 ```{r}
 response <- "deaths"
 exposures <- list( "temperature_high" = 0, "pr100_ili_lag_1" = 0)
-est_mort <- attrib::est_mort(fit, data_fake, exposures = exposures, response = response )
+est_mort_sim <- attrib::est_mort(fit, data_fake, exposures = exposures, response = response )
   
 ```
 ```{r}
-exp_mort_melt<-data.table::melt.data.table(est_mort, id.vars = c("week", "season",  "x", "week", "id", "sim_id", "deaths", "exp_mort_observed"),
+exp_mort_long<-data.table::melt.data.table(est_mort_sim, id.vars = c("location_code", "season",  "x", "week", "id", "sim_id", "deaths", "exp_mort_observed"),
                                            measure.vars = c("exp_mort_temperature_high=0", "exp_mort_pr100_ili_lag_1=0")) 
-setnames(exp_mort_melt, "variable", "attr")
+data.table::setnames(exp_mort_long, "variable", "attr")
 
-head(exp_mort_melt, 5)
+head(exp_mort_long, 5)
 ```
 
 ```{r}
-aggregated_county_to_nation_week <-  exp_mort_melt[, .(
+aggregated_county_to_nation <-  exp_mort_long[, .(
   exp_mort_observed = sum(exp_mort_observed),
   value = sum(value), 
   deaths = sum(deaths)
 ), keyby = .(season, x, week, attr, sim_id)]
 
-aggregated_county_to_nation_week[, exp_attr:= (exp_mort_observed - value)]
-aggregated_county_to_nation_week[, exp_irr:= (exp_mort_observed/value)]
+```
+
+```{r}
+aggregated_county_to_nation[, exp_attr:= (exp_mort_observed - value)]
+aggregated_county_to_nation[, exp_irr:= (exp_mort_observed/value)]
 
 ```
 
 ```{r}
+#quantile functions
 q05 <- function(x){
   return(stats::quantile(x, 0.05))
 }
@@ -132,28 +140,29 @@ q95 <- function(x){
 ```
 
 ```{r}
-col_names <- colnames(aggregated_county_to_nation_week)
-setkeyv(aggregated_county_to_nation_week, col_names[!col_names %in% c("exp_attr", "exp_irr","sim_id", "exposures", "exp_mort_observed", "value")])
 
-aggregated_county_to_nation_week <- aggregated_county_to_nation_week[,
+col_names <- colnames(aggregated_county_to_nation)
+data.table::setkeyv(aggregated_county_to_nation, col_names[!col_names %in% c("exp_attr", "exp_irr","sim_id", "exposures", "exp_mort_observed", "value")])
+
+aggregated_county_to_nation_weekly <- aggregated_county_to_nation[,
               unlist(recursive = FALSE, lapply(.(median = median, q05 = q05, q95 = q95),
                                                function(f) lapply(.SD, f)
               )), 
-              by = key(aggregated_county_to_nation_week),
+              by=eval(data.table::key(aggregated_county_to_nation)),
               .SDcols = c("exp_attr", "exp_irr")]
 
 
-aggregated_county_to_nation_week[, cumsum := cumsum(median.exp_attr), by = .( attr, season)]
-aggregated_county_to_nation_week[, cumsum_q05 := cumsum(q05.exp_attr), by = .( attr, season)]
-aggregated_county_to_nation_week[, cumsum_q95 := cumsum(q95.exp_attr), by = .( attr, season)]
+aggregated_county_to_nation_weekly[, cumsum := cumsum(median.exp_attr), by = .( attr, season)]
+aggregated_county_to_nation_weekly[, cumsum_q05 := cumsum(q05.exp_attr), by = .( attr, season)]
+aggregated_county_to_nation_weekly[, cumsum_q95 := cumsum(q95.exp_attr), by = .( attr, season)]
 
 ```
 
 ```{r}
 library(ggplot2)
-q <-ggplot(data = aggregated_county_to_nation_week[season %in% c("2015/2016", "2016/2017", "2017/2018", "2018/2019","2019/2020") & attr == "exp_mort_pr100_ili_lag_1=0"], aes(x = x, y = cumsum, group = season, color = season, fill = season)) 
+q <-ggplot(data = aggregated_county_to_nation_weekly[season %in% c("2015/2016", "2016/2017", "2017/2018", "2018/2019","2019/2020") & attr == "exp_mort_pr100_ili_lag_1=0"], aes(x = x, y = cumsum, group = season, color = season, fill = season)) 
 q <- q +  geom_line() 
-q <- q + geom_ribbon(data = aggregated_county_to_nation_week[season %in% c("2019/2020") & attr == "exp_mort_pr100_ili_lag_1=0"],
+q <- q + geom_ribbon(data = aggregated_county_to_nation_weekly[season %in% c("2019/2020") & attr == "exp_mort_pr100_ili_lag_1=0"],
                      aes(ymin = cumsum_q05, ymax = cumsum_q95), alpha = 0.4, colour = NA)
 
 q <- q + scale_y_continuous("Estimated attributable mortality", breaks = fhiplot::pretty_breaks(5), labels = fhiplot::format_nor)
@@ -165,24 +174,26 @@ q
 ```
 
 ```{r}
-q <-ggplot(data = aggregated_county_to_nation_week[season %in% c("2015/2016", "2016/2017", "2017/2018", "2018/2019","2019/2020") & attr == "exp_mort_temperature_high=0"], aes(x = x, y = cumsum, group = season, color = season, fill = season)) 
+library(ggplot2)
+q <-ggplot(data = aggregated_county_to_nation_weekly[season %in% c("2015/2016", "2016/2017", "2017/2018", "2018/2019","2019/2020") & attr == "exp_mort_temperature_high=0"], aes(x = x, y = cumsum, group = season, color = season, fill = season)) 
 q <- q +  geom_line() 
-q <- q + geom_ribbon(data = aggregated_county_to_nation_week[season %in% c("2019/2020") & attr == "exp_mort_temperature_high=0"],
+q <- q + geom_ribbon(data = aggregated_county_to_nation_weekly[season %in% c("2019/2020") & attr == "exp_mort_temperature_high=0"],
                      aes(ymin = cumsum_q05, ymax = cumsum_q95), alpha = 0.4, colour = NA)
 
 q <- q + scale_y_continuous("Estimated attributable mortality", breaks = fhiplot::pretty_breaks(5), labels = fhiplot::format_nor)
 q <- q + fhiplot::scale_color_fhi(name = "Season")
 q <- q + fhiplot::theme_fhi_lines_horizontal()
 q <- q + ggtitle("Estimated mortality due to heatwaves in Norway")
+q
 ```
 ```{r}
-q <- ggplot(data = aggregated_county_to_nation_week[attr == "exp_mort_pr100_ili_lag_1=0"], 
+q <- ggplot(data = aggregated_county_to_nation_weekly[attr == "exp_mort_pr100_ili_lag_1=0"], 
             aes(x = x, y = cumsum, group = season)) 
-q <- q +  geom_line(data = aggregated_county_to_nation_week[season != "2019/2020" &attr == "exp_mort_pr100_ili_lag_1=0"], 
+q <- q +  geom_line(data = aggregated_county_to_nation_weekly[season != "2019/2020" &attr == "exp_mort_pr100_ili_lag_1=0"], 
             aes(x = x, y = median.exp_attr, group = season), color = "grey")
-q <- q +  geom_line(data = aggregated_county_to_nation_week[season == "2019/2020" &attr == "exp_mort_pr100_ili_lag_1=0"], 
+q <- q +  geom_line(data = aggregated_county_to_nation_weekly[season == "2019/2020" &attr == "exp_mort_pr100_ili_lag_1=0"], 
             aes(x = x, y = median.exp_attr, group = season), color = "blue")
-q <- q +  geom_ribbon(data = aggregated_county_to_nation_week[season == "2019/2020" &attr == "exp_mort_pr100_ili_lag_1=0"], 
+q <- q +  geom_ribbon(data = aggregated_county_to_nation_weekly[season == "2019/2020" &attr == "exp_mort_pr100_ili_lag_1=0"], 
               aes(x = x, ymin = q05.exp_attr, ymax = q95.exp_attr), fill = "blue", alpha=0.4)
 
 q <- q + scale_y_continuous("Estimated attributable mortality", breaks = fhiplot::pretty_breaks(5), labels = fhiplot::format_nor)
@@ -193,52 +204,69 @@ q
 ```
 
 ```{r}
-exp_mort_melt[, exp_attr:= (exp_mort_observed - value)]
-exp_mort_melt[, exp_irr:= (exp_mort_observed/value)]
+exp_mort_long[, exp_attr:= (exp_mort_observed - value)]
+exp_mort_long[, exp_irr:= (exp_mort_observed/value)]
 
 
-col_names <- colnames( exp_mort_melt)
-setkeyv(exp_mort_melt, col_names[!col_names %in% c("exp_attr", "exp_irr","sim_id", "exposures", "exp_mort_observed", "value")])
+col_names <- colnames( exp_mort_long)
+data.table::setkeyv(exp_mort_long, col_names[!col_names %in% c( "exp_attr", "exp_irr","sim_id", "exposures", "exp_mort_observed", "value")])
 
-aggregated_sim_weekly_county <- exp_mort_melt[,
+aggregated_sim_weekly_county <- exp_mort_long[,
                                                                      unlist(recursive = FALSE, lapply(.(median = median, q05 = q05, q95 = q95),
                                                                                                       function(f) lapply(.SD, f)
                                                                      )), 
-                                                                     by = key(exp_mort_melt),
+                                                                     by =eval(data.table::key(exp_mort_long)),
                                                                      .SDcols = c("exp_attr", "exp_irr")]
 
+```
 
-aggregated_sim_weekly_county[, cumsum := cumsum(median.exp_attr), by = .( attr, season)]
-
-
-
+```{r}
+#aggregated_sim_weekly_county[, cumsum := cumsum(median.exp_attr), by = .( attr, season)]
 
 columns <- c("location_code","season", "x", "week", "attr", "deaths", "median.exp_attr")
 aggregated_weekly_last_weeks <- aggregated_sim_weekly_county[season == "2019/2020", ..columns]
 aggregated_weekly_last_weeks_wide <- data.table::dcast.data.table(aggregated_weekly_last_weeks, 
                                                                   formula = ...~ attr, fun = mean, value.var = "median.exp_attr")
 
-table_data<- aggregated_weekly_last_weeks_wide[order(-x)]
-table_data <- head(table_data, 33)
-table_data[, -(1:2)] <- round(table_data[,-(1:2)],0)
+```
+```{r}
+table_data <- aggregated_weekly_last_weeks_wide[week %in% c(6,7,8)]
+
 #table_data <- table_data[week %in% c(12,13,14)]
 table_data <- table_data[, .(
-  `exp_mort_heatwave=0_avg` = sum(`exp_mort_heatwave=0`),
-  `exp_mort_pr100_ili_total_lag_1=0_avg` = sum(`exp_mort_pr100_ili_total_lag_1=0`),
-  `exp_mort_pr100_covid_19_tested_lag_1=0` = sum(`exp_mort_pr100_covid_19_tested_lag_1=0`)),
+  `exp_mort_temperature_high=0_sum` = sum(`exp_mort_temperature_high=0`),
+  `exp_mort_pr100_ili_lag_1=0_sum` = sum(`exp_mort_pr100_ili_lag_1=0`)),
   keyby = (
     location_code
 )]
 
+```
+```{r}
 
-
-cols <- names(table_data)[2:4]
+cols <- names(table_data)[2:3]
 table_data[,(cols) := round(.SD,0.1), .SDcols=cols]
 
 #test_data <- as.data.table(tibble(location_code, value =seq(1:11)))
 nrow(as.data.frame(fhidata::norway_map_counties_b2020))
 map_data <- merge(as.data.frame(fhidata::norway_map_counties_b2020), table_data, all = TRUE)
 nrow(map_data)
+
+```
+```{r}
+library(ggplot2)
+q <- ggplot2::ggplot(mapping = aes(x = long, y = lat, group = group, fill = `exp_mort_pr100_ili_lag_1=0_sum`))
+q <- q + geom_polygon(
+  data = map_data,
+  aes(fill = `exp_mort_pr100_ili_lag_1=0_sum`),
+  color = "black",
+  #fill = "location_code",
+  size = 0.2
+)
+q <- q + scale_fill_gradient(low="#56B1F7", high="#132B43") 
+q <- q + theme_void()
+q <- q + coord_quickmap()
+q 
+
 
 ```
 

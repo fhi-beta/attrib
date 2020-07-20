@@ -1,7 +1,7 @@
 #' Estimates attributable mortality and irr
 #'
 #' @param data The output data from est_mort on long format with all attr in one colum with there values in clumn "value"
-#' @export
+#'
 est_attrib <- function(
   data) {
 

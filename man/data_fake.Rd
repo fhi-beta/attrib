@@ -9,7 +9,6 @@
 \item{location_code}{Location code of the norwegian municipalities}
 \item{week}{Week}
 \item{season}{Season used for influenza like ilnesses}
-\item{date}{Date}
 \item{yrwk}{Year and week}
 \item{x}{Number of weeks from the start of the season}
 \item{pop}{Population size}

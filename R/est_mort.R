@@ -4,6 +4,7 @@
 #' @param data The observed data
 #' @param exposures The exposures that will get reference expected mortalities
 #' @param response The name of the response column
+#' @export
 est_mort <- function(
   fit,
   data,

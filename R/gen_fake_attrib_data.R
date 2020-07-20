@@ -13,7 +13,6 @@
 #' \item{location_code}{Location code of the norwegian municipalities}
 #' \item{week}{Week}
 #' \item{season}{Season used for influenza like ilnesses}
-#' \item{date}{Date}
 #' \item{yrwk}{Year and week}
 #' \item{x}{Number of weeks from the start of the season}
 #' \item{pop}{Population size}
@@ -26,7 +25,31 @@
 
 "data_fake"
 
+#' Fake data for mortality in Norway
+#'
+#' libraries. This data is licensed under specific conditions noted in the details section.
+#'
+#' The permission to use the data is granted on condition that:
+#' \itemize{
+#' \item The data will not be used for commercial purposes
+#' \item The source will be acknowledged. A copyright notice will have to be visible on any printed or electronic publication using this dataset
+#' }
 
+#' @format
+#' \describe{
+#' \item{location_code}{Location code}
+#' \item{week}{Week}
+#' \item{season}{Season used for influenza like ilnesses}
+#' \item{yrwk}{Year and week}
+#' \item{x}{Number of weeks from the start of the season}
+#' \item{pop}{Population size}
+#' \item{pr100_ili}{Pr hundered ILI, precentage og consultations diagnised as influenza like illnesses}
+#' \item{pr100_ili_lag_1}{pr100_ili_lag_1}
+#' \item{temperature}{ temperature}
+#' \item{temperature_high}{temperature_high}
+#' \item{deaths}{deaths}
+#' }
+"data_fake_norway"
 
 # Generates fake attributable data
 #
@@ -34,8 +57,6 @@
 # @param n_locations Telling how many locations one watns in the output data
 
 gen_fake_attrib_data <- function(n_locations = 11 ) {
-  start_date <- as.Date("2010-01-01")
-  end_date <- as.Date("2020-12-31")
 
   yrwk <- NULL
   x <- NULL
@@ -60,10 +81,11 @@ gen_fake_attrib_data <- function(n_locations = 11 ) {
   deaths <- NULL
 
 
+  start_date <- as.Date("2010-01-01")
+  end_date <- as.Date("2020-12-31")
 
-
-  location_code <- unique(fhidata::norway_locations_b2020$county_code)
-
+  #location_code <- unique(fhidata::norway_locations_b2020$county_code)
+  location_code <- "norway"
   skeleton <- expand.grid(
     location_code = location_code,
     date = seq.Date(
@@ -81,18 +103,20 @@ gen_fake_attrib_data <- function(n_locations = 11 ) {
   skeleton[, x := fhi::x(week)]
   skeleton[, season := fhi::season(yrwk)]
 
-  x_pop <- fhidata::norway_population_b2020[level == "county", .(
-    pop = sum(pop)
-  ), keyby = .(
-    year,
-    location_code
-  )]
-  skeleton[
-    x_pop,
-    on = c("year", "location_code"),
-    pop := pop
-  ]
 
+  # x_pop <- fhidata::norway_population_b2020[level == "county", .(
+  #   pop = sum(pop)
+  # ), keyby = .(
+  #   year,
+  #   location_code
+  # )]
+  # skeleton[
+  #   x_pop,
+  #   on = c("year", "location_code"),
+  #   pop := pop
+  # ]
+
+  skeleton[, pop := 5360000]
   ######## seasonbased influenza
   #### still without any lag.
   skeleton_season <- unique(skeleton[,c("location_code", "season")])
@@ -182,9 +206,9 @@ gen_fake_attrib_data <- function(n_locations = 11 ) {
   # max(death_tot$death)
   #get unique loctation codes, return n first.
 
-  # fake_data_colums <- c("location_code", "week", "season", "date", "year", "yrwk", "x", "pop", "pr100_ili", "pr100_ili_lag_1", "temperature", "temperature_high", "deaths")
-  # data_fake <- skeleton[, ..fake_data_colums]
-  # save(data_fake, file = "data/data_fake.rda", compress = "bzip2")
+   fake_data_colums <- c("location_code", "week", "season", "year", "yrwk", "x", "pop", "pr100_ili", "pr100_ili_lag_1", "temperature", "temperature_high", "deaths")
+   data_fake <- skeleton[, ..fake_data_colums]
+   save(data_fake, file = "data/data_fake_norway.rda", compress = "bzip2")
 
   locations <- unique(skeleton$location_code)
   locations_current <- locations[1:n_locations]

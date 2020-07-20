@@ -24,7 +24,8 @@ Imports: data.table,
     lme4,
     arm, 
     tibble,
-    stringr
+    stringr,
+    ggplot2
 Suggests: testthat,
     knitr,
     rmarkdown
