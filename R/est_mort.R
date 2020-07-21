@@ -62,5 +62,6 @@ est_mort <- function(
   #                                              as.formula(formula_cast), value.var = "expected_mort")
   #
   data_ret_val[, tag := NULL]
+  data_ret_val[, id_row := NULL]
   return(data_ret_val)
 }

@@ -146,14 +146,14 @@ offset_nation <- "log(pop)"
 ```
 
 
-```{r, message = FALSE}
-suppressWarnings(
+```{r, message = FALSE, warning=FALSE}
+
   fit_nation <- fit_attrib(data_fake_nation, 
                            response = response, 
                            fixef = fixef_nation, 
                            ranef = ranef_nation, 
                            offset = offset_nation)
-)
+
 ```
 
 
@@ -177,7 +177,9 @@ est_mort_sim_nation <- attrib::est_mort(fit_nation,
 ```{r}
 head(est_mort_sim_county, 5)
 ```
-Now one can see in the above dataset that the 
+Now one can see in the above dataset that the colums *id*, *sim_id*,  *exp_mort_observed*, *exp_mort_temperature_high=0*, *exp_mort_pr100_ili_lag_1=0* are added to the previous set of colums. For each row in the original dataset we now have 500 
+<!-- change this if we change n_sim --> 
+rows, one for each of the simulations done by est_mort. In each row we see the estimate of the number of mortalities given a refereance value for *exp_mort_temperature_high* and *exp_mort_pr100_ili_lag_1*.
 
 To make the dataprocessing easier later we convert the dataset from wide to long form and collapse the estimated mortalities 
 ```{r}
@@ -196,6 +198,9 @@ data.table::setnames(est_mort_county_long, "variable", "attr")
 
 head(est_mort_county_long, 5)
 ```
+
+We can see that the columns *exp_mort_temperature_high=0*, *exp_mort_pr100_ili_lag_1=0* are now collapsed into the new column *attr* and *value* with *attr* discribing which exposure we have and *value* giving the corresponding referance value. 
+
 ```{r}
 est_mort_nation_long<-data.table::melt.data.table(est_mort_sim_nation, 
                                                   id.vars = c("location_code", 
@@ -229,7 +234,11 @@ aggregated_county_to_nation <-  est_mort_county_long[,.(
 aggregated_county_to_nation[, exp_attr:= (exp_mort_observed - value)]
 aggregated_county_to_nation[, exp_irr:= (exp_mort_observed/value)]
 aggregated_county_to_nation[, tag := "aggregated_from_county"]
+
+head(aggregated_county_to_nation, 5)
 ```
+
+One can see that we no longer have the colums *location_code*, *week* and *x* sinse the data is now aggregated to a national level on a seasonal basis.
 
 ## Aggregating the national model per season
 For the national model one sums the same feathures but only for all weeks per season and create exp_attr and exp_irr in the same way as above.
@@ -245,8 +254,9 @@ aggregated_nation <-  est_mort_nation_long[, .(
 aggregated_nation[, exp_attr:= (exp_mort_observed - value)]
 aggregated_nation[, exp_irr:= (exp_mort_observed/value)]
 aggregated_nation[, tag:= "nation"]
-
+head(aggregated_nation, 5)
 ```
+Again we kan see that the data does no longer contain weekly information but is aggregated to a seasonal basis.
 
 For simplicity we rbindlist the two datasets together. 
 ```{r}
@@ -288,6 +298,7 @@ aggregated_sim_seasonal_data_national<- data_national[,
                                    by = eval(data.table::key(data_national)),
                                    .SDcols = c("exp_attr", "exp_irr")]
 
+head(aggregated_sim_seasonal_data_national,5)
 ```
 
 One can now see that we have confidance intervals and estimates for both the attributable deaths and the incident risk ratio for all exposures. 
@@ -309,8 +320,10 @@ q
 ```
 
 # Aggregating the county model to compare seasons. 
+As a contrast to what we did in the section about comparing the national data to data aggregated from county to national level, we now want to keep the information on a weekly basis. 
 
-The aggregation is done in the same way as before with the exeption of keeping the data on a weekly basis. 
+Hence the aggregation is done in the same way as before with the exeption of including *x* and *week* in the keyby funciton.
+<!-- is keyby a function? -->
 ```{r}
 aggregated_county_to_nation <-  est_mort_county_long[, .(
   exp_mort_observed = sum(exp_mort_observed),
@@ -320,8 +333,9 @@ aggregated_county_to_nation <-  est_mort_county_long[, .(
 
 aggregated_county_to_nation[, exp_attr:= (exp_mort_observed - value)]
 aggregated_county_to_nation[, exp_irr:= (exp_mort_observed/value)]
-
+head(aggregated_county_to_nation,5)
 ```
+We observe that the *location_code* is aggregated away but we still have both *x* and *week*
 
 Again we compute the quantiles. 
 ```{r}
@@ -343,7 +357,9 @@ aggregated_county_to_nation_weekly[, cumsum := cumsum(median.exp_attr), by = .( 
 aggregated_county_to_nation_weekly[, cumsum_q05 := cumsum(q05.exp_attr), by = .( attr, season)]
 aggregated_county_to_nation_weekly[, cumsum_q95 := cumsum(q95.exp_attr), by = .( attr, season)]
 
+head(aggregated_county_to_nation_weekly, 5)
 ```
+We now have the quantiles and median as before as well as the cumulativ values on a seasonal basis. 
 
 ## Cumulativ plot for attributable mortality due to ILI 
 
@@ -377,24 +393,102 @@ q <- q + ggtitle("Estimated mortality due to ILI per week")
 q
 ```
 
-## Plot of the incident rate ratio of ILI 
+# Incident rate ratio
 
-Again we use geom_line to graph all the different seasons and use geom_ribbon to add the confidance bound for the last season now visualizing the incident risk ratio per season.
+Untill now we have focused moslty on attributable mortalities. Now we will take a look at how to cumpute the incident rate ratio for *pr100_ili_lag_1*. Do do this we will use the fit made by fit_attrib on the county dataset but we will change the values for *pr100_ili_lag_1* to 1.
+
 ```{r}
-q <- ggplot(data = aggregated_county_to_nation_weekly[attr == "exp_mort_pr100_ili_lag_1=0"], 
-            aes(x = x, y = median.exp_irr, group = season)) 
-q <- q +  geom_line(data = aggregated_county_to_nation_weekly[season != "2019/2020" &attr == "exp_mort_pr100_ili_lag_1=0"], 
-            aes(x = x, y = median.exp_irr, group = season), color = "grey")
-q <- q +  geom_line(data = aggregated_county_to_nation_weekly[season == "2019/2020" &attr == "exp_mort_pr100_ili_lag_1=0"], 
-            aes(x = x, y = median.exp_irr, group = season), color = "blue")
-q <- q +  geom_ribbon(data = aggregated_county_to_nation_weekly[season == "2019/2020" &attr == "exp_mort_pr100_ili_lag_1=0"], 
-              aes(x = x, ymin = q05.exp_irr, ymax = q95.exp_irr), fill = "blue", alpha=0.4)
+data_fake_county_irr <- copy(data_fake_county)
+data_fake_county_irr[, pr100_ili_lag_1 := 1]
+head(data_fake_county_irr, 5)
+```
 
-#q <- q + scale_y_continuous("Estimated attributable mortality")
-q <- q + ylim(0.95, 1.15)
-q <- q + labs(y = "Estimated attributable mortality")
-q <- q + ggtitle("Estimated mortality due to ILI per week")
+Then we can set the referance value to zero and hence optain the risk ratio for the given exposures. The response is still the same as before. 
+```{r}
+exposures_irr = c(pr100_ili_lag_1 = 0)
+response = "deaths"
+```
+
+Now we use est_mort to create the simmulations. 
+```{r}
+est_mort_sim_county_irr <- attrib::est_mort(fit_county, 
+                                        data_fake_county_irr, 
+                                        exposures = exposures_irr, 
+                                        response = response )
+head(est_mort_sim_county_irr, 5)
+```
+We see we have obtained values for the referance of the exposure in the same way as before. The difference now is that we changed the dataset before running *est_mort* meaning the *exp_mort_observed* will now deviate a from the true number of deaths and be the expected number of deaths given *pr100_ili_lag_1* equall to 1. 
+
+The next step is as before to aggregate from a county, weekly to a national seasonal dataset as well ass adding the values for the incident risk ratio to the column *exp_irr*.
+
+```{r}
+aggregated_county_to_nation_sim_irr <-  est_mort_sim_county_irr[, .(
+  exp_mort_observed = sum(exp_mort_observed),
+  "exp_mort_pr100_ili_lag_1=0"= sum(`exp_mort_pr100_ili_lag_1=0`), 
+  deaths = sum(deaths)
+), keyby = .(season, sim_id)]
+```
+
+```{r}
+aggregated_county_to_nation_sim_irr[, exp_irr:= (exp_mort_observed/`exp_mort_pr100_ili_lag_1=0`
+)]
+head(aggregated_county_to_nation_sim_irr,5)
+```
+
+Now we can compute the quantiles. 
+```{r}
+
+col_names <- colnames(aggregated_county_to_nation_sim_irr)
+data.table::setkeyv(aggregated_county_to_nation_sim_irr, col_names[!col_names %in% c( "exp_irr","sim_id", "exp_mort_observed", "exp_mort_pr100_ili_lag_1=0")])
+
+aggregated_county_to_nation_weekly_irr <- aggregated_county_to_nation_sim_irr[,
+              unlist(recursive = FALSE, lapply(.(median = median, q05 = q05, q95 = q95),
+                                               function(f) lapply(.SD, f)
+              )), 
+              by=eval(data.table::key(aggregated_county_to_nation_sim_irr)),
+              .SDcols = c("exp_irr")]
+aggregated_county_to_nation_weekly_irr[, tag := "aggregated"]
+
+aggregated_county_to_nation_weekly_irr
+```
+
+Now we compare the resulting values for irr with the ones obtained by coef(fit_county).
+```{r}
+coef_fit_county <- as.data.table(coef(fit_county)$season)
+col_names_coef <- c("pr100_ili_lag_1")
+irr_data <- coef_fit_county[, ..col_names_coef]
+irr_data[, irr := exp(pr100_ili_lag_1)]
+irr_data[, q05 := exp(pr100_ili_lag_1 - 1.96 *0.003761)]  # 0.003761 is the standard deviation from coef(fit_county)
+irr_data[, q95 := exp(pr100_ili_lag_1 + 1.96 *0.003761)]
+irr_data[, tag := "from_coef"]
+irr_data
+```
+
+```{r}
+irr_data <- cbind(season = aggregated_county_to_nation_weekly_irr$season, irr_data)
+irr_data
+```
+```{r}
+total_data <- rbindlist(list(irr_data, aggregated_county_to_nation_weekly_irr), use.names = FALSE)
+total_data[, pr100_ili_lag_1 := NULL]
+total_data
+```
+As one can see these valueas are very similar.
+
+The benefit of the aggregated aproach is that this prosess will be equally easy no matter the complecity of what one wants to compute the irr for. 
+One does not have ot take the variance covariance matrix in to account at any stage. 
+
+
+
+```{r}
+q <- ggplot(data = total_data, 
+            aes(x = season, group = tag, color = tag)) 
+q <- q +  geom_pointrange(aes(y = irr, ymin = q05, ymax = q95), position = position_dodge(width = 0.3))
+q <- q +  theme(axis.text.x = element_text(angle = 90),axis.title.x=element_blank())
+q <- q + labs(y = "Incident risk ratio")
+q <- q + ggtitle("Incident risk ratio for ILI per season")
 q
 ```
+
 
 
