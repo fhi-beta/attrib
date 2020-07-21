@@ -33,9 +33,9 @@ This example will go throug how to use fit_attrib to fit the data, how to use es
 ## Data example
 
 We will use the datasets fake_data_county and fake_data_nation.
-Fake_data_county consists of fake date of mortalities for all municipalities of Norway on a weekly basis from 2010 untill 2020. The dataset consists of the followig features:
+Fake_data_county consists of fake date of mortalities for all counties of Norway on a weekly basis from 2010 untill 2020. The dataset consists of the followig features:
 
-* location_code: Location code of the differend municipalities
+* location_code: Location code of the differend counties
 * week: Week number
 * season: Years of the season
 * x: Number of weeks from the start of the season
@@ -98,11 +98,11 @@ Now we fit the model using fit_attrib.
 
 ```{r, message=FALSE, warning = FALSE}
 
-  fit_county <- fit_attrib(data_fake_county, 
-                           response = response, 
-                           fixef = fixef_county, 
-                           ranef = ranef_county, 
-                           offset = offset_county)
+fit_county <- fit_attrib(data_fake_county, 
+                          response = response, 
+                          fixef = fixef_county, 
+                          ranef = ranef_county, 
+                          offset = offset_county)
 
 ```
 
@@ -160,18 +160,16 @@ offset_nation <- "log(pop)"
 # Estimating referance mortality using est_mort
 
 To generate simulations for each observation and estimate the mortality given the referance values of the exposures one uses attribs est_mort. 
-One needs to give the fit, the dataset, the response and the exposures with referance values. Est_mort will then using the sim function from the arm pachage to generate simulations of the underlying posterior distribution before using this to compute the estimated mortalities for each simulation. 
+One needs to give the fit, the dataset and the exposures with referance values. Est_mort will then using the sim function from the arm pachage to generate simulations of the underlying posterior distribution before using this to compute the estimated mortalities for each simulation. 
 
 ```{r}
 exposures <- list( "temperature_high" = 0, "pr100_ili_lag_1" = 0)
 est_mort_sim_county <- attrib::est_mort(fit_county, 
                                         data_fake_county, 
-                                        exposures = exposures, 
-                                        response = response )
+                                        exposures = exposures)
 est_mort_sim_nation <- attrib::est_mort(fit_nation, 
                                         data_fake_nation, 
-                                        exposures = exposures, 
-                                        response = response )
+                                        exposures = exposures )
 ```
 
 ```{r}
@@ -398,23 +396,21 @@ q
 Untill now we have focused moslty on attributable mortalities. Now we will take a look at how to cumpute the incident rate ratio for *pr100_ili_lag_1*. Do do this we will use the fit made by fit_attrib on the county dataset but we will change the values for *pr100_ili_lag_1* to 1.
 
 ```{r}
-data_fake_county_irr <- copy(data_fake_county)
+data_fake_county_irr <- data.table::copy(data_fake_county)
 data_fake_county_irr[, pr100_ili_lag_1 := 1]
 head(data_fake_county_irr, 5)
 ```
 
-Then we can set the referance value to zero and hence optain the risk ratio for the given exposures. The response is still the same as before. 
+Then we can set the referance value to zero and hence optain the risk ratio for the given exposures. 
 ```{r}
 exposures_irr = c(pr100_ili_lag_1 = 0)
-response = "deaths"
 ```
 
 Now we use est_mort to create the simmulations. 
 ```{r}
 est_mort_sim_county_irr <- attrib::est_mort(fit_county, 
                                         data_fake_county_irr, 
-                                        exposures = exposures_irr, 
-                                        response = response )
+                                        exposures = exposures_irr)
 head(est_mort_sim_county_irr, 5)
 ```
 We see we have obtained values for the referance of the exposure in the same way as before. The difference now is that we changed the dataset before running *est_mort* meaning the *exp_mort_observed* will now deviate a from the true number of deaths and be the expected number of deaths given *pr100_ili_lag_1* equall to 1. 
@@ -455,7 +451,7 @@ aggregated_county_to_nation_irr
 Now we compare the resulting values for irr with the ones obtained by coef(fit_county)$season and the 90 credible interval computed manually using the standard deviation given by summary(fit_county) for *pr100_ili_lag_1*.
 
 ```{r}
-coef_fit_county <- as.data.table(coef(fit_county)$season)
+coef_fit_county <- data.table::as.data.table(coef(fit_county)$season)
 col_names_coef <- c("pr100_ili_lag_1")
 coef_irr_data <- coef_fit_county[, ..col_names_coef]
 coef_irr_data[, irr := exp(pr100_ili_lag_1)]
@@ -473,12 +469,12 @@ coef_irr_data
 
 Rbindlist the two datasets together. 
 ```{r}
-total_data_irr <- rbindlist(list(coef_irr_data, aggregated_county_to_nation_irr), use.names = FALSE)
+total_data_irr <- data.table::rbindlist(list(coef_irr_data, aggregated_county_to_nation_irr), use.names = FALSE)
 total_data_irr[, pr100_ili_lag_1 := NULL]
 total_data_irr
 ```
 
-```{r}
+```{r fig.height=4, fig.width=6}
 q <- ggplot(data = total_data_irr, 
             aes(x = season, group = tag, color = tag)) 
 q <- q +  geom_pointrange(aes(y = irr, ymin = q05, ymax = q95), position = position_dodge(width = 0.3))

@@ -82,7 +82,7 @@ test_that("Attributable numbers", {
   )
   exposures = list("pr100_ili_lag_1" =  0  ,"temperature_high" = 0)
   #data_one <- data[1]
-  data <- est_mort(fit, data, exposures = exposures, response = "deaths" )
+  data <- est_mort(fit, data, exposures = exposures)
 
   data_copy <- copy(data)
   data_copy <-data_copy[,.(attr_pr100_ili_lag_1 = median(exp_mort_observed - `exp_mort_pr100_ili_lag_1=0`),
@@ -91,7 +91,7 @@ test_that("Attributable numbers", {
 
   # verify that your model is giving you results like you expect
   #influenza
-  testthat::expect_gt(mean(data_copy$attr_pr100_ili_lag_1), 0) # denne ufngerer ikke lenger men det er sikkert greit i snitt
+  testthat::expect_gt(mean(data_copy$attr_pr100_ili_lag_1), 0)
 
   testthat::expect_lt(
     sum(data_copy[week >= 21 & week <= 39]$attr_pr100_ili_lag_1),
@@ -135,7 +135,7 @@ test_that("simmulations", {
   )
 
   exposures <- list("pr100_ili_lag_1" = 0, "temperature_high" = 0)
-  est_mort <- est_mort(fit, data, exposures, response = "deaths")
+  est_mort <- est_mort(fit, data, exposures)
 
   # predict mean
   pred <- exp(lme4:::predict.merMod(fit, data))
