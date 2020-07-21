@@ -61,6 +61,6 @@ est_mort <- function(
   # data_ret_val <- data.table::dcast.data.table(data_tot_ret,
   #                                              as.formula(formula_cast), value.var = "expected_mort")
   #
-
+  data_ret_val[, tag := NULL]
   return(data_ret_val)
 }

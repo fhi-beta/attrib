@@ -1,7 +1,7 @@
 ---
 title: "Introduction to Attrib"
 author: "Aurora Hofman"
-date: "2020-02-20"
+date: "2020-07-21"
 output: rmarkdown::html_vignette
 figure_width: 6
 figure_height: 4
@@ -26,7 +26,7 @@ library(attrib)
 ```
 
 # Introduciton
-Attrib provides a way of estimating what the mortality would have been if some given exposures are set to a referance value. 
+Attrib provides a way of estimating what the mortality would have been if some given exposures are set to a referance value. By using simulations from the posterior distribution of all coefficiants one gets the opportunity to easily aggregate over time and locations and still be able to optain credible intevals of the desired percentages. 
 
 This example will go throug how to use fit_attrib to fit the data, how to use est_attrib to estimate the mortality given exposures and referance values and some examples of usages of the resulting dataset. 
 
@@ -51,7 +51,7 @@ Fake_data_nation consists of the same features but contains national information
 
 ```{r}
 data_fake_county <- attrib::data_fake_county
-data_fake_nation <- attrib::data_fake_norway
+data_fake_nation <- attrib::data_fake_nation
 head(data_fake_county, 5)
 ```
 
@@ -96,14 +96,14 @@ offset_county <- "log(pop)"
 
 Now we fit the model using fit_attrib. 
 
-```{r, message=FALSE}
-suppressWarnings(
+```{r, message=FALSE, warning = FALSE}
+
   fit_county <- fit_attrib(data_fake_county, 
                            response = response, 
                            fixef = fixef_county, 
                            ranef = ranef_county, 
                            offset = offset_county)
-)
+
 ```
 
 This results in the following fit. 
@@ -111,8 +111,7 @@ This results in the following fit.
 fit_county
 ```
 
-<!-- IS THIS CORRECT!! -->
-<!-- Note that fit has the added attributes offset, saving the offset name, and fit_fix, the coefficients of the linear model fitted on only the fixed effects. These are needed by est_attrib later on.  -->
+Note that fit has the added attributes offset, saving the offset name, and fit_fix, the coefficients of the linear model fitted on only the fixed effects. These are needed by est_attrib later on to create the dataset containing only the fixed effects. 
 
 
 ##  National level
@@ -174,6 +173,11 @@ est_mort_sim_nation <- attrib::est_mort(fit_nation,
                                         exposures = exposures, 
                                         response = response )
 ```
+
+```{r}
+head(est_mort_sim_county, 5)
+```
+Now one can see in the above dataset that the 
 
 To make the dataprocessing easier later we convert the dataset from wide to long form and collapse the estimated mortalities 
 ```{r}

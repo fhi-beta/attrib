@@ -64,8 +64,8 @@ est_mean <- function(
 
   # multiply it out
 
-  dim(cbind(as.matrix(x_fix),1))
-  dim(rbind(1,as.matrix(t(data_fix_copy))))
+  # dim(cbind(as.matrix(x_fix),1))
+  # dim(rbind(1,as.matrix(t(data_fix_copy))))
 
   colnames(cbind(as.matrix(x_fix),1))
   rownames(rbind(1,as.matrix(t(data_fix_copy))))
@@ -84,16 +84,16 @@ est_mean <- function(
   for(i in 1:length(x@ranef)){
     grouping <- names(x@ranef)[i]
     for(j in 1:dim(x@ranef[[i]])[3]){
-      print(j)
+      # print(j)
       variable <- dimnames(x@ranef[[i]])[[3]][j]
       coefficients <- x@ranef[[i]][,,j]
       if(variable=="(Intercept)"){
-        print(dim(expected_ran))
-        print(dim(coefficients[,data[[grouping]]]))
+        # print(dim(expected_ran))
+        # print(dim(coefficients[,data[[grouping]]]))
         expected_ran <- expected_ran + coefficients[,data[[grouping]]]
       } else {
-        print(dim(expected_ran))
-        print(dim(coefficients[,data[[grouping]]]))
+        # print(dim(expected_ran))
+        # print(dim(coefficients[,data[[grouping]]]))
         print("non_intercept")
         expected_ran <- expected_ran + coefficients[,data[[grouping]]] %*% diag(data[[variable]])
       }

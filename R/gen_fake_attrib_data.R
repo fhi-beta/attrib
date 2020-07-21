@@ -48,7 +48,7 @@
 #' \item{temperature_high}{temperature_high}
 #' \item{deaths}{deaths}
 #' }
-"data_fake_norway"
+"data_fake_nation"
 
 # Generates fake data
 #
@@ -210,8 +210,8 @@ gen_fake_attrib_data <- function(n_locations = 11 ) {
   #get unique loctation codes, return n first.
 
    # fake_data_colums <- c("location_code", "week", "season", "year", "yrwk", "x", "pop", "pr100_ili", "pr100_ili_lag_1", "temperature", "temperature_high", "deaths")
-   # data_fake_norway <- skeleton[, ..fake_data_colums]
-   # save(data_fake_norway, file = "data/data_fake_norway.rda", compress = "bzip2")
+   # data_fake_nation <- skeleton[, ..fake_data_colums]
+   # save(data_fake_nation, file = "data/data_fake_nation.rda", compress = "bzip2")
 
   locations <- unique(skeleton$location_code)
   locations_current <- locations[1:n_locations]
