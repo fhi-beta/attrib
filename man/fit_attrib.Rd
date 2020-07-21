@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_attrib.R
 \name{fit_attrib}
 \alias{fit_attrib}
-\title{Data fits}
+\title{Data fit}
 \usage{
 fit_attrib(data, response, fixef, ranef, offset = NULL)
 }
@@ -18,8 +18,8 @@ fit_attrib(data, response, fixef, ranef, offset = NULL)
 \item{offset}{The offsets.}
 }
 \value{
-The model fit of the data with additional attributes offset and fit_fix.
-Offset is the same offset as in the input and fit_fix is the linear model of the fix effects.
+The model fit of the data with additional attributes offset, response and fit_fix.
+Offset and response are the same as in the input and fit_fix is the linear model of the fix effects.
 
 For more details see the help vignette:
 \code{vignette("intro", package="attrib")}

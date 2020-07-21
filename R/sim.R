@@ -1,12 +1,16 @@
-#' Estimates the mean of the simmulations of expected mortality
-#' @param fit A model fit.
-#' @param data The observed data.
-#' @param response Name of response column
+#' Generates simulations of expected mortalities by simulating the model coefficiants.
+#'
+#' With the given fit the funcion sim from package arm is used to generate 500 simulations
+#' of all the coefiecients from there respective posterior distributions.
+#' This is then used to compute the expected response for all simulations and rows in the input data.
+#'
+#' @param fit A model fit created by fit_attrib
+#' @param data The data with eather observed values or referance values.
+#' @return A dataset with 500 simulation og the expected response for each row in the orriginal dataset.
 #' @export
-est_mean <- function(
+sim <- function(
   fit,
-  data,
-  response) {
+  data) {
 
   if (length(which(is.na(data))) != 0){
     stop("The dataset has NA values")
@@ -17,6 +21,7 @@ est_mean <- function(
 
   fix_eff <- attr(fit, "fit_fix")
   offset <- attr(fit, "offset")
+  response <- attr(fit, "response")
   x <- arm::sim(fit, n.sims=n_sim)
 
   # get the design matrix for the fixed effects
@@ -64,8 +69,8 @@ est_mean <- function(
 
   # multiply it out
 
-  # dim(cbind(as.matrix(x_fix),1))
-  # dim(rbind(1,as.matrix(t(data_fix_copy))))
+  dim(cbind(as.matrix(x_fix),1))
+  dim(rbind(1,as.matrix(t(data_fix_copy))))
 
   colnames(cbind(as.matrix(x_fix),1))
   rownames(rbind(1,as.matrix(t(data_fix_copy))))
@@ -94,12 +99,12 @@ est_mean <- function(
       } else {
         # print(dim(expected_ran))
         # print(dim(coefficients[,data[[grouping]]]))
-        print("non_intercept")
+        # print("non_intercept")
         expected_ran <- expected_ran + coefficients[,data[[grouping]]] %*% diag(data[[variable]])
       }
     }
   }
-  print("loop over")
+  # print("loop over")
   # add together the coefficients for the fixed and random effects
 
 

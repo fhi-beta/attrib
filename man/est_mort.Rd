@@ -4,16 +4,14 @@
 \alias{est_mort}
 \title{Estimates expected mortality}
 \usage{
-est_mort(fit, data, exposures, response)
+est_mort(fit, data, exposures)
 }
 \arguments{
 \item{fit}{A model fit constructed by fit_attrib}
 
 \item{data}{The observed data}
 
-\item{exposures}{The exposures that will get reference expected mortalities}
-
-\item{response}{The response
+\item{exposures}{The exposures that will get reference expected mortalities
 
 For more details see the help vignette:
 \code{vignette("intro", package="attrib")}}
@@ -21,5 +19,9 @@ For more details see the help vignette:
 \description{
 For each row in the dataset the expected number of mortalities
 will be calculated for the original data as well as for the
-data with refereance values for the exposures.
+data with refereance values for the exposures using the sim function.
+}
+\details{
+For more details see the help vignette:
+\code{vignette("intro", package="attrib")}
 }

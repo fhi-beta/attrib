@@ -2,13 +2,14 @@
 #'
 #' For each row in the dataset the expected number of mortalities
 #' will be calculated for the original data as well as for the
-#' data with refereance values for the exposures.
+#' data with refereance values for the exposures using the sim function.
 #'
+#' For more details see the help vignette:
+#' \code{vignette("intro", package="attrib")}
 #'
 #' @param fit A model fit constructed by fit_attrib
 #' @param data The observed data
 #' @param exposures The exposures that will get reference expected mortalities
-#' @param response The response
 #'
 #' For more details see the help vignette:
 #' \code{vignette("intro", package="attrib")}
@@ -17,14 +18,15 @@
 est_mort <- function(
   fit,
   data,
-  exposures,
-  response) {
+  exposures) {
   if (length(which(is.na(data))) != 0){
     stop("The dataset has NA values")
   }
 
   id = NULL
   tag = NULL
+  id_row = NULL
+
   data_ret_val = copy(data)
   data_ret_val[, id := 1:.N]
 
@@ -45,7 +47,7 @@ est_mort <- function(
   }
   data_tot <- rbindlist(data_tot)
 
-  data_tot_ret <- est_mean(fit, data_tot, response = response)
+  data_tot_ret <- sim(fit, data_tot)
 
   data_ret_val <- data_tot_ret[tag == "observed"]
   setnames(data_ret_val, "expected_mort", "exp_mort_observed")

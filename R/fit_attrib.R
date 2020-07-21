@@ -1,4 +1,4 @@
-#' Data fits
+#' Data fit
 #'
 #' Data fit using glmer from lme4 and family poisson to fit the dataset with the given formula.
 #'
@@ -9,8 +9,8 @@
 #' @param ranef The random effects
 #' @param offset The offsets.
 #'
-#' @return The model fit of the data with additional attributes offset and fit_fix.
-#' Offset is the same offset as in the input and fit_fix is the linear model of the fix effects.
+#' @return The model fit of the data with additional attributes offset, response and fit_fix.
+#' Offset and response are the same as in the input and fit_fix is the linear model of the fix effects.
 #'
 #' For more details see the help vignette:
 #' \code{vignette("intro", package="attrib")}
@@ -52,6 +52,7 @@ fit_attrib <- function(
 
   attr(fit, "fit_fix") <- fit_fix
   attr(fit, "offset") <- offset
+  attr(fit, "response") <- response
   return(fit)
 }
 

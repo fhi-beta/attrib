@@ -441,47 +441,45 @@ Now we can compute the quantiles.
 col_names <- colnames(aggregated_county_to_nation_sim_irr)
 data.table::setkeyv(aggregated_county_to_nation_sim_irr, col_names[!col_names %in% c( "exp_irr","sim_id", "exp_mort_observed", "exp_mort_pr100_ili_lag_1=0")])
 
-aggregated_county_to_nation_weekly_irr <- aggregated_county_to_nation_sim_irr[,
+aggregated_county_to_nation_irr <- aggregated_county_to_nation_sim_irr[,
               unlist(recursive = FALSE, lapply(.(median = median, q05 = q05, q95 = q95),
                                                function(f) lapply(.SD, f)
               )), 
               by=eval(data.table::key(aggregated_county_to_nation_sim_irr)),
               .SDcols = c("exp_irr")]
-aggregated_county_to_nation_weekly_irr[, tag := "aggregated"]
+aggregated_county_to_nation_irr[, tag := "aggregated"]
 
-aggregated_county_to_nation_weekly_irr
+aggregated_county_to_nation_irr
 ```
 
-Now we compare the resulting values for irr with the ones obtained by coef(fit_county).
+Now we compare the resulting values for irr with the ones obtained by coef(fit_county)$season and the 90 credible interval computed manually using the standard deviation given by summary(fit_county) for *pr100_ili_lag_1*.
+
 ```{r}
 coef_fit_county <- as.data.table(coef(fit_county)$season)
 col_names_coef <- c("pr100_ili_lag_1")
-irr_data <- coef_fit_county[, ..col_names_coef]
-irr_data[, irr := exp(pr100_ili_lag_1)]
-irr_data[, q05 := exp(pr100_ili_lag_1 - 1.96 *0.003761)]  # 0.003761 is the standard deviation from coef(fit_county)
-irr_data[, q95 := exp(pr100_ili_lag_1 + 1.96 *0.003761)]
-irr_data[, tag := "from_coef"]
-irr_data
+coef_irr_data <- coef_fit_county[, ..col_names_coef]
+coef_irr_data[, irr := exp(pr100_ili_lag_1)]
+coef_irr_data[, q05 := exp(pr100_ili_lag_1 - 1.645 *0.003761)]  # 0.003761 is the standard deviation from coef(fit_county)
+coef_irr_data[, q95 := exp(pr100_ili_lag_1 + 1.645 *0.003761)]
+coef_irr_data[, tag := "from_coef"]
+coef_irr_data
+```
+
+Add the correct seasons to the data. 
+```{r}
+coef_irr_data <- cbind(season = aggregated_county_to_nation_irr$season, coef_irr_data)
+coef_irr_data
+```
+
+Rbindlist the two datasets together. 
+```{r}
+total_data_irr <- rbindlist(list(coef_irr_data, aggregated_county_to_nation_irr), use.names = FALSE)
+total_data_irr[, pr100_ili_lag_1 := NULL]
+total_data_irr
 ```
 
 ```{r}
-irr_data <- cbind(season = aggregated_county_to_nation_weekly_irr$season, irr_data)
-irr_data
-```
-```{r}
-total_data <- rbindlist(list(irr_data, aggregated_county_to_nation_weekly_irr), use.names = FALSE)
-total_data[, pr100_ili_lag_1 := NULL]
-total_data
-```
-As one can see these valueas are very similar.
-
-The benefit of the aggregated aproach is that this prosess will be equally easy no matter the complecity of what one wants to compute the irr for. 
-One does not have ot take the variance covariance matrix in to account at any stage. 
-
-
-
-```{r}
-q <- ggplot(data = total_data, 
+q <- ggplot(data = total_data_irr, 
             aes(x = season, group = tag, color = tag)) 
 q <- q +  geom_pointrange(aes(y = irr, ymin = q05, ymax = q95), position = position_dodge(width = 0.3))
 q <- q +  theme(axis.text.x = element_text(angle = 90),axis.title.x=element_blank())
@@ -490,5 +488,9 @@ q <- q + ggtitle("Incident risk ratio for ILI per season")
 q
 ```
 
+As one can see these intervals are very similar.
+
+The benefit of the aggregated aproach is that this prosess will be equally easy no matter the complexity of what one wants to compute the irr for. 
+One does not have ot take the variance covariance matrix in to account at any stage or manually compute credible intervals. 
 
 

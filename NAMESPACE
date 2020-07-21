@@ -2,10 +2,10 @@
 
 export("%>%")
 export(attrdl)
-export(est_mean)
 export(est_mort)
 export(fit_attrib)
 export(is_data_table)
+export(sim)
 import(data.table)
 import(dlnm)
 importFrom(magrittr,"%>%")
