@@ -1,9 +1,18 @@
 #' Estimates expected mortality
 #'
-#' @param fit A model fit
+#' For each row in the dataset the expected number of mortalities
+#' will be calculated for the original data as well as for the
+#' data with refereance values for the exposures.
+#'
+#'
+#' @param fit A model fit constructed by fit_attrib
 #' @param data The observed data
 #' @param exposures The exposures that will get reference expected mortalities
-#' @param response The name of the response column
+#' @param response The response
+#'
+#' For more details see the help vignette:
+#' \code{vignette("intro", package="attrib")}
+#'
 #' @export
 est_mort <- function(
   fit,

@@ -1,6 +1,6 @@
 #' Estimates the mean of the simmulations of expected mortality
-#' @param fit A model fit, OBS: offset must be the last element
-#' @param data The observed data. OBS: mortality must be the first column
+#' @param fit A model fit.
+#' @param data The observed data.
 #' @param response Name of response column
 #' @export
 est_mean <- function(

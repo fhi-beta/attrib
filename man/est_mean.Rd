@@ -7,9 +7,9 @@
 est_mean(fit, data, response)
 }
 \arguments{
-\item{fit}{A model fit, OBS: offset must be the last element}
+\item{fit}{A model fit.}
 
-\item{data}{The observed data. OBS: mortality must be the first column}
+\item{data}{The observed data.}
 
 \item{response}{Name of response column}
 }

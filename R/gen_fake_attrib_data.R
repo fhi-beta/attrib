@@ -50,10 +50,10 @@
 #' }
 "data_fake_norway"
 
-# Generates fake attributable data
+# Generates fake data
 #
-# This function generates one dataset
-# @param n_locations Telling how many locations one watns in the output data
+# This function generates a fake dataset with parameters
+# @param n_locations Telling how many locations one wants in the output data, default = 11 the number of municipalities in Norway.
 
 gen_fake_attrib_data <- function(n_locations = 11 ) {
 

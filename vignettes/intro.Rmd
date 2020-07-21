@@ -3,6 +3,8 @@ title: "Introduction to Attrib"
 author: "Aurora Hofman"
 date: "2020-02-20"
 output: rmarkdown::html_vignette
+figure_width: 6
+figure_height: 4
 vignette: >
  %\VignetteIndexEntry{Introduction to Attrib}
  %\VignetteEncoding{UTF-8}
@@ -290,7 +292,7 @@ One can now see that we have confidance intervals and estimates for both the att
 
 To be able to compare the two models we make a pointrange plot using ggplot2. 
 
-```{r}
+```{r fig.height=4, fig.width=6}
 q <- ggplot(aggregated_sim_seasonal_data_national[attr == "exp_mort_pr100_ili_lag_1=0"], 
                        aes(x = season, y = median.exp_attr, group = tag, color = tag)) 
 q <- q + geom_pointrange(aes(x = season, y = median.exp_attr, ymin = q05.exp_attr, ymax = q95.exp_attr), position = position_dodge(width = 0.3))
@@ -342,16 +344,14 @@ aggregated_county_to_nation_weekly[, cumsum_q95 := cumsum(q95.exp_attr), by = .(
 ## Cumulativ plot for attributable mortality due to ILI 
 
 We use ggplot2s geom_line and geom_ribbon to nicely visualize the estimates of attributable mortality for the diferent seasons and adding the ninty percent confidance interval to the last season. 
-```{r}
+```{r fig.height=4, fig.width=6}
 library(ggplot2)
 q <-ggplot(data = aggregated_county_to_nation_weekly[season %in% c("2015/2016", "2016/2017", "2017/2018", "2018/2019","2019/2020") & attr == "exp_mort_pr100_ili_lag_1=0"], aes(x = x, y = cumsum, group = season, color = season, fill = season)) 
 q <- q +  geom_line() 
 q <- q + geom_ribbon(data = aggregated_county_to_nation_weekly[season %in% c("2019/2020") & attr == "exp_mort_pr100_ili_lag_1=0"],
                      aes(ymin = cumsum_q05, ymax = cumsum_q95), alpha = 0.4, colour = NA)
 
-q <- q + scale_y_continuous("Estimated attributable mortality", breaks = fhiplot::pretty_breaks(5), labels = fhiplot::format_nor)
-q <- q + fhiplot::scale_color_fhi(name = "Season")
-q <- q + fhiplot::theme_fhi_lines_horizontal()
+q <- q + scale_y_continuous("Estimated attributable mortality")
 q <- q + ggtitle("Estimated mortality due to ILI in Norway")
 q
 
@@ -386,7 +386,7 @@ q <- q +  geom_line(data = aggregated_county_to_nation_weekly[season == "2019/20
 q <- q +  geom_ribbon(data = aggregated_county_to_nation_weekly[season == "2019/2020" &attr == "exp_mort_pr100_ili_lag_1=0"], 
               aes(x = x, ymin = q05.exp_irr, ymax = q95.exp_irr), fill = "blue", alpha=0.4)
 
-#q <- q + scale_y_continuous("Estimated attributable mortality", breaks = fhiplot::pretty_breaks(5), labels = fhiplot::format_nor)
+#q <- q + scale_y_continuous("Estimated attributable mortality")
 q <- q + ylim(0.95, 1.15)
 q <- q + labs(y = "Estimated attributable mortality")
 q <- q + ggtitle("Estimated mortality due to ILI per week")
