@@ -38,6 +38,8 @@ Fake_data_county consists of fake date of mortalities for all counties of Norway
 * location_code: Location code of the differend counties
 * week: Week number
 * season: Years of the season
+* year: Year
+* yrwk: Year and week
 * x: Number of weeks from the start of the season
 * pop: Population size
 * pr100_ili: Percentage of doctorsconsultations diagnosed with influenza like ilnesses 
