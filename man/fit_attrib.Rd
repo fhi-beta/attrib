@@ -25,7 +25,7 @@ For more details see the help vignette:
 \code{vignette("intro", package="attrib")}
 }
 \description{
-Data fit using glmer from lme4 and family poisson to fit the dataset with the given formula.
+Data fit using glmer from lme4 with family poisson to fit the dataset with the given formula.
 }
 \examples{
 

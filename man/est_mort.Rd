@@ -2,7 +2,7 @@
 % Please edit documentation in R/est_mort.R
 \name{est_mort}
 \alias{est_mort}
-\title{Estimates expected mortality}
+\title{Estimates simulations of expected mortality}
 \usage{
 est_mort(fit, data, exposures)
 }
@@ -17,9 +17,10 @@ For more details see the help vignette:
 \code{vignette("intro", package="attrib")}}
 }
 \description{
-For each row in the dataset the expected number of mortalities
-will be calculated for the original data as well as for the
-data with refereance values for the exposures using the sim function.
+For each exposure the dataset is copied and the original value replaced by the referance value.
+Then the sim function is used to generate 500 simulations of expected mortalities for each row.
+Finaly the dataset is transformed to obtain expected mortality for original and referance values
+ of the given exposures for each original row of the dataset.
 }
 \details{
 For more details see the help vignette:

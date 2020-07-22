@@ -113,7 +113,7 @@ test_that("Attributable numbers", {
 
 test_that("simmulations", {
 
-  data <- gen_fake_attrib_data(2)
+  data <- gen_fake_attrib_data(4)
 
   response = "deaths"
   # take in the fixed effects
@@ -129,7 +129,6 @@ test_that("simmulations", {
 
   #ranef <- "(pr100_ili_lag_1|season)"
 
-  data[,temperature_high:= 0]
   suppressWarnings(
     fit <- fit_attrib(data, response = response, fixef = fixef, ranef = ranef, offset = offset)
   )

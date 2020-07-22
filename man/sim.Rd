@@ -15,7 +15,7 @@ sim(fit, data)
 A dataset with 500 simulation og the expected response for each row in the orriginal dataset.
 }
 \description{
-With the given fit the funcion sim from package arm is used to generate 500 simulations
-of all the coefiecients from there respective posterior distributions.
-This is then used to compute the expected response for all simulations and rows in the input data.
+With the given fit from fit_attrib the funcion sim, from package arm, is used to generate 500 simulations
+of all the coefiecients, from there respective posterior distributions.
+This is then used to compute the expected response for all simulations and rows in the input dataset.
 }

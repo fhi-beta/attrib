@@ -1,8 +1,8 @@
 #' Generates simulations of expected mortalities by simulating the model coefficiants.
 #'
-#' With the given fit the funcion sim from package arm is used to generate 500 simulations
-#' of all the coefiecients from there respective posterior distributions.
-#' This is then used to compute the expected response for all simulations and rows in the input data.
+#' With the given fit from fit_attrib the funcion sim, from package arm, is used to generate 500 simulations
+#' of all the coefiecients, from there respective posterior distributions.
+#' This is then used to compute the expected response for all simulations and rows in the input dataset.
 #'
 #' @param fit A model fit created by fit_attrib
 #' @param data The data with eather observed values or referance values.
@@ -15,6 +15,15 @@ sim <- function(
   if (length(which(is.na(data))) != 0){
     stop("The dataset has NA values")
   }
+
+  if (is.null(attr(fit, "fit_fix"))){
+    stop("Fit is missing attribute fit_fix and possibly not computed by fit_attrib") # Maybe a different message, you decide :)
+  }
+
+  if (is.null(attr(fit, "response"))){
+    stop("Fit is missing attribute fit_fix and possibly not computed by fit_attrib") # Maybe a different message, you decide :)
+  }
+
   col_names <- colnames(data)
 
   n_sim <- 500
@@ -86,6 +95,8 @@ sim <- function(
 
   # slowly add in each of the random effects
   i = j = k = 1
+  pb <- utils::txtProgressBar(min=0, max=(length(x@ranef)), style = 3)
+
   for(i in 1:length(x@ranef)){
     grouping <- names(x@ranef)[i]
     for(j in 1:dim(x@ranef[[i]])[3]){
@@ -103,6 +114,7 @@ sim <- function(
         expected_ran <- expected_ran + coefficients[,data[[grouping]]] %*% diag(data[[variable]])
       }
     }
+    utils::setTxtProgressBar(pb, i)
   }
   # print("loop over")
   # add together the coefficients for the fixed and random effects

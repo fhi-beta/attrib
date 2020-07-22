@@ -1,8 +1,9 @@
-#' Estimates expected mortality
+#' Estimates simulations of expected mortality
 #'
-#' For each row in the dataset the expected number of mortalities
-#' will be calculated for the original data as well as for the
-#' data with refereance values for the exposures using the sim function.
+#' For each exposure the dataset is copied and the original value replaced by the referance value.
+#' Then the sim function is used to generate 500 simulations of expected mortalities for each row.
+#' Finaly the dataset is transformed to obtain expected mortality for original and referance values
+#'  of the given exposures for each original row of the dataset.
 #'
 #' For more details see the help vignette:
 #' \code{vignette("intro", package="attrib")}
@@ -22,6 +23,24 @@ est_mort <- function(
   if (length(which(is.na(data))) != 0){
     stop("The dataset has NA values")
   }
+
+  if (is.null(attr(fit, "fit_fix"))){
+    stop("Fit is missing attribute fit_fix and possibly not computed by fit_attrib") # Maybe a different message, you decide :)
+  }
+
+  if (is.null(attr(fit, "response"))){
+    stop("Fit is missing attribute fit_fix and possibly not computed by fit_attrib") # Maybe a different message, you decide :)
+  }
+
+  if( length(exposures)==0){
+    stop("Exposures is empthy")
+  }
+  for ( i in seq_along(exposures)){
+    if (!names(exposures)[i] %in% colnames(data)){
+      stop(glue::glue("Exposure {names(exposures)[i]} is not in the dataset"))
+    }
+  }
+
 
   id = NULL
   tag = NULL
@@ -58,11 +77,6 @@ est_mort <- function(
                 glue::glue("exp_mort_{names(exposures)[i]}={(exposures)[i]}") := data_ret_temp$expected_mort]
   }
 
-  # cur_col_names <- c(col_names_orig[1:12], "sim_id", "id") #need to remove the exposures
-  # formula_cast <- paste(c(paste(cur_col_names, collapse = " + "),  "~ tag"), collapse = " ")
-  # data_ret_val <- data.table::dcast.data.table(data_tot_ret,
-  #                                              as.formula(formula_cast), value.var = "expected_mort")
-  #
   data_ret_val[, tag := NULL]
   data_ret_val[, id_row := NULL]
   return(data_ret_val)
