@@ -28,7 +28,7 @@
 #' exposures <- c(pr100_ili_lag_1 = 0)
 #' new_data <- est_attrib(fit, data, exposures)
 #' new_data[]
-#' @return dataset with expected responses for all simulations including excpected responses given the exposure referance values
+#' @return Dataset with expected responses for all simulations including excpected responses given the exposure referance values
 #'
 #' @export
 est_attrib <- function(
