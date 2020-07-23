@@ -4,8 +4,24 @@
 #' of all the coefiecients, from there respective posterior distributions.
 #' This is then used to compute the expected response for all simulations and rows in the input dataset.
 #'
+# For more details see the help vignette:
+#' \code{vignette("intro", package="attrib")}
+#'
 #' @param fit A model fit created by fit_attrib
 #' @param data The data with eather observed values or referance values.
+#'
+#' @examples
+#'
+#' response <- "deaths"
+#' fixef <- "pr100_ili_lag_1 + sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)"
+#' ranef <- " (pr100_ili_lag_1| season)"
+#' offset <- "log(pop)"
+#'
+#' data = attrib::data_fake_nation
+#'
+#' fit <- fit_attrib(data = data, response = response, fixef = fixef, ranef = ranef, offset = offset)
+#'
+#' sim(fit, data)
 #' @return A dataset with 500 simulation og the expected response for each row in the orriginal dataset.
 #' @export
 sim <- function(

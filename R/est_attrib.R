@@ -1,40 +1,98 @@
-#' Estimates attributable mortality and irr
+#' Estimates simulations of expected responses
 #'
-#' @param data The output data from est_mort on long format with all attr in one colum with there values in clumn "value"
+#' For each exposure the dataset is copied and the original value replaced by the referance value.
+#' Then the sim function is used to generate 500 simulations of expected responses for each row.
+#' Finaly the dataset is transformed to obtain expected response for original and referance values
+#'  of the given exposures for each original row of the dataset.
 #'
+#' For more details see the help vignette:
+#' \code{vignette("intro", package="attrib")}
+#'
+#' @param fit A model fit constructed by fit_attrib
+#' @param data The observed data
+#' @param exposures The exposures that will get reference expected mortalities
+#'
+#' For more details see the help vignette:
+#' \code{vignette("intro", package="attrib")}
+#'
+#' @examples
+#'
+#' response <- "deaths"
+#' fixef <- "pr100_ili_lag_1 + sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)"
+#' ranef <- " (pr100_ili_lag_1| season)"
+#' offset <- "log(pop)"
+#'
+#' data = attrib::data_fake_nation
+#'
+#' fit <- fit_attrib(data = data, response = response, fixef = fixef, ranef = ranef, offset = offset)
+#' exposures <- c(pr100_ili_lag_1 = 0)
+#' new_data <- est_attrib(fit, data, exposures)
+#' new_data[]
+#' @return dataset with expected responses for all exposures given there re
+#'
+#' @export
 est_attrib <- function(
-                       data) {
-  exp_attr <- NULL
-  exp_mort_observed <- NULL
-  value <- NULL
-  exp_irr <- NULL
-  col_names <- NULL
-  . <- NULL
-
-
-  data_copy <- copy(data)
-  data_copy[, exp_attr := (exp_mort_observed - value)]
-  data_copy[, exp_irr := (exp_mort_observed / value)]
-
-  q05 <- function(x) {
-    return(stats::quantile(x, 0.05))
-  }
-  q95 <- function(x) {
-    return(stats::quantile(x, 0.95))
+  fit,
+  data,
+  exposures) {
+  if (length(which(is.na(data))) != 0){
+    stop("The dataset has NA values")
   }
 
-  setkeyv(data_copy, col_names[!col_names %in% c("exp_attr", "exp_irr", "sim_id", "exposures", "exp_mort_observed", "value")])
-  data_copy_part <- data_copy[1:1000]
+  if (is.null(attr(fit, "fit_fix"))){
+    stop("Fit is missing attribute fit_fix and possibly not computed by fit_attrib") # Maybe a different message, you decide :)
+  }
+
+  if (is.null(attr(fit, "response"))){
+    stop("Fit is missing attribute fit_fix and possibly not computed by fit_attrib") # Maybe a different message, you decide :)
+  }
+
+  if( length(exposures)==0){
+    stop("Exposures is empthy")
+  }
+  for ( i in seq_along(exposures)){
+    if (!names(exposures)[i] %in% colnames(data)){
+      stop(glue::glue("Exposure {names(exposures)[i]} is not in the dataset"))
+    }
+  }
 
 
-  aggregated_sim_weekly <- data_copy[,
-    unlist(recursive = FALSE, lapply(
-      .(median = stats::median, q05 = q05, q95 = q95),
-      function(f) lapply(.SD, f)
-    )),
-    by = key(data_copy),
-    .SDcols = c("exp_attr", "exp_irr")
-  ]
+  id = NULL
+  tag = NULL
+  id_row = NULL
 
-  return(aggregated_sim_weekly)
+  data_ret_val = copy(data)
+  data_ret_val[, id := 1:.N]
+
+  col_names_orig<- colnames(data)
+
+  data_observed <- copy(data)
+  data_observed[, id:= 1:.N]
+  data_observed$tag <- "observed"
+  #data_ret_val_2 = copy(data)
+  data_tot <- vector("list", length = length(exposures)+1 )
+  data_tot[[1]] <- data_observed
+  for (i in seq_along(exposures)){
+    data_reference <- copy(data)
+    data_reference[, id:= 1:.N]
+    data_reference <- data_reference[, glue::glue({names(exposures)[i]}) := exposures[[i]]]
+    data_reference$tag <- as.character(glue::glue("ref_{names(exposures)[i]}"))
+    data_tot [[i+1]]<- data_reference
+  }
+  data_tot <- rbindlist(data_tot)
+
+  data_tot_ret <- sim(fit, data_tot)
+
+  data_ret_val <- data_tot_ret[tag == "observed"]
+  setnames(data_ret_val, "expected_mort", "exp_mort_observed")
+  #this works but is a bit sslow
+  for (i in seq_along(exposures)){
+    data_ret_temp <- data_tot_ret[tag == glue::glue("ref_{names(exposures)[i]}")]
+    data_ret_val[data_ret_temp, on= c("sim_id", "id"),
+                glue::glue("exp_mort_{names(exposures)[i]}={(exposures)[i]}") := data_ret_temp$expected_mort]
+  }
+
+  data_ret_val[, tag := NULL]
+  data_ret_val[, id_row := NULL]
+  return(data_ret_val)
 }

@@ -63,7 +63,7 @@ In this example we will look at the exposures pr100_ili_lag_1 and temperature_hi
 
 ## County level
 
-We want to estimate the attributable mortality due to ILI and heatwaves. Attrib lets one fit models with both fixed and random effect and offsets using linear mixed models. To do so the glmer function from lme4 package is used. This means one must specify which are the offsets, the fixed effects and the random effects. One must also spesify the response. In our case we will model the response  *deaths* as a function of:
+We want to estimate the attributable mortality due to ILI and heatwaves. Attrib lets us fit models with both fixed and random effect and offsets using linear mixed models. To do so the glmer function from lme4 package is used. This means we must specify which are the offsets, the fixed effects and the random effects. We must also spesify the response. In our case we will model the response  *deaths* as a function of:
 
 * the fixed effects:
   * temperature_high
@@ -158,32 +158,44 @@ offset_nation <- "log(pop)"
 
 ```
 
+# Using the sim function
 
-# Estimating referance mortality using est_mort
+The sim function can be used to generate simulations for all the rows in our data. It first generater 500 simulations from the posterior distribution of the coefficients from out fit before applying these coefficiants on our dataset generating 500 simululations og expected mortality for each line. This is quite generic. Hence if the goal is to compute attributable mortalities or incident risk ratios we use est_attrib as shown below. 
 
-To generate simulations for each observation and estimate the mortality given the referance values of the exposures one uses attribs est_mort. 
-One needs to give the fit, the dataset and the exposures with referance values. Est_mort will then using the sim function from the arm pachage to generate simulations of the underlying posterior distribution before using this to compute the estimated mortalities for each simulation. 
+```{r}
+sim_data <- sim(fit_nation, data_fake_nation)
+```
+```{r}
+head(sim_data[id_row == 1], 5)
+```
+
+We can see that we now have multiple expected mortalities for the same dataline. This is due to the coefficiant simmulations. 
+
+# Estimating referance mortality using est_attrib
+
+To generate simulations for each observation and estimate the mortality given the referance values of the exposures we use attribs est_attrib. 
+We need to give the fit, the dataset and the exposures with referance values. Est_attrib will then using the sim function from the arm pachage to generate simulations of the underlying posterior distribution before using this to compute the estimated mortalities for each simulation. 
 
 ```{r}
 exposures <- list( "temperature_high" = 0, "pr100_ili_lag_1" = 0)
-est_mort_sim_county <- attrib::est_mort(fit_county, 
+est_attrib_sim_county <- attrib::est_attrib(fit_county, 
                                         data_fake_county, 
                                         exposures = exposures)
-est_mort_sim_nation <- attrib::est_mort(fit_nation, 
+est_attrib_sim_nation <- attrib::est_attrib(fit_nation, 
                                         data_fake_nation, 
                                         exposures = exposures )
 ```
 
 ```{r}
-head(est_mort_sim_county, 5)
+head(est_attrib_sim_county, 5)
 ```
-Now one can see in the above dataset that the colums *id*, *sim_id*,  *exp_mort_observed*, *exp_mort_temperature_high=0*, *exp_mort_pr100_ili_lag_1=0* are added to the previous set of colums. For each row in the original dataset we now have 500 
+Now we can see in the above dataset that the colums *id*, *sim_id*,  *exp_mort_observed*, *exp_mort_temperature_high=0*, *exp_mort_pr100_ili_lag_1=0* are added to the previous set of colums. For each row in the original dataset we now have 500 
 <!-- change this if we change n_sim --> 
-rows, one for each of the simulations done by est_mort. In each row we see the estimate of the number of mortalities given a refereance value for *exp_mort_temperature_high* and *exp_mort_pr100_ili_lag_1*.
+rows, one for each of the simulations done by est_attrib. In each row we see the estimate of the number of mortalities given a refereance value for *exp_mort_temperature_high* and *exp_mort_pr100_ili_lag_1*.
 
 To make the dataprocessing easier later we convert the dataset from wide to long form and collapse the estimated mortalities 
 ```{r}
-est_mort_county_long<-data.table::melt.data.table(est_mort_sim_county, 
+est_attrib_county_long<-data.table::melt.data.table(est_attrib_sim_county, 
                                                   id.vars = c("location_code", 
                                                               "season",  
                                                               "x", 
@@ -194,15 +206,15 @@ est_mort_county_long<-data.table::melt.data.table(est_mort_sim_county,
                                                               "exp_mort_observed"),
                                            measure.vars = c("exp_mort_temperature_high=0", 
                                                             "exp_mort_pr100_ili_lag_1=0")) 
-data.table::setnames(est_mort_county_long, "variable", "attr")
+data.table::setnames(est_attrib_county_long, "variable", "attr")
 
-head(est_mort_county_long, 5)
+head(est_attrib_county_long, 5)
 ```
 
 We can see that the columns *exp_mort_temperature_high=0*, *exp_mort_pr100_ili_lag_1=0* are now collapsed into the new column *attr* and *value* with *attr* discribing which exposure we have and *value* giving the corresponding referance value. 
 
 ```{r}
-est_mort_nation_long<-data.table::melt.data.table(est_mort_sim_nation, 
+est_attrib_nation_long<-data.table::melt.data.table(est_attrib_sim_nation, 
                                                   id.vars = c("location_code", 
                                                               "season",  
                                                               "x", 
@@ -213,7 +225,7 @@ est_mort_nation_long<-data.table::melt.data.table(est_mort_sim_nation,
                                                               "exp_mort_observed"),
                                            measure.vars = c("exp_mort_temperature_high=0", 
                                                             "exp_mort_pr100_ili_lag_1=0")) 
-data.table::setnames(est_mort_nation_long, "variable", "attr")
+data.table::setnames(est_attrib_nation_long, "variable", "attr")
 
 ```
 
@@ -221,10 +233,10 @@ data.table::setnames(est_mort_nation_long, "variable", "attr")
 Sinse we now have two datasets, one on a countylevel and one on a national level, to compare them some aggregations is needed. 
 
 ## Aggregate from county to national level seasonaly
-To aggregate from the the current dataset to a national dataset with seasonal data for *est_mort_county_long*, the county dataset, we sums *exp_mort_observed*, *value* and *deaths* for all counties and weeks per season. Afterwards we calculate the expected attributable mortality, exp_attr, by substracting *value* (the estimated number of mortalities given the referance value of the exposure) from *the exp_mort_observed* and the incident risk ration, exp_irr, by deviding *exp_mort_observed* by *value*. 
+To aggregate from the the current dataset to a national dataset with seasonal data for *est_attrib_county_long*, the county dataset, we sums *exp_mort_observed*, *value* and *deaths* for all counties and weeks per season. Afterwards we calculate the expected attributable mortality, exp_attr, by substracting *value* (the estimated number of mortalities given the referance value of the exposure) from *the exp_mort_observed* and the incident risk ration, exp_irr, by deviding *exp_mort_observed* by *value*. 
 To be able to separate this dataset from the other we add a tag. 
 ```{r}
-aggregated_county_to_nation <-  est_mort_county_long[,.(
+aggregated_county_to_nation <-  est_attrib_county_long[,.(
   exp_mort_observed = sum(exp_mort_observed),
   value = sum(value), 
   deaths = sum(deaths)
@@ -238,12 +250,12 @@ aggregated_county_to_nation[, tag := "aggregated_from_county"]
 head(aggregated_county_to_nation, 5)
 ```
 
-One can see that we no longer have the colums *location_code*, *week* and *x* sinse the data is now aggregated to a national level on a seasonal basis.
+We can see that we no longer have the colums *location_code*, *week* and *x* sinse the data is now aggregated to a national level on a seasonal basis.
 
 ## Aggregating the national model per season
-For the national model one sums the same feathures but only for all weeks per season and create exp_attr and exp_irr in the same way as above.
+For the national model we sum the same feathures but only for all weeks per season and create exp_attr and exp_irr in the same way as above.
 ```{r}
-aggregated_nation <-  est_mort_nation_long[, .(
+aggregated_nation <-  est_attrib_nation_long[, .(
   exp_mort_observed = sum(exp_mort_observed),
   value = sum(value), 
   deaths = sum(deaths)
@@ -301,7 +313,7 @@ aggregated_sim_seasonal_data_national<- data_national[,
 head(aggregated_sim_seasonal_data_national,5)
 ```
 
-One can now see that we have confidance intervals and estimates for both the attributable deaths and the incident risk ratio for all exposures. 
+We can now see that we have confidance intervals and estimates for both the attributable deaths and the incident risk ratio for all exposures. 
 
 ## Plot to compare the national with the aggregated county to natoinal model
 
@@ -325,7 +337,7 @@ As a contrast to what we did in the section about comparing the national data to
 Hence the aggregation is done in the same way as before with the exeption of including *x* and *week* in the keyby funciton.
 <!-- is keyby a function? -->
 ```{r}
-aggregated_county_to_nation <-  est_mort_county_long[, .(
+aggregated_county_to_nation <-  est_attrib_county_long[, .(
   exp_mort_observed = sum(exp_mort_observed),
   value = sum(value), 
   deaths = sum(deaths)
@@ -408,19 +420,19 @@ Then we can set the referance value to zero and hence optain the risk ratio for 
 exposures_irr = c(pr100_ili_lag_1 = 0)
 ```
 
-Now we use est_mort to create the simmulations. 
+Now we use est_attrib to create the simmulations. 
 ```{r}
-est_mort_sim_county_irr <- attrib::est_mort(fit_county, 
+est_attrib_sim_county_irr <- attrib::est_attrib(fit_county, 
                                         data_fake_county_irr, 
                                         exposures = exposures_irr)
-head(est_mort_sim_county_irr, 5)
+head(est_attrib_sim_county_irr, 5)
 ```
-We see we have obtained values for the referance of the exposure in the same way as before. The difference now is that we changed the dataset before running *est_mort* meaning the *exp_mort_observed* will now deviate a from the true number of deaths and be the expected number of deaths given *pr100_ili_lag_1* equall to 1. 
+We see we have obtained values for the referance of the exposure in the same way as before. The difference now is that we changed the dataset before running *est_attrib* meaning the *exp_mort_observed* will now deviate a from the true number of deaths and be the expected number of deaths given *pr100_ili_lag_1* equall to 1. 
 
 The next step is as before to aggregate from a county, weekly to a national seasonal dataset as well ass adding the values for the incident risk ratio to the column *exp_irr*.
 
 ```{r}
-aggregated_county_to_nation_sim_irr <-  est_mort_sim_county_irr[, .(
+aggregated_county_to_nation_sim_irr <-  est_attrib_sim_county_irr[, .(
   exp_mort_observed = sum(exp_mort_observed),
   "exp_mort_pr100_ili_lag_1=0"= sum(`exp_mort_pr100_ili_lag_1=0`), 
   deaths = sum(deaths)
@@ -486,9 +498,9 @@ q <- q + ggtitle("Incident risk ratio for ILI per season")
 q
 ```
 
-As one can see these intervals are very similar.
+As we can see these intervals are very similar.
 
-The benefit of the aggregated aproach is that this prosess will be equally easy no matter the complexity of what one wants to compute the irr for. 
-One does not have ot take the variance covariance matrix in to account at any stage or manually compute credible intervals. 
+The benefit of the aggregated aproach is that this prosess will be equally easy no matter the complexity of what we want to compute the irr for. 
+We do not have ot take the variance covariance matrix in to account at any stage or manually compute credible intervals. 
 
 

@@ -18,16 +18,13 @@
 #' @examples
 #'
 #' response <- "deaths"
-#' fixef <- "pr100_ili + sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)"
-#' ranef <- " (pr100_ili| season)"
+
+#' fixef <- "pr100_ili_lag_1 + sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)"
+#' ranef <- " (pr100_ili_lag_1| season)"
 #' offset <- "log(pop)"
 #'
-#' data <- data.table::data.table(
-#'   deaths = c(100, 110, 150, 160), week = c(10, 11, 10, 11),
-#'   season = c("2018/2019", "2018/2019", "2019/2020", "2019/2020"),
-#'   pr100_ili = c(0.2, 0.21, 0.35, 0.36),
-#'   pop = c(50000, 50000, 50000, 50000)
-#' )
+#' data = attrib::data_fake_nation
+
 #'
 #' fit_attrib(data = data, response = response, fixef = fixef, ranef = ranef, offset = offset)
 #' @export

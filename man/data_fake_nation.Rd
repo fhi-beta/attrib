@@ -25,11 +25,4 @@ data_fake_nation
 \description{
 This data is licensed under specific conditions noted in the details section.
 }
-\details{
-The permission to use the data is granted on condition that:
-\itemize{
-\item The data will not be used for commercial purposes
-\item The source will be acknowledged. A copyright notice will have to be visible on any printed or electronic publication using this dataset
-}
-}
 \keyword{datasets}
