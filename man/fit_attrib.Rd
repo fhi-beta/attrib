@@ -29,9 +29,9 @@ Data fit using glmer from lme4 with family poisson to fit the dataset with the g
 }
 \examples{
 
-response = "deaths"
-fixef = "pr100_ili + sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)"
-ranef = " (pr100_ili| season)"
+response <- "deaths"
+fixef <- "pr100_ili + sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)"
+ranef <- " (pr100_ili| season)"
 offset <- "log(pop)"
 
 data = data.table::data.table(deaths = c(100, 110, 150, 160), week = c(10, 11, 10, 11),

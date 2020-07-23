@@ -2,13 +2,27 @@
 % Please edit documentation in R/est_attrib.R
 \name{est_attrib}
 \alias{est_attrib}
-\title{Estimates attributable mortality and irr}
+\title{Estimates simulations of expected responses}
 \usage{
-est_attrib(data)
+est_attrib(fit, data, exposures)
 }
 \arguments{
-\item{data}{The output data from est_mort on long format with all attr in one colum with there values in clumn "value"}
+\item{fit}{A model fit constructed by fit_attrib}
+
+\item{data}{The observed data}
+
+\item{exposures}{The exposures that will get reference expected mortalities
+
+For more details see the help vignette:
+\code{vignette("intro", package="attrib")}}
 }
 \description{
-Estimates attributable mortality and irr
+For each exposure the dataset is copied and the original value replaced by the referance value.
+Then the sim function is used to generate 500 simulations of expected responses for each row.
+Finaly the dataset is transformed to obtain expected response for original and referance values
+ of the given exposures for each original row of the dataset.
+}
+\details{
+For more details see the help vignette:
+\code{vignette("intro", package="attrib")}
 }

@@ -19,3 +19,6 @@ With the given fit from fit_attrib the funcion sim, from package arm, is used to
 of all the coefiecients, from there respective posterior distributions.
 This is then used to compute the expected response for all simulations and rows in the input dataset.
 }
+\details{
+\code{vignette("intro", package="attrib")}
+}
