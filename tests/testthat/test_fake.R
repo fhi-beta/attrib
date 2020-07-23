@@ -84,7 +84,7 @@ test_that("Attributable numbers", {
   )
   exposures <- list("pr100_ili_lag_1" = 0, "temperature_high" = 0)
   # data_one <- data[1]
-  data <- est_mort(fit, data, exposures = exposures)
+  data <- est_attrib(fit, data, exposures = exposures)
 
   data_copy <- copy(data)
   data_copy <- data_copy[, .(
@@ -137,7 +137,7 @@ test_that("simmulations", {
   )
 
   exposures <- list("pr100_ili_lag_1" = 0, "temperature_high" = 0)
-  est_mort <- est_mort(fit, data, exposures)
+  est_mort <- est_attrib(fit, data, exposures)
 
   # predict mean
   pred <- exp(lme4:::predict.merMod(fit, data))

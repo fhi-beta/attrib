@@ -17,7 +17,7 @@ For more details see the help vignette:
 \code{vignette("intro", package="attrib")}}
 }
 \value{
-blbl
+dataset with expected responses for all simulations including excpected responses given the exposure referance values
 }
 \description{
 For each exposure the dataset is copied and the original value replaced by the referance value.
@@ -41,5 +41,5 @@ data = attrib::data_fake_nation
 fit <- fit_attrib(data = data, response = response, fixef = fixef, ranef = ranef, offset = offset)
 exposures <- c(pr100_ili_lag_1 = 0)
 new_data <- est_attrib(fit, data, exposures)
-new_data
+new_data[]
 }
