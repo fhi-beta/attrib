@@ -27,8 +27,8 @@
 #' fit <- fit_attrib(data = data, response = response, fixef = fixef, ranef = ranef, offset = offset)
 #' exposures <- c(pr100_ili_lag_1 = 0)
 #' new_data <- est_attrib(fit, data, exposures)
-#' new_data
-#' @return blbl
+#' new_data[]
+#' @return dataset with expected responses for all exposures given there re
 #'
 #' @export
 est_attrib <- function(

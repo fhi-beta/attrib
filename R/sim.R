@@ -25,18 +25,17 @@
 #' @return A dataset with 500 simulation og the expected response for each row in the orriginal dataset.
 #' @export
 sim <- function(
-  fit,
-  data) {
-
-  if (length(which(is.na(data))) != 0){
+                fit,
+                data) {
+  if (length(which(is.na(data))) != 0) {
     stop("The dataset has NA values")
   }
 
-  if (is.null(attr(fit, "fit_fix"))){
+  if (is.null(attr(fit, "fit_fix"))) {
     stop("Fit is missing attribute fit_fix and possibly not computed by fit_attrib") # Maybe a different message, you decide :)
   }
 
-  if (is.null(attr(fit, "response"))){
+  if (is.null(attr(fit, "response"))) {
     stop("Fit is missing attribute fit_fix and possibly not computed by fit_attrib") # Maybe a different message, you decide :)
   }
 
@@ -47,24 +46,24 @@ sim <- function(
   fix_eff <- attr(fit, "fit_fix")
   offset <- attr(fit, "offset")
   response <- attr(fit, "response")
-  x <- arm::sim(fit, n.sims=n_sim)
+  x <- arm::sim(fit, n.sims = n_sim)
 
   # get the design matrix for the fixed effects
-  data_fix <- stats::model.frame(fix_eff, data=data)
+  data_fix <- stats::model.frame(fix_eff, data = data)
   data_fix_copy <- as.data.table(data_fix)
   data_fix_copy[, (response) := NULL]
 
   x_fix <- as.data.frame(as.matrix(x@fixef))
 
-  r_names <- rownames(rbind(1,as.matrix(t(data_fix_copy))))
+  r_names <- rownames(rbind(1, as.matrix(t(data_fix_copy))))
   c_names <- colnames(as.matrix(x@fixef))
-  count = 0
-  for (i in (2:(length(r_names)-1))){
+  count <- 0
+  for (i in (2:(length(r_names) - 1))) {
     # print(i)
     r_cur <- r_names[i]
-    c_cur <- c_names[i- count]
+    c_cur <- c_names[i - count]
 
-    check = FALSE
+    check <- FALSE
 
     c_check <- stringr::str_replace_all(c_cur, "[:(, =)*/-]", ".")
     r_check <- stringr::str_replace_all(r_cur, "[:(, =)*/-]", ".")
@@ -72,62 +71,62 @@ sim <- function(
     # print(r_cur)
     # print(c_check)
 
-    if(c_check == r_check){
-      check = TRUE
+    if (c_check == r_check) {
+      check <- TRUE
       next
     }
 
     split <- strsplit(c_check, "")[[1]]
-    if(split[length(split)-1] == "."){
-      p<- paste0(substr(c_check, 1, (nchar(c_check)-1)),".", substr(c_check, nchar(c_check), nchar(c_check)), collapse = NULL)
-      if( p == r_check){
-        check = TRUE
+    if (split[length(split) - 1] == ".") {
+      p <- paste0(substr(c_check, 1, (nchar(c_check) - 1)), ".", substr(c_check, nchar(c_check), nchar(c_check)), collapse = NULL)
+      if (p == r_check) {
+        check <- TRUE
         next
       }
     }
 
-    if(check == FALSE){
-      x_fix<- tibble::add_column(x_fix, extra = 0, .after = (i-1 + count))
+    if (check == FALSE) {
+      x_fix <- tibble::add_column(x_fix, extra = 0, .after = (i - 1 + count))
       count <- count + 1
     }
   }
 
   # multiply it out
 
-  dim(cbind(as.matrix(x_fix),1))
-  dim(rbind(1,as.matrix(t(data_fix_copy))))
+  dim(cbind(as.matrix(x_fix), 1))
+  dim(rbind(1, as.matrix(t(data_fix_copy))))
 
-  colnames(cbind(as.matrix(x_fix),1))
-  rownames(rbind(1,as.matrix(t(data_fix_copy))))
+  colnames(cbind(as.matrix(x_fix), 1))
+  rownames(rbind(1, as.matrix(t(data_fix_copy))))
 
   # add the offset!!
-  if (is.null(offset)){
-    cbind(as.matrix(x_fix)) %*% rbind(1,as.matrix(t(data_fix_copy)))
-  } else{
-    expected_fix <- cbind(as.matrix(x_fix),1) %*% rbind(1,as.matrix(t(data_fix_copy)))
+  if (is.null(offset)) {
+    cbind(as.matrix(x_fix)) %*% rbind(1, as.matrix(t(data_fix_copy)))
+  } else {
+    expected_fix <- cbind(as.matrix(x_fix), 1) %*% rbind(1, as.matrix(t(data_fix_copy)))
   }
   # set up the results for random effects
-  expected_ran <- matrix(0, ncol=ncol(expected_fix), nrow=nrow(expected_fix))
+  expected_ran <- matrix(0, ncol = ncol(expected_fix), nrow = nrow(expected_fix))
 
   # slowly add in each of the random effects
-  i = j = k = 1
-  pb <- utils::txtProgressBar(min=0, max=(length(x@ranef)), style = 3)
+  i <- j <- k <- 1
+  pb <- utils::txtProgressBar(min = 0, max = (length(x@ranef)), style = 3)
 
-  for(i in 1:length(x@ranef)){
+  for (i in 1:length(x@ranef)) {
     grouping <- names(x@ranef)[i]
-    for(j in 1:dim(x@ranef[[i]])[3]){
+    for (j in 1:dim(x@ranef[[i]])[3]) {
       # print(j)
       variable <- dimnames(x@ranef[[i]])[[3]][j]
-      coefficients <- x@ranef[[i]][,,j]
-      if(variable=="(Intercept)"){
+      coefficients <- x@ranef[[i]][, , j]
+      if (variable == "(Intercept)") {
         # print(dim(expected_ran))
         # print(dim(coefficients[,data[[grouping]]]))
-        expected_ran <- expected_ran + coefficients[,data[[grouping]]]
+        expected_ran <- expected_ran + coefficients[, data[[grouping]]]
       } else {
         # print(dim(expected_ran))
         # print(dim(coefficients[,data[[grouping]]]))
         # print("non_intercept")
-        expected_ran <- expected_ran + coefficients[,data[[grouping]]] %*% diag(data[[variable]])
+        expected_ran <- expected_ran + coefficients[, data[[grouping]]] %*% diag(data[[variable]])
       }
     }
     utils::setTxtProgressBar(pb, i)
@@ -139,15 +138,15 @@ sim <- function(
   expected <- as.data.table(exp(expected_fix + expected_ran))
 
   expected_t <- data.table::transpose(expected)
-  expected_t$id_row <-1:nrow(data)
+  expected_t$id_row <- 1:nrow(data)
   data$id_row <- 1:nrow(data)
 
-  new_data<- merge(data, expected_t, by = "id_row", all = TRUE)
-  new_data<- data.table::melt(new_data, id.vars = c(col_names, "id_row"))
+  new_data <- merge(data, expected_t, by = "id_row", all = TRUE)
+  new_data <- data.table::melt(new_data, id.vars = c(col_names, "id_row"))
 
   setnames(new_data, "variable", "sim_id")
   new_data$sim_id <- as.numeric(as.factor(new_data$sim_id))
   setnames(new_data, "value", "expected_mort")
 
-  return (new_data)
+  return(new_data)
 }

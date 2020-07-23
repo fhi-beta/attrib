@@ -18,41 +18,54 @@
 #' @examples
 #'
 #' response <- "deaths"
+
 #' fixef <- "pr100_ili_lag_1 + sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)"
 #' ranef <- " (pr100_ili_lag_1| season)"
 #' offset <- "log(pop)"
 #'
 #' data = attrib::data_fake_nation
+
 #'
 #' fit_attrib(data = data, response = response, fixef = fixef, ranef = ranef, offset = offset)
-#'
 #' @export
 fit_attrib <- function(
-  data,
-  response,
-  fixef,
-  ranef,
-  offset = NULL){
+                       data,
+                       response,
+                       fixef,
+                       ranef,
+                       offset = NULL) {
   is_data_table(data)
 
-  #fix this with offset
-  if(is.null(offset)){
-
-    if (tryCatch({stats::as.formula(paste0(response, "~" ,fixef))}, error = function(e){"error"}) == "error"){
+  # fix this with offset
+  if (is.null(offset)) {
+    if (tryCatch(
+      {
+        stats::as.formula(paste0(response, "~", fixef))
+      },
+      error = function(e) {
+        "error"
+      }
+    ) == "error") {
       stop("response, fixef or ranef is not in the correct form")
     }
 
-    formula <- paste0(response, "~",fixef,"+",ranef)
-    fit_fix <- stats::lm(stats::as.formula(paste0(response, "~" ,fixef)), data=data)
+    formula <- paste0(response, "~", fixef, "+", ranef)
+    fit_fix <- stats::lm(stats::as.formula(paste0(response, "~", fixef)), data = data)
   } else {
+    formula <- paste0(response, "~", fixef, "+ offset(", offset, ")+", ranef)
 
-    formula <- paste0(response, "~", fixef,"+ offset(",offset, ")+", ranef)
-
-    if (tryCatch({stats::as.formula(formula)}, error = function(e){"error"}) == "error"){
+    if (tryCatch(
+      {
+        stats::as.formula(formula)
+      },
+      error = function(e) {
+        "error"
+      }
+    ) == "error") {
       stop("response, offset, fixef or ranef is not in the correct form")
     }
 
-    fit_fix <- stats::lm(stats::as.formula(paste0(response, "~" , fixef,"+ offset(",offset, ")")), data=data)
+    fit_fix <- stats::lm(stats::as.formula(paste0(response, "~", fixef, "+ offset(", offset, ")")), data = data)
   }
 
 
@@ -64,4 +77,3 @@ fit_attrib <- function(
 
   return(fit)
 }
-
