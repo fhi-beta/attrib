@@ -22,3 +22,16 @@ This is then used to compute the expected response for all simulations and rows 
 \details{
 \code{vignette("intro", package="attrib")}
 }
+\examples{
+
+response <- "deaths"
+fixef <- "pr100_ili_lag_1 + sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)"
+ranef <- " (pr100_ili_lag_1| season)"
+offset <- "log(pop)"
+
+data = attrib::data_fake_nation
+
+fit <- fit_attrib(data = data, response = response, fixef = fixef, ranef = ranef, offset = offset)
+
+sim(fit, data)
+}

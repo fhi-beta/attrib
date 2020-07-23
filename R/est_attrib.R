@@ -15,6 +15,21 @@
 #' For more details see the help vignette:
 #' \code{vignette("intro", package="attrib")}
 #'
+#' @examples
+#'
+#' response <- "deaths"
+#' fixef <- "pr100_ili_lag_1 + sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)"
+#' ranef <- " (pr100_ili_lag_1| season)"
+#' offset <- "log(pop)"
+#'
+#' data = attrib::data_fake_nation
+#'
+#' fit <- fit_attrib(data = data, response = response, fixef = fixef, ranef = ranef, offset = offset)
+#' exposures <- c(pr100_ili_lag_1 = 0)
+#' new_data <- est_attrib(fit, data, exposures)
+#' new_data
+#' @return blbl
+#'
 #' @export
 est_attrib <- function(
   fit,
