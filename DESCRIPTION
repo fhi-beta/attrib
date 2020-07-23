@@ -15,8 +15,6 @@ Imports: data.table,
     glue,
     pbs,
     dlnm,
-    fhi,
-    fhidata,
     lubridate,
     mvmeta,
     tsModel,
@@ -25,7 +23,8 @@ Imports: data.table,
     arm, 
     tibble,
     stringr,
-    ggplot2
+    ggplot2,
+    utils
 Suggests: testthat,
     knitr,
     rmarkdown

@@ -1,22 +1,36 @@
-#' Estimates the mean of the simmulations of expected mortality
-#' @param fit A model fit, OBS: offset must be the last element
-#' @param data The observed data. OBS: mortality must be the first column
-#' @param response Name of response column
+#' Generates simulations of expected mortalities by simulating the model coefficiants.
+#'
+#' With the given fit from fit_attrib the funcion sim, from package arm, is used to generate 500 simulations
+#' of all the coefiecients, from there respective posterior distributions.
+#' This is then used to compute the expected response for all simulations and rows in the input dataset.
+#'
+#' @param fit A model fit created by fit_attrib
+#' @param data The data with eather observed values or referance values.
+#' @return A dataset with 500 simulation og the expected response for each row in the orriginal dataset.
 #' @export
-est_mean <- function(
+sim <- function(
   fit,
-  data,
-  response) {
+  data) {
 
   if (length(which(is.na(data))) != 0){
     stop("The dataset has NA values")
   }
+
+  if (is.null(attr(fit, "fit_fix"))){
+    stop("Fit is missing attribute fit_fix and possibly not computed by fit_attrib") # Maybe a different message, you decide :)
+  }
+
+  if (is.null(attr(fit, "response"))){
+    stop("Fit is missing attribute fit_fix and possibly not computed by fit_attrib") # Maybe a different message, you decide :)
+  }
+
   col_names <- colnames(data)
 
   n_sim <- 500
 
   fix_eff <- attr(fit, "fit_fix")
   offset <- attr(fit, "offset")
+  response <- attr(fit, "response")
   x <- arm::sim(fit, n.sims=n_sim)
 
   # get the design matrix for the fixed effects
@@ -72,34 +86,37 @@ est_mean <- function(
 
   # add the offset!!
   if (is.null(offset)){
-    cbind(as.matrix(x_fix)) %*% rbind(1,as.matrix(t(data_fix_copy))) # This crashes when the dataset does not contain covid. Need to add a 1 column correpsonding to covid
+    cbind(as.matrix(x_fix)) %*% rbind(1,as.matrix(t(data_fix_copy)))
   } else{
-    expected_fix <- cbind(as.matrix(x_fix),1) %*% rbind(1,as.matrix(t(data_fix_copy))) # This crashes when the dataset does not contain covid. Need to add a 1 column correpsonding to covid
+    expected_fix <- cbind(as.matrix(x_fix),1) %*% rbind(1,as.matrix(t(data_fix_copy)))
   }
   # set up the results for random effects
   expected_ran <- matrix(0, ncol=ncol(expected_fix), nrow=nrow(expected_fix))
 
   # slowly add in each of the random effects
   i = j = k = 1
+  pb <- utils::txtProgressBar(min=0, max=(length(x@ranef)), style = 3)
+
   for(i in 1:length(x@ranef)){
     grouping <- names(x@ranef)[i]
     for(j in 1:dim(x@ranef[[i]])[3]){
-      print(j)
+      # print(j)
       variable <- dimnames(x@ranef[[i]])[[3]][j]
       coefficients <- x@ranef[[i]][,,j]
       if(variable=="(Intercept)"){
-        print(dim(expected_ran))
-        print(dim(coefficients[,data[[grouping]]]))
+        # print(dim(expected_ran))
+        # print(dim(coefficients[,data[[grouping]]]))
         expected_ran <- expected_ran + coefficients[,data[[grouping]]]
       } else {
-        print(dim(expected_ran))
-        print(dim(coefficients[,data[[grouping]]]))
-        print("non_intercept")
+        # print(dim(expected_ran))
+        # print(dim(coefficients[,data[[grouping]]]))
+        # print("non_intercept")
         expected_ran <- expected_ran + coefficients[,data[[grouping]]] %*% diag(data[[variable]])
       }
     }
+    utils::setTxtProgressBar(pb, i)
   }
-  print("loop over")
+  # print("loop over")
   # add together the coefficients for the fixed and random effects
 
 

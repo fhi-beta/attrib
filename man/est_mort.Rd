@@ -2,19 +2,27 @@
 % Please edit documentation in R/est_mort.R
 \name{est_mort}
 \alias{est_mort}
-\title{Estimates expected mortality}
+\title{Estimates simulations of expected mortality}
 \usage{
-est_mort(fit, data, exposures, response)
+est_mort(fit, data, exposures)
 }
 \arguments{
-\item{fit}{A model fit}
+\item{fit}{A model fit constructed by fit_attrib}
 
 \item{data}{The observed data}
 
-\item{exposures}{The exposures that will get reference expected mortalities}
+\item{exposures}{The exposures that will get reference expected mortalities
 
-\item{response}{The name of the response column}
+For more details see the help vignette:
+\code{vignette("intro", package="attrib")}}
 }
 \description{
-Estimates expected mortality
+For each exposure the dataset is copied and the original value replaced by the referance value.
+Then the sim function is used to generate 500 simulations of expected mortalities for each row.
+Finaly the dataset is transformed to obtain expected mortality for original and referance values
+ of the given exposures for each original row of the dataset.
+}
+\details{
+For more details see the help vignette:
+\code{vignette("intro", package="attrib")}
 }

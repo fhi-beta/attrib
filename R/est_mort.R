@@ -1,21 +1,51 @@
-#' Estimates expected mortality
+#' Estimates simulations of expected mortality
 #'
-#' @param fit A model fit
+#' For each exposure the dataset is copied and the original value replaced by the referance value.
+#' Then the sim function is used to generate 500 simulations of expected mortalities for each row.
+#' Finaly the dataset is transformed to obtain expected mortality for original and referance values
+#'  of the given exposures for each original row of the dataset.
+#'
+#' For more details see the help vignette:
+#' \code{vignette("intro", package="attrib")}
+#'
+#' @param fit A model fit constructed by fit_attrib
 #' @param data The observed data
 #' @param exposures The exposures that will get reference expected mortalities
-#' @param response The name of the response column
+#'
+#' For more details see the help vignette:
+#' \code{vignette("intro", package="attrib")}
+#'
 #' @export
 est_mort <- function(
   fit,
   data,
-  exposures,
-  response) {
+  exposures) {
   if (length(which(is.na(data))) != 0){
     stop("The dataset has NA values")
   }
 
+  if (is.null(attr(fit, "fit_fix"))){
+    stop("Fit is missing attribute fit_fix and possibly not computed by fit_attrib") # Maybe a different message, you decide :)
+  }
+
+  if (is.null(attr(fit, "response"))){
+    stop("Fit is missing attribute fit_fix and possibly not computed by fit_attrib") # Maybe a different message, you decide :)
+  }
+
+  if( length(exposures)==0){
+    stop("Exposures is empthy")
+  }
+  for ( i in seq_along(exposures)){
+    if (!names(exposures)[i] %in% colnames(data)){
+      stop(glue::glue("Exposure {names(exposures)[i]} is not in the dataset"))
+    }
+  }
+
+
   id = NULL
   tag = NULL
+  id_row = NULL
+
   data_ret_val = copy(data)
   data_ret_val[, id := 1:.N]
 
@@ -36,7 +66,7 @@ est_mort <- function(
   }
   data_tot <- rbindlist(data_tot)
 
-  data_tot_ret <- est_mean(fit, data_tot, response = response)
+  data_tot_ret <- sim(fit, data_tot)
 
   data_ret_val <- data_tot_ret[tag == "observed"]
   setnames(data_ret_val, "expected_mort", "exp_mort_observed")
@@ -47,11 +77,7 @@ est_mort <- function(
                 glue::glue("exp_mort_{names(exposures)[i]}={(exposures)[i]}") := data_ret_temp$expected_mort]
   }
 
-  # cur_col_names <- c(col_names_orig[1:12], "sim_id", "id") #need to remove the exposures
-  # formula_cast <- paste(c(paste(cur_col_names, collapse = " + "),  "~ tag"), collapse = " ")
-  # data_ret_val <- data.table::dcast.data.table(data_tot_ret,
-  #                                              as.formula(formula_cast), value.var = "expected_mort")
-  #
-
+  data_ret_val[, tag := NULL]
+  data_ret_val[, id_row := NULL]
   return(data_ret_val)
 }
