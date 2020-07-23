@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Data fit — fit_attrib • attrib</title>
+<title>Generates simulations of expected mortalities by simulating the model coefficiants. — sim • attrib</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,10 @@
 
 
 
-<meta property="og:title" content="Data fit — fit_attrib" />
-<meta property="og:description" content="Data fit using glmer from lme4 with family poisson to fit the dataset with the given formula." />
+<meta property="og:title" content="Generates simulations of expected mortalities by simulating the model coefficiants. — sim" />
+<meta property="og:description" content="With the given fit from fit_attrib the funcion sim, from package arm, is used to generate 500 simulations
+of all the coefiecients, from there respective posterior distributions.
+This is then used to compute the expected response for all simulations and rows in the input dataset." />
 
 
 
@@ -118,83 +120,36 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Data fit</h1>
+    <h1>Generates simulations of expected mortalities by simulating the model coefficiants.</h1>
     
-    <div class="hidden name"><code>fit_attrib.Rd</code></div>
+    <div class="hidden name"><code>sim.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Data fit using glmer from lme4 with family poisson to fit the dataset with the given formula.</p>
+    <p>With the given fit from fit_attrib the funcion sim, from package arm, is used to generate 500 simulations
+of all the coefiecients, from there respective posterior distributions.
+This is then used to compute the expected response for all simulations and rows in the input dataset.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>fit_attrib</span>(<span class='no'>data</span>, <span class='no'>response</span>, <span class='no'>fixef</span>, <span class='no'>ranef</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>sim</span>(<span class='no'>fit</span>, <span class='no'>data</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
+      <th>fit</th>
+      <td><p>A model fit created by fit_attrib</p></td>
+    </tr>
+    <tr>
       <th>data</th>
-      <td><p>The observed data to be fitted.</p></td>
-    </tr>
-    <tr>
-      <th>response</th>
-      <td><p>The response</p></td>
-    </tr>
-    <tr>
-      <th>fixef</th>
-      <td><p>The fixed effects</p></td>
-    </tr>
-    <tr>
-      <th>ranef</th>
-      <td><p>The random effects</p></td>
-    </tr>
-    <tr>
-      <th>offset</th>
-      <td><p>The offsets.</p></td>
+      <td><p>The data with eather observed values or referance values.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>The model fit of the data with additional attributes offset, response and fit_fix.
-Offset and response are the same as in the input and fit_fix is the linear model of the fix effects.</p>
-<p>For more details see the help vignette:
-<code>vignette("intro", package="attrib")</code></p>
+    <p>A dataset with 500 simulation og the expected response for each row in the orriginal dataset.</p>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='no'>response</span> <span class='kw'>=</span> <span class='st'>"deaths"</span>
-<span class='no'>fixef</span> <span class='kw'>=</span> <span class='st'>"pr100_ili + sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)"</span>
-<span class='no'>ranef</span> <span class='kw'>=</span> <span class='st'>" (pr100_ili| season)"</span>
-<span class='no'>offset</span> <span class='kw'>&lt;-</span> <span class='st'>"log(pop)"</span>
-
-<span class='no'>data</span> <span class='kw'>=</span> <span class='kw pkg'>data.table</span><span class='kw ns'>::</span><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></span>(<span class='kw'>deaths</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>100</span>, <span class='fl'>110</span>, <span class='fl'>150</span>, <span class='fl'>160</span>), <span class='kw'>week</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>10</span>, <span class='fl'>11</span>, <span class='fl'>10</span>, <span class='fl'>11</span>),
-                  <span class='kw'>season</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"2018/2019"</span>, <span class='st'>"2018/2019"</span>, <span class='st'>"2019/2020"</span>, <span class='st'>"2019/2020"</span>),
-                  <span class='kw'>pr100_ili</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.2</span>, <span class='fl'>0.21</span>, <span class='fl'>0.35</span>, <span class='fl'>0.36</span>),
-                  <span class='kw'>pop</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>50000</span>, <span class='fl'>50000</span>, <span class='fl'>50000</span>, <span class='fl'>50000</span>))
-
-<span class='fu'>fit_attrib</span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>data</span>, <span class='kw'>response</span> <span class='kw'>=</span> <span class='no'>response</span>, <span class='kw'>fixef</span> <span class='kw'>=</span> <span class='no'>fixef</span>, <span class='kw'>ranef</span> <span class='kw'>=</span> <span class='no'>ranef</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='no'>offset</span>)</div><div class='output co'>#&gt; <span class='message'>fixed-effect model matrix is rank deficient so dropping 1 column / coefficient</span></div><div class='output co'>#&gt; <span class='message'>boundary (singular) fit: see ?isSingular</span></div><div class='output co'>#&gt; Generalized linear mixed model fit by maximum likelihood (Laplace
-#&gt;   Approximation) [glmerMod]
-#&gt;  Family: poisson  ( log )
-#&gt; Formula: deaths ~ pr100_ili + sin(2 * pi * (week - 1)/52) + cos(2 * pi *  
-#&gt;     (week - 1)/52) + offset(log(pop)) + (pr100_ili | season)
-#&gt;    Data: data
-#&gt;      AIC      BIC   logLik deviance df.resid 
-#&gt;  38.7779  35.0957 -13.3889  26.7779       -2 
-#&gt; Random effects:
-#&gt;  Groups Name        Std.Dev.  Corr
-#&gt;  season (Intercept) 0.000e+00     
-#&gt;         pr100_ili   4.834e-08  NaN
-#&gt; Number of obs: 4, groups:  season, 2
-#&gt; Fixed Effects:
-#&gt;                 (Intercept)                    pr100_ili  
-#&gt;                      -7.635                        2.596  
-#&gt; sin(2 * pi * (week - 1)/52)  
-#&gt;                       1.029  
-#&gt; fit warnings:
-#&gt; fixed-effect model matrix is rank deficient so dropping 1 column / coefficient
-#&gt; convergence code 0; 0 optimizer warnings; 1 lme4 warnings </div><div class='input'>
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
