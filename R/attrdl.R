@@ -122,7 +122,6 @@
 #' )[31:60]
 #' }
 #'
-#' @export
 
 attrdl <- function(
                    x,
