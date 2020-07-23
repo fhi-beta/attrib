@@ -167,3 +167,27 @@ test_that("simmulations", {
   )
 
 })
+
+test_that("lag_data", {
+  data <- gen_fake_attrib_data(4)
+
+  response = "deaths"
+  # take in the fixed effects
+  fixef <- "temperature_high +
+  lag_data(x = pr100_ili, lags = 2, ref = 0, by = location_code) +
+  sin(2 * pi * (week - 1) / 52) +
+  cos(2 * pi * (week - 1) / 52)"
+
+  offset <- "log(pop)"
+  # take in the random effects
+  ranef <- "(1|location_code) +(lag_data(x = pr100_ili, lags = 2, ref = 0, by = location_code)|season)"
+
+
+  suppressWarnings(
+    fit <- fit_attrib(data, response = response, fixef = fixef, ranef = ranef, offset = offset)
+  )
+
+  exposures <- list("pr100_ili" = 0, "temperature_high" = 0)
+  #est_mort <- est_mort(fit, data, exposures)
+
+})
