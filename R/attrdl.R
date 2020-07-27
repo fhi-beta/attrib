@@ -138,17 +138,18 @@ attrdl <- function(
                    sim = FALSE,
                    nsim = 5000,
                    sub = 1:length(cases)) {
-  .getcoef <- getFromNamespace("getcoef", "dlnm")
-  .getvcov <- getFromNamespace("getvcov", "dlnm")
-  .getlink <- getFromNamespace("getlink", "dlnm")
-  .seqlag <- getFromNamespace("seqlag", "dlnm")
-  .mkXpred <- getFromNamespace("mkXpred", "dlnm")
-
-
-  # CHECK VERSION OF THE DLNM PACKAGE
-  if (packageVersion("dlnm") < "2.2.0") {
-    stop("update dlnm package to version >= 2.2.0")
-  }
+  # .getcoef <- getFromNamespace("getcoef", "dlnm")
+  # .getvcov <- getFromNamespace("getvcov", "dlnm")
+  # .getlink <- getFromNamespace("getlink", "dlnm")
+  # .seqlag <- getFromNamespace("seqlag", "dlnm")
+  # .mkXpred <- getFromNamespace("mkXpred", "dlnm")
+  # 
+  # onebasis = NULL
+  # 
+  # # CHECK VERSION OF THE DLNM PACKAGE
+  # if (packageVersion("dlnm") < "2.2.0") {
+  #   stop("update dlnm package to version >= 2.2.0")
+  # }
   #
   # EXTRACT NAME AND CHECK type AND dir
   name <- deparse(substitute(basis))

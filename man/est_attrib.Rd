@@ -17,7 +17,7 @@ For more details see the help vignette:
 \code{vignette("intro", package="attrib")}}
 }
 \value{
-dataset with expected responses for all simulations including excpected responses given the exposure referance values
+Dataset with expected responses for all simulations including excpected responses given the exposure referance values
 }
 \description{
 For each exposure the dataset is copied and the original value replaced by the referance value.
