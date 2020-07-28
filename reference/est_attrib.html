@@ -98,7 +98,7 @@ Finaly the dataset is transformed to obtain expected response for original and r
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/intro.html">Introduction to Attrib</a>
+      <a href="../articles/intro.html">Introduction to attrib</a>
     </li>
   </ul>
 </li>
@@ -169,10 +169,11 @@ Finaly the dataset is transformed to obtain expected response for original and r
 <span class='no'>ranef</span> <span class='kw'>&lt;-</span> <span class='st'>" (pr100_ili_lag_1| season)"</span>
 <span class='no'>offset</span> <span class='kw'>&lt;-</span> <span class='st'>"log(pop)"</span>
 
-<span class='no'>data</span> <span class='kw'>=</span> <span class='kw pkg'>attrib</span><span class='kw ns'>::</span><span class='no'>data_fake_nation</span>
+<span class='no'>data</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>attrib</span><span class='kw ns'>::</span><span class='no'>data_fake_nation</span>
 
 <span class='no'>fit</span> <span class='kw'>&lt;-</span> <span class='fu'>fit_attrib</span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>data</span>, <span class='kw'>response</span> <span class='kw'>=</span> <span class='no'>response</span>, <span class='kw'>fixef</span> <span class='kw'>=</span> <span class='no'>fixef</span>, <span class='kw'>ranef</span> <span class='kw'>=</span> <span class='no'>ranef</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='no'>offset</span>)</div><div class='output co'>#&gt; <span class='message'>boundary (singular) fit: see ?isSingular</span></div><div class='input'><span class='no'>exposures</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='kw'>pr100_ili_lag_1</span> <span class='kw'>=</span> <span class='fl'>0</span>)
-<span class='no'>new_data</span> <span class='kw'>&lt;-</span> <span class='fu'>est_attrib</span>(<span class='no'>fit</span>, <span class='no'>data</span>, <span class='no'>exposures</span>)</div><div class='output co'>#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%</div><div class='input'><span class='no'>new_data</span>[]</div><div class='output co'>#&gt;         location_code week    season year    yrwk    x     pop pr100_ili
+<span class='no'>new_data</span> <span class='kw'>&lt;-</span> <span class='fu'>est_attrib</span>(<span class='no'>fit</span>, <span class='no'>data</span>, <span class='no'>exposures</span>)
+<span class='no'>new_data</span>[]</div><div class='output co'>#&gt;         location_code week    season year    yrwk    x     pop pr100_ili
 #&gt;      1:        norway    1 2009/2010 2010 2010-01 24.0 5367580 1.9293240
 #&gt;      2:        norway    1 2010/2011 2011 2011-01 24.0 5367580 1.9219890
 #&gt;      3:        norway    1 2011/2012 2012 2012-01 24.0 5367580 1.3976273
