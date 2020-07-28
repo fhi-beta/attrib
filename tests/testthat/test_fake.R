@@ -88,8 +88,8 @@ test_that("Attributable numbers", {
 
   data_copy <- copy(data)
   data_copy <- data_copy[, .(
-    attr_pr100_ili_lag_1 = median(observed_value - `sim_value_pr100_ili_lag_1=0`),
-    attr_temperature_high = median(observed_value - `sim_value_temperature_high=0`)
+    attr_pr100_ili_lag_1 = median(`sim_value_exposures=observed` - `sim_value_pr100_ili_lag_1=0`),
+    attr_temperature_high = median(`sim_value_exposures=observed` - `sim_value_temperature_high=0`)
   ),
   keyby = .(season, location_code, id, week)
   ]
