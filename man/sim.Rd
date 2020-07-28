@@ -29,7 +29,7 @@ fixef <- "pr100_ili_lag_1 + sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week -
 ranef <- " (pr100_ili_lag_1| season)"
 offset <- "log(pop)"
 
-data = attrib::data_fake_nation
+data <- attrib::data_fake_nation
 
 fit <- fit_attrib(data = data, response = response, fixef = fixef, ranef = ranef, offset = offset)
 

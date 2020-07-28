@@ -110,7 +110,7 @@ sim <- function(
 
   # slowly add in each of the random effects
   i <- j <- k <- 1
-  pb <- utils::txtProgressBar(min = 0, max = (length(x@ranef)), style = 3)
+  pb <- progress::progress_bar$new(total = length(x@ranef)+3)
 
   for (i in 1:length(x@ranef)) {
     grouping <- names(x@ranef)[i]
@@ -129,7 +129,7 @@ sim <- function(
         expected_ran <- expected_ran + coefficients[, data[[grouping]]] %*% diag(data[[variable]])
       }
     }
-    utils::setTxtProgressBar(pb, i)
+    if(interactive()) pb$tick()
   }
   # print("loop over")
   # add together the coefficients for the fixed and random effects
@@ -141,8 +141,11 @@ sim <- function(
   expected_t$id_row <- 1:nrow(data)
   data$id_row <- 1:nrow(data)
 
+  if(interactive()) pb$tick()
   new_data <- merge(data, expected_t, by = "id_row", all = TRUE)
+  if(interactive()) pb$tick()
   new_data <- data.table::melt(new_data, id.vars = c(col_names, "id_row"))
+  if(interactive()) pb$tick()
 
   setnames(new_data, "variable", "sim_id")
   new_data$sim_id <- as.numeric(as.factor(new_data$sim_id))

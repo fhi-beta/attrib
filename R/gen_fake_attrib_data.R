@@ -1,8 +1,5 @@
 #' Fake data for mortality in Norway
 #'
-#' This data is licensed under specific conditions noted in the details section.
-#'
-#'
 #' @format
 #' \describe{
 #' \item{location_code}{Location code of the norwegian municipalities}
@@ -21,9 +18,6 @@
 
 #' Fake data for mortality in Norway nationaly
 #'
-#' This data is licensed under specific conditions noted in the details section.
-#'
-
 #' @format
 #' \describe{
 #' \item{location_code}{Location code}

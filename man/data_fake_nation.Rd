@@ -23,6 +23,6 @@
 data_fake_nation
 }
 \description{
-This data is licensed under specific conditions noted in the details section.
+Fake data for mortality in Norway nationaly
 }
 \keyword{datasets}

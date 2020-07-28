@@ -24,7 +24,8 @@ Imports: data.table,
     tibble,
     stringr,
     ggplot2,
-    utils
+    utils,
+    progress
 Suggests: testthat,
     knitr,
     rmarkdown
