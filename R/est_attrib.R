@@ -84,12 +84,12 @@ est_attrib <- function(
   data_tot_ret <- sim(fit, data_tot)
 
   data_ret_val <- data_tot_ret[tag == "observed"]
-  setnames(data_ret_val, "expected_mort", "exp_mort_observed")
+  setnames(data_ret_val, "sim_value", "observed_value")
   #this works but is a bit sslow
   for (i in seq_along(exposures)){
     data_ret_temp <- data_tot_ret[tag == glue::glue("ref_{names(exposures)[i]}")]
     data_ret_val[data_ret_temp, on= c("sim_id", "id"),
-                glue::glue("exp_mort_{names(exposures)[i]}={(exposures)[i]}") := data_ret_temp$expected_mort]
+                glue::glue("sim_value_{names(exposures)[i]}={(exposures)[i]}") := data_ret_temp$sim_value]
   }
 
   data_ret_val[, tag := NULL]
