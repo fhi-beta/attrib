@@ -138,16 +138,16 @@ attrdl <- function(
                    sim = FALSE,
                    nsim = 5000,
                    sub = 1:length(cases)) {
-  .getcoef <- getFromNamespace("getcoef", "dlnm")
-  .getvcov <- getFromNamespace("getvcov", "dlnm")
-  .getlink <- getFromNamespace("getlink", "dlnm")
-  .seqlag <- getFromNamespace("seqlag", "dlnm")
-  .mkXpred <- getFromNamespace("mkXpred", "dlnm")
+  .getcoef <- utils::getFromNamespace("getcoef", "dlnm")
+  .getvcov <- utils::getFromNamespace("getvcov", "dlnm")
+  .getlink <- utils::getFromNamespace("getlink", "dlnm")
+  .seqlag <- utils::getFromNamespace("seqlag", "dlnm")
+  .mkXpred <- utils::getFromNamespace("mkXpred", "dlnm")
 
   onebasis <- NULL
 
   # CHECK VERSION OF THE DLNM PACKAGE
-  if (packageVersion("dlnm") < "2.2.0") {
+  if (utils::packageVersion("dlnm") < "2.2.0") {
     stop("update dlnm package to version >= 2.2.0")
   }
   #

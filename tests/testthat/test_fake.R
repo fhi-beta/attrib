@@ -88,8 +88,8 @@ test_that("Attributable numbers", {
 
   data_copy <- copy(data)
   data_copy <- data_copy[, .(
-    attr_pr100_ili_lag_1 = median(exp_mort_observed - `exp_mort_pr100_ili_lag_1=0`),
-    attr_temperature_high = median(exp_mort_observed - `exp_mort_temperature_high=0`)
+    attr_pr100_ili_lag_1 = median(observed_value - `sim_value_pr100_ili_lag_1=0`),
+    attr_temperature_high = median(observed_value - `sim_value_temperature_high=0`)
   ),
   keyby = .(season, location_code, id, week)
   ]
@@ -141,9 +141,9 @@ test_that("simmulations", {
 
   # predict mean
   pred <- exp(lme4:::predict.merMod(fit, data))
-  est_mean <- est_mort[, .(exp_mort_median = median(exp_mort_observed)), keyby = .(id, location_code, week, season, yrwk, pop, deaths)]
+  est_mean <- est_mort[, .(observed_value_median = median(observed_value)), keyby = .(id, location_code, week, season, yrwk, pop, deaths)]
 
-  dif_mean <- pred - est_mean$exp_mort_median
+  dif_mean <- pred - est_mean$observed_value_median
   mean(dif_mean)
   median(dif_mean)
 
@@ -152,7 +152,7 @@ test_that("simmulations", {
     c(0)
   )
 
-  dif_obs <- est_mean$deaths - est_mean$exp_mort_median
+  dif_obs <- est_mean$deaths - est_mean$observed_value_median
   mean(dif_obs)
   median(dif_obs)
 

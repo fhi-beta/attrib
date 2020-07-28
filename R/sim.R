@@ -146,7 +146,7 @@ sim <- function(
 
   setnames(new_data, "variable", "sim_id")
   new_data$sim_id <- as.numeric(as.factor(new_data$sim_id))
-  setnames(new_data, "value", "expected_mort")
+  setnames(new_data, "value", "sim_value")
 
   return(new_data)
 }
