@@ -87,7 +87,7 @@ est_attrib <- function(
 
   data_ret_val <- data_tot_ret[tag == "observed"]
 
-  setnames(data_ret_val, "sim_value", "observed_value")
+  setnames(data_ret_val, "sim_value", "sim_value_exposures=observed")
   # this works but is a bit sslow
   for (i in seq_along(exposures)) {
     data_ret_temp <- data_tot_ret[tag == glue::glue("ref_{names(exposures)[i]}")]

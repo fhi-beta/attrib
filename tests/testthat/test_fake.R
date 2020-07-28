@@ -141,7 +141,7 @@ test_that("simmulations", {
 
   # predict mean
   pred <- exp(lme4:::predict.merMod(fit, data))
-  est_mean <- est_mort[, .(observed_value_median = median(observed_value)), keyby = .(id, location_code, week, season, yrwk, pop, deaths)]
+  est_mean <- est_mort[, .(observed_value_median = median(`sim_value_exposures=observed`)), keyby = .(id, location_code, week, season, yrwk, pop, deaths)]
 
   dif_mean <- pred - est_mean$observed_value_median
   mean(dif_mean)
