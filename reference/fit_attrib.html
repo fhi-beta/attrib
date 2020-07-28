@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">attrib</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2020.7.23</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2020.7.28</span>
       </span>
     </div>
 
@@ -163,38 +163,32 @@ Offset and response are the same as in the input and fit_fix is the linear model
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='no'>response</span> <span class='kw'>=</span> <span class='st'>"deaths"</span>
-<span class='no'>fixef</span> <span class='kw'>=</span> <span class='st'>"pr100_ili + sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)"</span>
-<span class='no'>ranef</span> <span class='kw'>=</span> <span class='st'>" (pr100_ili| season)"</span>
+<span class='no'>response</span> <span class='kw'>&lt;-</span> <span class='st'>"deaths"</span>
+<span class='no'>fixef</span> <span class='kw'>&lt;-</span> <span class='st'>"pr100_ili_lag_1 + sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)"</span>
+<span class='no'>ranef</span> <span class='kw'>&lt;-</span> <span class='st'>" (pr100_ili_lag_1| season)"</span>
 <span class='no'>offset</span> <span class='kw'>&lt;-</span> <span class='st'>"log(pop)"</span>
 
-<span class='no'>data</span> <span class='kw'>=</span> <span class='kw pkg'>data.table</span><span class='kw ns'>::</span><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></span>(<span class='kw'>deaths</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>100</span>, <span class='fl'>110</span>, <span class='fl'>150</span>, <span class='fl'>160</span>), <span class='kw'>week</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>10</span>, <span class='fl'>11</span>, <span class='fl'>10</span>, <span class='fl'>11</span>),
-                  <span class='kw'>season</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"2018/2019"</span>, <span class='st'>"2018/2019"</span>, <span class='st'>"2019/2020"</span>, <span class='st'>"2019/2020"</span>),
-                  <span class='kw'>pr100_ili</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.2</span>, <span class='fl'>0.21</span>, <span class='fl'>0.35</span>, <span class='fl'>0.36</span>),
-                  <span class='kw'>pop</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>50000</span>, <span class='fl'>50000</span>, <span class='fl'>50000</span>, <span class='fl'>50000</span>))
+<span class='no'>data</span> <span class='kw'>=</span> <span class='kw pkg'>attrib</span><span class='kw ns'>::</span><span class='no'>data_fake_nation</span>
 
-<span class='fu'>fit_attrib</span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>data</span>, <span class='kw'>response</span> <span class='kw'>=</span> <span class='no'>response</span>, <span class='kw'>fixef</span> <span class='kw'>=</span> <span class='no'>fixef</span>, <span class='kw'>ranef</span> <span class='kw'>=</span> <span class='no'>ranef</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='no'>offset</span>)</div><div class='output co'>#&gt; <span class='message'>fixed-effect model matrix is rank deficient so dropping 1 column / coefficient</span></div><div class='output co'>#&gt; <span class='message'>boundary (singular) fit: see ?isSingular</span></div><div class='output co'>#&gt; Generalized linear mixed model fit by maximum likelihood (Laplace
+<span class='fu'>fit_attrib</span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>data</span>, <span class='kw'>response</span> <span class='kw'>=</span> <span class='no'>response</span>, <span class='kw'>fixef</span> <span class='kw'>=</span> <span class='no'>fixef</span>, <span class='kw'>ranef</span> <span class='kw'>=</span> <span class='no'>ranef</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='no'>offset</span>)</div><div class='output co'>#&gt; <span class='message'>boundary (singular) fit: see ?isSingular</span></div><div class='output co'>#&gt; Generalized linear mixed model fit by maximum likelihood (Laplace
 #&gt;   Approximation) [glmerMod]
 #&gt;  Family: poisson  ( log )
-#&gt; Formula: deaths ~ pr100_ili + sin(2 * pi * (week - 1)/52) + cos(2 * pi *  
-#&gt;     (week - 1)/52) + offset(log(pop)) + (pr100_ili | season)
+#&gt; Formula: deaths ~ pr100_ili_lag_1 + sin(2 * pi * (week - 1)/52) + cos(2 *  
+#&gt;     pi * (week - 1)/52) + offset(log(pop)) + (pr100_ili_lag_1 |      season)
 #&gt;    Data: data
-#&gt;      AIC      BIC   logLik deviance df.resid 
-#&gt;  38.7779  35.0957 -13.3889  26.7779       -2 
+#&gt;       AIC       BIC    logLik  deviance  df.resid 
+#&gt;  6148.616  6179.084 -3067.308  6134.616       567 
 #&gt; Random effects:
-#&gt;  Groups Name        Std.Dev.  Corr
-#&gt;  season (Intercept) 0.000e+00     
-#&gt;         pr100_ili   4.834e-08  NaN
-#&gt; Number of obs: 4, groups:  season, 2
+#&gt;  Groups Name            Std.Dev. Corr
+#&gt;  season (Intercept)     0.00000      
+#&gt;         pr100_ili_lag_1 0.01891   NaN
+#&gt; Number of obs: 574, groups:  season, 12
 #&gt; Fixed Effects:
-#&gt;                 (Intercept)                    pr100_ili  
-#&gt;                      -7.635                        2.596  
-#&gt; sin(2 * pi * (week - 1)/52)  
-#&gt;                       1.029  
-#&gt; fit warnings:
-#&gt; fixed-effect model matrix is rank deficient so dropping 1 column / coefficient
-#&gt; convergence code 0; 0 optimizer warnings; 1 lme4 warnings </div><div class='input'>
-</div></pre>
+#&gt;                 (Intercept)              pr100_ili_lag_1  
+#&gt;                   -8.793528                     0.038818  
+#&gt; sin(2 * pi * (week - 1)/52)  cos(2 * pi * (week - 1)/52)  
+#&gt;                    0.006712                     0.046031  
+#&gt; convergence code 0; 0 optimizer warnings; 1 lme4 warnings </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
