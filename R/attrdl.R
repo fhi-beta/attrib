@@ -144,6 +144,7 @@ attrdl <- function(
   .seqlag <- getFromNamespace("seqlag", "dlnm")
   .mkXpred <- getFromNamespace("mkXpred", "dlnm")
 
+  onebasis = NULL
 
   # CHECK VERSION OF THE DLNM PACKAGE
   if (packageVersion("dlnm") < "2.2.0") {

@@ -37,5 +37,4 @@ offset <- "log(pop)"
 data = attrib::data_fake_nation
 
 fit_attrib(data = data, response = response, fixef = fixef, ranef = ranef, offset = offset)
-
 }
