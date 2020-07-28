@@ -7,27 +7,27 @@
 # \href{https://github.com/gasparrini/2014_gasparrini_BMCmrm_Rcodedata}{here}.
 # Slightly amended by Theodore Lytras for use with \href{https://github.com/thlytras/FluMoDL/blob/50296a36038142a0cf187f4beec47dfb3204dc74/R/attrdl.R}{FluMoDL}.
 
-#@param x An exposure vector OR (only for \code{dir="back"}) a matrix of lagged exposures, for which
-#the attributable risk needs to be computed.
-#@param basis The object of class "crossbasis" used for fitting the model.
-#@param cases The cases vector OR (only for \code{dir="forw"}) the matrix of future cases corresponding to \code{x}.
-#@param model The fitted model. You need to provide either this, or arguments \code{coef} and \code{vcov}.
-#\emph{The model MUST have a log link function.}
-#@param coef Coefficients for \code{basis} IF \code{model} is not provided
-#@param vcov Variance-covariance matrix for \code{basis} IF \code{model} is not provided
-#@param type Either "an" or "af" for attributable number or attributable fraction
-#@param dir Either "back" or "forw" for backward or forward perspectives of attributable risk
-#param tot If \code{TRUE}, the total attributable risk is computed (number or fraction, depending on argument \code{type})
-#@param cen The reference value used as the counterfactual scenario (the comparator)
-#@param range The range of exposure (for which the attributable risk, compared to \code{cen}, is
-#calculated). If \code{NULL}, the whole range is used.
-#@param sim Set to \code{TRUE} if Monte Carlo simulation samples should be returned.
-#@param nsim Number of simulation samples desired (only for \code{nsim=TRUE}).
-#@param sub Subset of \code{cases} for which to calculate the attributable risk (as an integer index
-#vector). Defaults to \code{1:length(cases)}. Argument \code{cases} should be a vector (not a matrix).
+# @param x An exposure vector OR (only for \code{dir="back"}) a matrix of lagged exposures, for which
+# the attributable risk needs to be computed.
+# @param basis The object of class "crossbasis" used for fitting the model.
+# @param cases The cases vector OR (only for \code{dir="forw"}) the matrix of future cases corresponding to \code{x}.
+# @param model The fitted model. You need to provide either this, or arguments \code{coef} and \code{vcov}.
+# \emph{The model MUST have a log link function.}
+# @param coef Coefficients for \code{basis} IF \code{model} is not provided
+# @param vcov Variance-covariance matrix for \code{basis} IF \code{model} is not provided
+# @param type Either "an" or "af" for attributable number or attributable fraction
+# @param dir Either "back" or "forw" for backward or forward perspectives of attributable risk
+# param tot If \code{TRUE}, the total attributable risk is computed (number or fraction, depending on argument \code{type})
+# @param cen The reference value used as the counterfactual scenario (the comparator)
+# @param range The range of exposure (for which the attributable risk, compared to \code{cen}, is
+# calculated). If \code{NULL}, the whole range is used.
+# @param sim Set to \code{TRUE} if Monte Carlo simulation samples should be returned.
+# @param nsim Number of simulation samples desired (only for \code{nsim=TRUE}).
+# @param sub Subset of \code{cases} for which to calculate the attributable risk (as an integer index
+# vector). Defaults to \code{1:length(cases)}. Argument \code{cases} should be a vector (not a matrix).
 
-#@details Documentation below copied from the
-#\href{https://github.com/gasparrini/2014_gasparrini_BMCmrm_Rcodedata/blob/master/attrdl.pdf}{original source}.
+# @details Documentation below copied from the
+# \href{https://github.com/gasparrini/2014_gasparrini_BMCmrm_Rcodedata/blob/master/attrdl.pdf}{original source}.
 
 # This function computes the attributable fraction or number for a specific exposure
 # scenario and associated cases, given an estimated exposure-lag-response association defined
@@ -144,7 +144,7 @@ attrdl <- function(
   .seqlag <- getFromNamespace("seqlag", "dlnm")
   .mkXpred <- getFromNamespace("mkXpred", "dlnm")
 
-  onebasis = NULL
+  onebasis <- NULL
 
   # CHECK VERSION OF THE DLNM PACKAGE
   if (packageVersion("dlnm") < "2.2.0") {
