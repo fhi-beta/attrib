@@ -22,7 +22,7 @@
 #' ranef <- " (pr100_ili_lag_1| season)"
 #' offset <- "log(pop)"
 #'
-#' data = attrib::data_fake_nation
+#' data <- attrib::data_fake_nation
 #'
 #' fit <- fit_attrib(data = data, response = response, fixef = fixef, ranef = ranef, offset = offset)
 #' exposures <- c(pr100_ili_lag_1 = 0)
@@ -32,58 +32,61 @@
 #'
 #' @export
 est_attrib <- function(
-  fit,
-  data,
-  exposures) {
-  if (length(which(is.na(data))) != 0){
+                       fit,
+                       data,
+                       exposures) {
+  if (length(which(is.na(data))) != 0) {
     stop("The dataset has NA values")
   }
 
-  if (is.null(attr(fit, "fit_fix"))){
+  if (is.null(attr(fit, "fit_fix"))) {
     stop("Fit is missing attribute fit_fix and possibly not computed by fit_attrib") # Maybe a different message, you decide :)
   }
 
-  if (is.null(attr(fit, "response"))){
+  if (is.null(attr(fit, "response"))) {
     stop("Fit is missing attribute fit_fix and possibly not computed by fit_attrib") # Maybe a different message, you decide :)
   }
 
-  if( length(exposures)==0){
+  if (length(exposures) == 0) {
     stop("Exposures is empthy")
   }
-  for ( i in seq_along(exposures)){
-    if (!names(exposures)[i] %in% colnames(data)){
+  for (i in seq_along(exposures)) {
+    if (!names(exposures)[i] %in% colnames(data)) {
       stop(glue::glue("Exposure {names(exposures)[i]} is not in the dataset"))
     }
   }
 
 
-  id = NULL
-  tag = NULL
-  id_row = NULL
+  id <- NULL
+  tag <- NULL
+  id_row <- NULL
 
-  data_ret_val = copy(data)
+  data_ret_val <- copy(data)
   data_ret_val[, id := 1:.N]
 
-  col_names_orig<- colnames(data)
+  col_names_orig <- colnames(data)
 
   data_observed <- copy(data)
-  data_observed[, id:= 1:.N]
+  data_observed[, id := 1:.N]
   data_observed$tag <- "observed"
-  #data_ret_val_2 = copy(data)
-  data_tot <- vector("list", length = length(exposures)+1 )
+  # data_ret_val_2 = copy(data)
+  data_tot <- vector("list", length = length(exposures) + 1)
   data_tot[[1]] <- data_observed
-  for (i in seq_along(exposures)){
+  for (i in seq_along(exposures)) {
     data_reference <- copy(data)
-    data_reference[, id:= 1:.N]
-    data_reference <- data_reference[, glue::glue({names(exposures)[i]}) := exposures[[i]]]
+    data_reference[, id := 1:.N]
+    data_reference <- data_reference[, glue::glue({
+      names(exposures)[i]
+    }) := exposures[[i]]]
     data_reference$tag <- as.character(glue::glue("ref_{names(exposures)[i]}"))
-    data_tot [[i+1]]<- data_reference
+    data_tot [[i + 1]] <- data_reference
   }
   data_tot <- rbindlist(data_tot)
 
   data_tot_ret <- sim(fit, data_tot)
 
   data_ret_val <- data_tot_ret[tag == "observed"]
+
   setnames(data_ret_val, "sim_value", "observed_value")
   #this works but is a bit sslow
   for (i in seq_along(exposures)){

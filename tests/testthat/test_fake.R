@@ -172,61 +172,61 @@ test_that("simmulations", {
 
 # test_that("lag_data", {
 #   data <- gen_fake_attrib_data(2)
-# 
+#
 #   response = "deaths"
 #   # take in the fixed effects
 #   fixef <- "temperature_high +
 #   lag_data(x = pr100_ili, lags = 2, ref = 0, by = location_code) +
 #   sin(2 * pi * (week - 1) / 52) +
 #   cos(2 * pi * (week - 1) / 52)"
-# 
+#
 #   offset <- "log(pop)"
 #   # take in the random effects
 #   ranef <- "(1|location_code) +(lag_data(x = pr100_ili, lags = 2, ref = 0, by = location_code)|season)"
-# 
-# 
+#
+#
 #   suppressWarnings(
 #     fit <- fit_attrib(data, response = response, fixef = fixef, ranef = ranef, offset = offset)
 #   )
-# 
+#
 #   exposures <- list("pr100_ili" = 0, "temperature_high" = 0)
 #   #est_mort <- est_mort(fit, data, exposures)
 #   sim <- sim_2(fit, data)
-#   
+#
 #   diff <- sim$deaths - sim$expected_mort
 #   median(diff)
-#   
+#
 #   est_mort <- est_attrib_2(fit, data, exposures)
-#   
+#
 #   # predict mean
 #   pred <- exp(lme4:::predict.merMod(fit, data))
 #   est_mean <- est_mort[, .(exp_mort_median = median(exp_mort_observed)), keyby = .(id, location_code, week, season, yrwk, pop, deaths)]
-#   
+#
 #   dif_mean <- pred - est_mean$exp_mort_median
 #   mean(dif_mean)
 #   median(dif_mean)
-#   
+#
 #   testthat::expect_equal(
 #     round(as.numeric(median(dif_mean), 0)),
 #     c(0)
 #   )
-#   
+#
 #   dif_obs <- est_mean$deaths - est_mean$exp_mort_median
 #   mean(dif_obs)
 #   median(dif_obs)
-#   
+#
 #   testthat::expect_equal(
 #     round(as.numeric(median(dif_obs), 0)),
 #     c(0)
 #   )
-#   
+#
 #   dif <- est_mean$deaths - pred
 #   median(dif)
-#   
+#
 #   testthat::expect_equal(
 #     round(as.numeric(median(dif), 0)),
 #     c(0)
 #   )
-#   
-#   
+#
+#
 # })
