@@ -1,8 +1,8 @@
 #' Estimates simulations of expected responses
 #'
-#' For each exposure the dataset is copied and the original value replaced by the referance value.
+#' For each exposure the dataset is copied and the original value replaced by the reference value.
 #' Then the sim function is used to generate 500 simulations of expected responses for each row.
-#' Finaly the dataset is transformed to obtain expected response for original and referance values
+#' Finally the dataset is transformed to obtain expected response for original and reference values
 #'  of the given exposures for each original row of the dataset.
 #'
 #' For more details see the help vignette:
@@ -16,7 +16,7 @@
 #' \code{vignette("intro", package="attrib")}
 #'
 #' @examples
-#'
+#' \dontrun{
 #' response <- "deaths"
 #' fixef <- "pr100_ili_lag_1 + sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)"
 #' ranef <- " (pr100_ili_lag_1| season)"
@@ -28,7 +28,8 @@
 #' exposures <- c(pr100_ili_lag_1 = 0)
 #' new_data <- est_attrib(fit, data, exposures)
 #' new_data[]
-#' @return Dataset with expected responses for all simulations including excpected responses given the exposure referance values
+#' }
+#' @return Dataset with expected responses for all simulations including expected responses given the exposure reference values
 #'
 #' @export
 est_attrib <- function(

@@ -2,21 +2,21 @@
 % Please edit documentation in R/sim.R
 \name{sim}
 \alias{sim}
-\title{Generates simulations of expected mortalities by simulating the model coefficiants.}
+\title{Generates simulations of expected mortality by simulating the model coefficients.}
 \usage{
 sim(fit, data)
 }
 \arguments{
 \item{fit}{A model fit created by fit_attrib}
 
-\item{data}{The data with eather observed values or referance values.}
+\item{data}{The data with either observed values or reference values.}
 }
 \value{
-A dataset with 500 simulation og the expected response for each row in the orriginal dataset.
+A dataset with 500 simulations of the expected response for each row in the original dataset.
 }
 \description{
-With the given fit from fit_attrib the funcion sim, from package arm, is used to generate 500 simulations
-of all the coefiecients, from there respective posterior distributions.
+With the given fit from fit_attrib the function sim, from package arm, is used to generate 500 simulations
+of all the coefficients, from there respective posterior distributions.
 This is then used to compute the expected response for all simulations and rows in the input dataset.
 }
 \details{

@@ -6,13 +6,13 @@
 \title{Fake data for mortality in Norway}
 \format{
 \describe{
-\item{location_code}{Location code of the norwegian municipalities}
+\item{location_code}{Location code of the Norwegian municipalities}
 \item{week}{Week}
-\item{season}{Season used for influenza like ilnesses}
+\item{season}{Season used for influenza like illnesses}
 \item{yrwk}{Year and week}
 \item{x}{Number of weeks from the start of the season}
 \item{pop}{Population size}
-\item{pr100_ili}{Pr hundered ILI, precentage og consultations diagnised as influenza like illnesses}
+\item{pr100_ili}{Per hundred ILI, percentage of consultations diagnosed as influenza like illnesses}
 \item{pr100_ili_lag_1}{pr100_ili_lag_1}
 \item{temperature}{ temperature}
 \item{temperature_high}{temperature_high}

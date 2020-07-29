@@ -2,7 +2,7 @@ Package: attrib
 Title: Attributable Burden of Disease
 Version: 2020.7.29
 Authors@R: c(
-  person("Richard", "White", email = "w@rwhite.no", role = c("aut", "cre")),
+  person("Richard", "White", email = "hello@rwhite.no", role = c("aut", "cre")),
   person("Aurora", "Hofman", role = "aut")
   )
 Description: Provides functions for estimating the attributable burden of disease due to risk factors.
