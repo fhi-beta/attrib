@@ -40,9 +40,9 @@
 
 
 <meta property="og:title" content="Estimates simulations of expected responses — est_attrib" />
-<meta property="og:description" content="For each exposure the dataset is copied and the original value replaced by the referance value.
+<meta property="og:description" content="For each exposure the dataset is copied and the original value replaced by the reference value.
 Then the sim function is used to generate 500 simulations of expected responses for each row.
-Finaly the dataset is transformed to obtain expected response for original and referance values
+Finally the dataset is transformed to obtain expected response for original and reference values
  of the given exposures for each original row of the dataset." />
 
 
@@ -127,9 +127,9 @@ Finaly the dataset is transformed to obtain expected response for original and r
     </div>
 
     <div class="ref-description">
-    <p>For each exposure the dataset is copied and the original value replaced by the referance value.
+    <p>For each exposure the dataset is copied and the original value replaced by the reference value.
 Then the sim function is used to generate 500 simulations of expected responses for each row.
-Finaly the dataset is transformed to obtain expected response for original and referance values
+Finally the dataset is transformed to obtain expected response for original and reference values
  of the given exposures for each original row of the dataset.</p>
     </div>
 
@@ -156,14 +156,14 @@ Finaly the dataset is transformed to obtain expected response for original and r
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Dataset with expected responses for all simulations including excpected responses given the exposure referance values</p>
+    <p>Dataset with expected responses for all simulations including expected responses given the exposure reference values</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>For more details see the help vignette:
 <code>vignette("intro", package="attrib")</code></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='no'>response</span> <span class='kw'>&lt;-</span> <span class='st'>"deaths"</span>
 <span class='no'>fixef</span> <span class='kw'>&lt;-</span> <span class='st'>"pr100_ili_lag_1 + sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)"</span>
 <span class='no'>ranef</span> <span class='kw'>&lt;-</span> <span class='st'>" (pr100_ili_lag_1| season)"</span>
@@ -171,44 +171,11 @@ Finaly the dataset is transformed to obtain expected response for original and r
 
 <span class='no'>data</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>attrib</span><span class='kw ns'>::</span><span class='no'>data_fake_nation</span>
 
-<span class='no'>fit</span> <span class='kw'>&lt;-</span> <span class='fu'>fit_attrib</span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>data</span>, <span class='kw'>response</span> <span class='kw'>=</span> <span class='no'>response</span>, <span class='kw'>fixef</span> <span class='kw'>=</span> <span class='no'>fixef</span>, <span class='kw'>ranef</span> <span class='kw'>=</span> <span class='no'>ranef</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='no'>offset</span>)</div><div class='output co'>#&gt; <span class='message'>boundary (singular) fit: see ?isSingular</span></div><div class='input'><span class='no'>exposures</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='kw'>pr100_ili_lag_1</span> <span class='kw'>=</span> <span class='fl'>0</span>)
+<span class='no'>fit</span> <span class='kw'>&lt;-</span> <span class='fu'>fit_attrib</span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>data</span>, <span class='kw'>response</span> <span class='kw'>=</span> <span class='no'>response</span>, <span class='kw'>fixef</span> <span class='kw'>=</span> <span class='no'>fixef</span>, <span class='kw'>ranef</span> <span class='kw'>=</span> <span class='no'>ranef</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='no'>offset</span>)
+<span class='no'>exposures</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='kw'>pr100_ili_lag_1</span> <span class='kw'>=</span> <span class='fl'>0</span>)
 <span class='no'>new_data</span> <span class='kw'>&lt;-</span> <span class='fu'>est_attrib</span>(<span class='no'>fit</span>, <span class='no'>data</span>, <span class='no'>exposures</span>)
-<span class='no'>new_data</span>[]</div><div class='output co'>#&gt;         location_code week    season year    yrwk    x     pop pr100_ili
-#&gt;      1:        norway    1 2009/2010 2010 2010-01 24.0 5367580 1.9293240
-#&gt;      2:        norway    1 2010/2011 2011 2011-01 24.0 5367580 1.9219890
-#&gt;      3:        norway    1 2011/2012 2012 2012-01 24.0 5367580 1.3976273
-#&gt;      4:        norway    1 2012/2013 2013 2013-01 24.0 5367580 1.7592660
-#&gt;      5:        norway    1 2013/2014 2014 2014-01 24.0 5367580 1.1564445
-#&gt;     ---                                                                 
-#&gt; 286996:        norway   52 2018/2019 2018 2018-52 23.0 5367580 1.4134848
-#&gt; 286997:        norway   52 2019/2020 2019 2019-52 23.0 5367580 1.7789371
-#&gt; 286998:        norway   52 2020/2021 2020 2020-52 23.0 5367580 0.5308053
-#&gt; 286999:        norway   53 2009/2010 2009 2009-53 23.5 5367580 1.9197015
-#&gt; 287000:        norway   53 2015/2016 2015 2015-53 23.5 5367580 1.8189595
-#&gt;         pr100_ili_lag_1 temperature temperature_high deaths  id sim_id
-#&gt;      1:       1.9197015  -3.9131137                0    942   1      1
-#&gt;      2:       1.8839310   2.1005689                0    969   2      1
-#&gt;      3:       1.1673965  -9.2338013                0    920   3      1
-#&gt;      4:       1.5918497  -7.0780783                0    889   4      1
-#&gt;      5:       0.9280684  -3.2695932                0    867   5      1
-#&gt;     ---                                                               
-#&gt; 286996:       1.1806417   0.9522693                0    860 570    500
-#&gt; 286997:       1.6096489   7.0470121                0    918 571    500
-#&gt; 286998:       0.3778115  -3.6855952                0    915 572    500
-#&gt; 286999:       0.0000000   2.8811622                0    857 573    500
-#&gt; 287000:       1.7563971   5.0585632                0    943 574    500
-#&gt;         sim_value_exposures=observed sim_value_pr100_ili_lag_1=0
-#&gt;      1:                     918.8242                    859.2425
-#&gt;      2:                     950.5683                    855.0132
-#&gt;      3:                     933.2312                    873.8763
-#&gt;      4:                     869.4745                    851.1139
-#&gt;      5:                     882.1646                    850.5451
-#&gt;     ---                                                         
-#&gt; 286996:                     843.0222                    843.3506
-#&gt; 286997:                     942.8308                    875.3058
-#&gt; 286998:                     863.3456                    852.6389
-#&gt; 286999:                     881.1744                    881.1744
-#&gt; 287000:                     902.0270                    839.8431</div></pre>
+<span class='no'>new_data</span>[]
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
