@@ -37,7 +37,7 @@
 est_attrib <- function(
                        fit,
                        data,
-                       exposures, 
+                       exposures,
                        n_sim) {
   if (length(which(is.na(data))) != 0) {
     stop("The dataset has NA values")

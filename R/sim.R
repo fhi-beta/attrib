@@ -9,7 +9,7 @@
 #'
 #' @param fit A model fit created by fit_attrib
 #' @param data The data with either observed values or reference values.
-#' @param n_sim Number of simulations 
+#' @param n_sim Number of simulations
 #'
 #' @examples
 #'
@@ -28,7 +28,7 @@
 #' @export
 sim <- function(
                 fit,
-                data, 
+                data,
                 n_sim) {
   if (length(which(is.na(data))) != 0) {
     stop("The dataset has NA values")
