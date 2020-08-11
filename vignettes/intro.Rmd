@@ -170,10 +170,11 @@ offset_nation <- "log(pop)"
 
 The `sim` function can be used to generate simulations for all the rows in our data.
 
-It first generates 500 simulations from the posterior distribution of the coefficients from out fit before applying these coefficients on our dataset generating 500 simulations and expected mortality for each line. This is quite generic. Hence if the goal is to compute attributable mortality or incident risk ratios we use `est_attrib` as shown in a later part of the vignette. 
+It first generates `n_sim` simulations from the posterior distribution of the coefficients from out fit before applying these coefficients on our dataset generating `n_sim` simulations and expected mortality for each line. This is quite generic. Hence if the goal is to compute attributable mortality or incident risk ratios we use `est_attrib` as shown in a later part of the vignette. 
 
 ```{r}
-sim_data <- sim(fit_nation, data_fake_nation)
+n_sim <- 20
+sim_data <- sim(fit_nation, data_fake_nation, n_sim)
 head(sim_data[id_row == 1], 5)
 ```
 
@@ -188,17 +189,20 @@ To estimate attributable mortality we simulate:
 
 This is easily done using `est_attrib`.
 
-We need to give the fit, the dataset, and the exposures with reference values. `est_attrib` will then using the `arm::sim` function to generate simulations of the underlying posterior distribution. `attrib::sim` will then combine the simulated coefficients to estimate the modeled outcome (i.e. number of deaths) for each simulation.
+We need to give the fit, the dataset, the exposures with reference values, and the number of simulations. `est_attrib` will then using the `arm::sim` function to generate simulations of the underlying posterior distribution. `attrib::sim` will then combine the simulated coefficients to estimate the modeled outcome (i.e. number of deaths) for each simulation.
 
 ```{r}
 exposures <- list( "temperature_high" = 0, "pr100_ili_lag_1" = 0)
+n_sim <- 20
 est_attrib_sim_county <- attrib::est_attrib(fit_county, 
                                         data_fake_county, 
-                                        exposures = exposures)
+                                        exposures = exposures, 
+                                        n_sim = n_sim)
 
 est_attrib_sim_nation <- attrib::est_attrib(fit_nation, 
                                         data_fake_nation, 
-                                        exposures = exposures )
+                                        exposures = exposures,
+                                        n_sim = n_sim)
 
 head(est_attrib_sim_county, 5)
 ```
@@ -501,7 +505,8 @@ Now we use `est_attrib` to create the simulations.
 est_attrib_sim_county_irr <- attrib::est_attrib(
   fit_county, 
   data_fake_county_irr, 
-  exposures = exposures_irr
+  exposures = exposures_irr,
+  n_sim = 100
 )
 head(est_attrib_sim_county_irr, 5)
 ```

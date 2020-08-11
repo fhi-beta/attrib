@@ -4,14 +4,16 @@
 \alias{est_attrib}
 \title{Estimates simulations of expected responses}
 \usage{
-est_attrib(fit, data, exposures)
+est_attrib(fit, data, exposures, n_sim)
 }
 \arguments{
 \item{fit}{A model fit constructed by fit_attrib}
 
 \item{data}{The observed data}
 
-\item{exposures}{The exposures that will get reference expected mortalities
+\item{exposures}{The exposures that will get reference expected mortalities}
+
+\item{n_sim}{Number of simulations
 
 For more details see the help vignette:
 \code{vignette("intro", package="attrib")}}
@@ -40,7 +42,8 @@ data <- attrib::data_fake_nation
 
 fit <- fit_attrib(data = data, response = response, fixef = fixef, ranef = ranef, offset = offset)
 exposures <- c(pr100_ili_lag_1 = 0)
-new_data <- est_attrib(fit, data, exposures)
+n_sim <- 5
+new_data <- est_attrib(fit, data, exposures, n_sim)
 new_data[]
 }
 }

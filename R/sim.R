@@ -9,6 +9,7 @@
 #'
 #' @param fit A model fit created by fit_attrib
 #' @param data The data with either observed values or reference values.
+#' @param n_sim Number of simulations 
 #'
 #' @examples
 #'
@@ -21,12 +22,14 @@
 #'
 #' fit <- fit_attrib(data = data, response = response, fixef = fixef, ranef = ranef, offset = offset)
 #'
-#' sim(fit, data)
+#' n_sim <- 5
+#' sim(fit, data, n_sim)
 #' @return A dataset with 500 simulations of the expected response for each row in the original dataset.
 #' @export
 sim <- function(
                 fit,
-                data) {
+                data, 
+                n_sim) {
   if (length(which(is.na(data))) != 0) {
     stop("The dataset has NA values")
   }
@@ -40,8 +43,6 @@ sim <- function(
   }
 
   col_names <- colnames(data)
-
-  n_sim <- 500
 
   fix_eff <- attr(fit, "fit_fix")
   offset <- attr(fit, "offset")

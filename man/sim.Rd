@@ -4,12 +4,14 @@
 \alias{sim}
 \title{Generates simulations of expected mortality by simulating the model coefficients.}
 \usage{
-sim(fit, data)
+sim(fit, data, n_sim)
 }
 \arguments{
 \item{fit}{A model fit created by fit_attrib}
 
 \item{data}{The data with either observed values or reference values.}
+
+\item{n_sim}{Number of simulations}
 }
 \value{
 A dataset with 500 simulations of the expected response for each row in the original dataset.
@@ -33,5 +35,6 @@ data <- attrib::data_fake_nation
 
 fit <- fit_attrib(data = data, response = response, fixef = fixef, ranef = ranef, offset = offset)
 
-sim(fit, data)
+n_sim <- 5
+sim(fit, data, n_sim)
 }
