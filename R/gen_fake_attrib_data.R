@@ -63,8 +63,8 @@ gen_fake_attrib_data <- function(n_locations = 11) {
   deaths <- NULL
 
 
-  start_date <- as.Date("2010-01-01")
-  end_date <- as.Date("2020-12-31")
+  start_date <- as.Date("2009-07-20")
+  end_date <- as.Date("2020-07-19")
 
   location_code <- c("county03", "county11", "county15", "county18", "county30", "county34", "county38", "county42", "county46", "county50", "county54")
   # unique(fhidata::norway_locations_b2020$county_code)
@@ -195,9 +195,28 @@ gen_fake_attrib_data <- function(n_locations = 11) {
   # get unique loctation codes, return n first.
 
   # fake_data_colums <- c("location_code", "week", "season", "year", "yrwk", "x", "pop", "pr100_ili", "pr100_ili_lag_1", "temperature", "temperature_high", "deaths")
-  # data_fake_nation <- skeleton[, ..fake_data_colums]
+  # data_fake_county <- skeleton[, ..fake_data_colums]
+  # save(data_fake_county, file = "data/data_fake_county.rda", compress = "bzip2")
+  # 
+  # data_fake_nation <- data_fake_county[, .(
+  #   location_code = "norge",
+  #   pop = sum(pop),
+  #   pr100_ili = mean(pr100_ili),
+  #   pr100_ili_lag_1 = mean(pr100_ili_lag_1),
+  #   temperature_high = min(temperature_high),
+  #   deaths = sum(deaths)
+  # ), keyby = .(
+  #     week,
+  #     season,
+  #     year,
+  #     yrwk,
+  #     x
+  # )]
+  # 
   # save(data_fake_nation, file = "data/data_fake_nation.rda", compress = "bzip2")
-
+  # 
+  #  
+   
   locations <- unique(skeleton$location_code)
   locations_current <- locations[1:n_locations]
   return(skeleton[location_code %in% locations_current])

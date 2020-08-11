@@ -11,6 +11,7 @@
 #' @param fit A model fit constructed by fit_attrib
 #' @param data The observed data
 #' @param exposures The exposures that will get reference expected mortalities
+#' @param n_sim Number of simulations
 #'
 #' For more details see the help vignette:
 #' \code{vignette("intro", package="attrib")}
@@ -26,7 +27,8 @@
 #'
 #' fit <- fit_attrib(data = data, response = response, fixef = fixef, ranef = ranef, offset = offset)
 #' exposures <- c(pr100_ili_lag_1 = 0)
-#' new_data <- est_attrib(fit, data, exposures)
+#' n_sim <- 5
+#' new_data <- est_attrib(fit, data, exposures, n_sim)
 #' new_data[]
 #' }
 #' @return Dataset with expected responses for all simulations including expected responses given the exposure reference values
@@ -35,7 +37,8 @@
 est_attrib <- function(
                        fit,
                        data,
-                       exposures) {
+                       exposures, 
+                       n_sim) {
   if (length(which(is.na(data))) != 0) {
     stop("The dataset has NA values")
   }
@@ -84,7 +87,7 @@ est_attrib <- function(
   }
   data_tot <- rbindlist(data_tot)
 
-  data_tot_ret <- sim(fit, data_tot)
+  data_tot_ret <- sim(fit, data_tot, n_sim)
 
   data_ret_val <- data_tot_ret[tag == "observed"]
 
