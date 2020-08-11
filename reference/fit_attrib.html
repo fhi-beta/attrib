@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">attrib</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2020.7.29</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2020.8.11</span>
       </span>
     </div>
 
@@ -179,17 +179,17 @@ Offset and response are the same as in the input and fit_fix is the linear model
 #&gt;     pi * (week - 1)/52) + offset(log(pop)) + (pr100_ili_lag_1 |      season)
 #&gt;    Data: data
 #&gt;       AIC       BIC    logLik  deviance  df.resid 
-#&gt;  6148.616  6179.084 -3067.308  6134.616       567 
+#&gt;  5664.885  5695.353 -2825.442  5650.885       567 
 #&gt; Random effects:
 #&gt;  Groups Name            Std.Dev. Corr
-#&gt;  season (Intercept)     0.00000      
-#&gt;         pr100_ili_lag_1 0.01891   NaN
-#&gt; Number of obs: 574, groups:  season, 12
+#&gt;  season (Intercept)     0.005714     
+#&gt;         pr100_ili_lag_1 0.001022 1.00
+#&gt; Number of obs: 574, groups:  season, 11
 #&gt; Fixed Effects:
 #&gt;                 (Intercept)              pr100_ili_lag_1  
-#&gt;                   -8.793528                     0.038818  
+#&gt;                  -8.7962692                    0.0536117  
 #&gt; sin(2 * pi * (week - 1)/52)  cos(2 * pi * (week - 1)/52)  
-#&gt;                    0.006712                     0.046031  
+#&gt;                  -0.0003147                    0.0425239  
 #&gt; convergence code 0; 0 optimizer warnings; 1 lme4 warnings </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
