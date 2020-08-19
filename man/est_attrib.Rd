@@ -4,7 +4,7 @@
 \alias{est_attrib}
 \title{Estimates simulations of expected responses}
 \usage{
-est_attrib(fit, data, exposures, n_sim)
+est_attrib(fit, data, exposures, n_sim = 500)
 }
 \arguments{
 \item{fit}{A model fit constructed by fit_attrib}

@@ -207,7 +207,7 @@ est_attrib_sim_nation <- attrib::est_attrib(fit_nation,
 head(est_attrib_sim_county, 5)
 ```
 
-We can see in the above dataset that the columns *id*, *sim_id*,  *sim_value_exposures=observed*, *sim_value_temperature_high=0*, *sim_value_pr100_ili_lag_1=0* are added to the previous set of columns. For each row in the original dataset we now have 500 
+We can see in the above dataset that the columns *id*, *sim_id*,  *sim_value_exposures=observed*, *sim_value_temperature_high=0*, *sim_value_pr100_ili_lag_1=0* are added to the previous set of columns. For each row in the original dataset we now have 20 
 <!-- change this if we change n_sim --> 
 rows, one for each of the simulations done by est_attrib. In each row we see the estimate of the number of deaths given a reference value for *sim_value_temperature_high* and *sim_value_pr100_ili_lag_1*.
 

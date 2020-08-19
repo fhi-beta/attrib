@@ -5,7 +5,7 @@ Authors@R: c(
   person("Richard", "White", email = "hello@rwhite.no", role = c("aut", "cre")),
   person("Aurora", "Hofman", role = "aut")
   )
-Description: Provides functions for estimating the attributable burden of disease due to risk factors.
+Description: Provides functions for estimating the attributable burden of disease due to risk factors. The posterior simulation is performed using arm::sim as described in Gelman, Hill (2012) <doi:10.1017/CBO9780511790942> and the attributable burden method is based on Nielsen, Krause, Molbak <doi:10.1111/irv.12564>.
 Depends: R (>= 3.5.0)
 License: GPL-3
 Encoding: UTF-8
