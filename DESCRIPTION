@@ -1,6 +1,6 @@
 Package: attrib
 Title: Attributable Burden of Disease
-Version: 2020.8.11
+Version: 2020.8.19
 Authors@R: c(
   person("Richard", "White", email = "hello@rwhite.no", role = c("aut", "cre")),
   person("Aurora", "Hofman", role = "aut")
