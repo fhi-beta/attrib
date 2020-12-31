@@ -33,7 +33,7 @@ gen_fake_death_data <- function() {
   
   
   skeleton <- expand.grid(
-    count = seq(1, 1000, by = 1),
+    count = seq(1, 150, by = 1),
     date = seq.Date(
       from = start_date,
       to = end_date,
@@ -44,7 +44,7 @@ gen_fake_death_data <- function() {
   setDT(skeleton)
   
   skeleton[, DoE := date]
-  skeleton[, reg_lag := stats::rpois(.N, 14)]
+  skeleton[, reg_lag := stats::rpois(.N, 28)]
   skeleton[, DoR := DoE + reg_lag]
   
   
