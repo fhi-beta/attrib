@@ -26,15 +26,21 @@ nowcast_clean <- function(
   aggregation_date,
   n_week) {
   
-  
-  # return only dataset or graphs as well? ## First only dataset! 
+  DoE <- NULL
+  DoR <- NULL
+  cut_DoE <- NULL
+  n_death <- NULL
+  temp_outcome <- NULL
+  n0_0 <- NULL
+  temp_variable <- NULL
+  # retur only dataset or graphs as well? ## First only dataset! 
   
   
   
   # for developing
-  data <- gen_fake_death_data()
-  aggregation_date <- as.Date("2020-01-01")
-  n_week <- 52
+  # data <- gen_fake_death_data()
+  # aggregation_date <- as.Date("2020-01-01")
+  # n_week <- 52
   
   ### check og parameters ----
   

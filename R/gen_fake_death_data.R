@@ -16,8 +16,8 @@
 gen_fake_death_data <- function() {
   DoE <- NULL
   DoR <- NULL
- 
-  
+  reg_lag <- NULL
+  . <- NULL
   
   start_date <- as.Date("2018-01-01")
   end_date <- as.Date("2020-01-01")
