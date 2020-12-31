@@ -1,20 +1,11 @@
-#' Fake data for mortality in Norway
+#' Fake data for mortalityregistration
 #'
 #' @format
 #' \describe{
-#' \item{location_code}{Location code of the Norwegian municipalities}
-#' \item{week}{Week}
-#' \item{season}{Season used for influenza like illnesses}
-#' \item{yrwk}{Year and week}
-#' \item{x}{Number of weeks from the start of the season}
-#' \item{pop}{Population size}
-#' \item{pr100_ili}{Per hundred ILI, percentage of consultations diagnosed as influenza like illnesses}
-#' \item{pr100_ili_lag_1}{pr100_ili_lag_1}
-#' \item{temperature}{ temperature}
-#' \item{temperature_high}{temperature_high}
-#' \item{deaths}{deaths}
+#' \item{DoE}{Date og event}
+#' \item{DoR}{Date of registration}
 #' }
-"data_fake_county"
+"data_fake_death"
 
 
 # Generates fake data
@@ -28,7 +19,7 @@ gen_fake_death_data <- function() {
  
   
   
-  start_date <- as.Date("2019-01-01")
+  start_date <- as.Date("2018-01-01")
   end_date <- as.Date("2020-01-01")
   
   
@@ -47,7 +38,8 @@ gen_fake_death_data <- function() {
   skeleton[, reg_lag := stats::rpois(.N, 28)]
   skeleton[, DoR := DoE + reg_lag]
   
-  
- 
+   # data_fake_death <- skeleton[,.(DoE, DoR)]
+   # save(data_fake_death, file = "data/data_fake_death.rda", compress = "bzip2")
+
   return(skeleton[,.(DoE, DoR)])
 }
