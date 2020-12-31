@@ -22,25 +22,18 @@
 #'
 #' @export
 nowcast_clean <- function(
-  data,
-  aggregation_date,
+  data_clean,
   n_week) {
   
-  DoE <- NULL
-  DoR <- NULL
-  cut_DoE <- NULL
-  n_death <- NULL
-  temp_outcome <- NULL
-  n0_0 <- NULL
-  temp_variable <- NULL
-  . <- NULL
-  new_variable <- NULL
-  # retur only dataset or graphs as well? ## First only dataset! 
-  
-  
-  
+  data <- data_fake_death_clean
+  n_week <- 4
 
+  i = 2
   
+  
+  fit <- glm(n_death ~ n0_4, family = "poisson", data = data[1:(nrow(data)-15)])
+  summary(fit)
+  predict(fit, newdata = data, type = "response")
   
   retval <- 1
   

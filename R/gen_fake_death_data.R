@@ -34,6 +34,19 @@ gen_fake_death_data <- function() {
   )
   setDT(skeleton)
   
+  # skeleton <- expand.grid(
+  #   date = seq.Date(
+  #     from = start_date,
+  #     to = end_date,
+  #     by = 1 # to get a weakly base.
+  #   ),
+  #   stringsAsFactors = FALSE
+  # )
+  # setDT(skeleton)
+  # 
+  # skeleton[, n_death := rnorm(.N, mean = 150, sd = 20)]
+  
+  
   skeleton[, DoE := date]
   skeleton[, reg_lag := stats::rpois(.N, 28)]
   skeleton[, DoR := DoE + reg_lag]

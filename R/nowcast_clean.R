@@ -1,5 +1,12 @@
 
-
+#' Cleaned fake data for mortalityregistration
+#'
+#' @format
+#' \describe{
+#' \item{DoE}{Date og event}
+#' \item{DoR}{Date of registration}
+#' }
+"data_fake_death_clean"
 
 
 
@@ -33,15 +40,18 @@ nowcast_clean <- function(
   temp_outcome <- NULL
   n0_0 <- NULL
   temp_variable <- NULL
+  . <- NULL
+  new_value <- NULL
   # retur only dataset or graphs as well? ## First only dataset! 
   
   
   
-  # for developing
-  # data <- gen_fake_death_data()
-  # aggregation_date <- as.Date("2020-01-01")
-  # n_week <- 52
+  ##### for developing
   
+  data <- gen_fake_death_data()
+  aggregation_date <- as.Date("2020-01-01")
+  n_week <- 52
+
   ### check og parameters ----
   
   if (! "DoE" %in% colnames(data)){
@@ -96,28 +106,29 @@ nowcast_clean <- function(
   d_within_week <- cbind.data.frame(retval)
   colnames(d_within_week) <- col_names
   d_within_week <- unique(as.data.table(d_within_week))
-  d_within_week <- (cbind(d_within_week, unique(d[, .(cut_DoE)])))
+  d_within_week <- (cbind(d_within_week, unique(d[, .(cut_DoE, n_death)])))
   
   
   # insert NA where we do not have data
   
-  d_corrected <- d_within_week[, .(cut_DoE, n0_0)]
+  d_corrected <- d_within_week[, .(cut_DoE, n_death, n0_0)]
   for ( i in 2:n_week){
+   
     week <- paste0("n0_",(i-1))
     d_within_week[, new_value := NA]
     d_within_week[, temp_variable := get(week)]
-    d_within_week[(nrow(d_within_week)-i+1):nrow(d_within_week), temp_variable := new_value]
+    d_within_week[(nrow(d_within_week)-i+2):nrow(d_within_week), temp_variable := new_value]
     d_corrected[ d_within_week, 
                  on = "cut_DoE",
                  paste0("n0_",(i-1)) := temp_variable]
   }
-  d
+  
   
 
   
-  
-  
-  
+   # data_fake_death_clean <- d_corrected
+   # save(data_fake_death_clean, file = "data/data_fake_death_clean.rda", compress = "bzip2")
+
   
   retval <- d_corrected
   
