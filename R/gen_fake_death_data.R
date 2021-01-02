@@ -74,8 +74,17 @@ gen_fake_death_data <- function() {
   )
   
   temp_vec <- vector( "list", length = length(date))
-  n_death <- round(rnorm(length(date), mean = 150, sd = 20))
+  n_death <- rep(0, length(date))
+  n_death[1] <- round(rnorm(1, mean = 150, sd = 10))
   for (i in seq_along(date)){
+    if(i != length(date)){
+      deaths <- round(rnorm(1, mean = n_death[i], sd = 5))
+      while(deaths < 0){
+        deaths <- round(rnorm(1, mean = n_death[i], sd = 5))
+      }
+      n_death[i+ 1] = deaths
+    }
+    
     skeleton <- expand.grid(
       date = date[i],
       count = seq(1, n_death[i], by = 1),
