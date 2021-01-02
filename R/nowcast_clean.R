@@ -48,9 +48,9 @@ nowcast_clean <- function(
   
   ##### for developing
   
-  data <- gen_fake_death_data()
-  aggregation_date <- as.Date("2020-01-01")
-  n_week <- 52
+  # data <- gen_fake_death_data()
+  # aggregation_date <- as.Date("2020-01-01")
+  # n_week <- 52
 
   ### check og parameters ----
   
@@ -132,8 +132,8 @@ nowcast_clean <- function(
   
 
   
-   # data_fake_death_clean <- d_corrected
-   # save(data_fake_death_clean, file = "data/data_fake_death_clean.rda", compress = "bzip2")
+    # data_fake_death_clean <- d_corrected
+    # save(data_fake_death_clean, file = "data/data_fake_death_clean.rda", compress = "bzip2")
 
   
   retval <- d_corrected
