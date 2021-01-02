@@ -33,10 +33,14 @@ nowcast <- function(
 
   
   ##### for developing
-  data <- as.data.table( data_fake_death_clean)
+  data_clean <- as.data.table( data_fake_death_clean)
+  start_train <- as.Date("2019-01-01")
   n_week <- 8
 
   i = 2
+  
+  data <- as.data.table(data_clean)
+  data <- data[cut_DoE>= start_train]
   
   #### corrected n_deaths ----
   for ( i in 0:n_week){
@@ -112,7 +116,7 @@ nowcast <- function(
   # 
   # Metrics::mse(data$n_death[1:99], n_cor[1:99])
   
-  retval <- 1
+  retval <- data
   
   return (retval)
 }
