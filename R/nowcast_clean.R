@@ -38,7 +38,7 @@ nowcast_clean <- function(
   cut_DoE <- NULL
   n_death <- NULL
   temp_outcome <- NULL
-  n0_0 <- NULL
+  p0_0 <- NULL
   temp_variable <- NULL
   . <- NULL
   new_value <- NULL
@@ -87,24 +87,24 @@ nowcast_clean <- function(
      on = "cut_DoE",
      n_death := n_death]
   
-  
   retval <- vector("list", length = n_week)
   d_within_week <- d[, .(cut_DoE)]
-  col_names <- vector("double", length = n_week)
   
   for ( i in 1:n_week){
-    new_outcome <- paste0("n0_", (i-1))
-    col_names[i] <- new_outcome
     
-    temp <- d[, .(temp_outcome = sum(DoR < (as.Date(cut_DoE) + i*7))/n_death), 
-              keyby = .(cut_DoE)]
-    retval[[i]] <- as.data.frame(temp[, temp_outcome])
+    temp <- d[, .(
+      temp_outcome_p = sum(DoR < (as.Date(cut_DoE) + i*7)),
+      temp_outcome_n = sum(DoR < (as.Date(cut_DoE) + i*7))/n_death), 
+      keyby = .(cut_DoE)]
+    
+    setnames(temp, "temp_outcome_p", paste0("p0_", (i-1)))
+    setnames(temp, "temp_outcome_n", paste0("n0_", (i-1)))
+    
+    retval[[i]] <- as.data.frame(subset(temp, select = -c(cut_DoE) ))
     
   }
   
-  
   d_within_week <- cbind.data.frame(retval)
-  colnames(d_within_week) <- col_names
   d_within_week <- unique(as.data.table(d_within_week))
   d_within_week <- (cbind(d_within_week, unique(d[, .(cut_DoE, n_death)])))
   
@@ -113,14 +113,20 @@ nowcast_clean <- function(
   
   d_corrected <- d_within_week[, .(cut_DoE, n_death, n0_0)]
   for ( i in 2:n_week){
-   
-    week <- paste0("n0_",(i-1))
+    
+    week_n <- paste0("n0_",(i-1))
+    week_p <- paste0("p0_",(i-1))
     d_within_week[, new_value := NA]
-    d_within_week[, temp_variable := get(week)]
-    d_within_week[(nrow(d_within_week)-i+2):nrow(d_within_week), temp_variable := new_value]
+    d_within_week[, temp_variable_n := get(week_n)]
+    d_within_week[, temp_variable_p := get(week_p)]
+    d_within_week[(nrow(d_within_week)-i+1):nrow(d_within_week), temp_variable_n := new_value]
+    d_within_week[(nrow(d_within_week)-i+1):nrow(d_within_week), temp_variable_p := new_value]
     d_corrected[ d_within_week, 
                  on = "cut_DoE",
-                 paste0("n0_",(i-1)) := temp_variable]
+                 paste0("n0_",(i-1)) := temp_variable_n]
+    d_corrected[ d_within_week, 
+                 on = "cut_DoE",
+                 paste0("p0_",(i-1)) := temp_variable_p]
   }
   
   
