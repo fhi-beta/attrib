@@ -93,8 +93,8 @@ nowcast_clean <- function(
   for ( i in 1:n_week){
     
     temp <- d[, .(
-      temp_outcome_p = sum(DoR < (as.Date(cut_DoE) + i*7)),
-      temp_outcome_n = sum(DoR < (as.Date(cut_DoE) + i*7))/n_death), 
+      temp_outcome_n = sum(DoR < (as.Date(cut_DoE) + i*7)),
+      temp_outcome_p = sum(DoR < (as.Date(cut_DoE) + i*7))/n_death), 
       keyby = .(cut_DoE)]
     
     setnames(temp, "temp_outcome_p", paste0("p0_", (i-1)))
@@ -119,8 +119,8 @@ nowcast_clean <- function(
     d_within_week[, new_value := NA]
     d_within_week[, temp_variable_n := get(week_n)]
     d_within_week[, temp_variable_p := get(week_p)]
-    d_within_week[(nrow(d_within_week)-i+1):nrow(d_within_week), temp_variable_n := new_value]
-    d_within_week[(nrow(d_within_week)-i+1):nrow(d_within_week), temp_variable_p := new_value]
+    d_within_week[(nrow(d_within_week)-i+2):nrow(d_within_week), temp_variable_n := new_value]
+    d_within_week[(nrow(d_within_week)-i+2):nrow(d_within_week), temp_variable_p := new_value]
     d_corrected[ d_within_week, 
                  on = "cut_DoE",
                  paste0("n0_",(i-1)) := temp_variable_n]
@@ -130,7 +130,7 @@ nowcast_clean <- function(
   }
   
   
-
+  d_corrected[99:103]
   
     # data_fake_death_clean <- d_corrected
     # save(data_fake_death_clean, file = "data/data_fake_death_clean.rda", compress = "bzip2")
