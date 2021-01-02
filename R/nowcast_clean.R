@@ -22,8 +22,9 @@
 #'
 #' data <- attrib::data_fake_death
 #' aggregation_date <- as.Date("2020-01-01")
+#' n_week <- 52
 #' 
-#' clean_data <- nowcast_clean(data, aggregation_date)
+#' clean_data <- nowcast_clean(data, aggregation_date, n_week)
 #' }
 #' @return Cleaned dataset with the percentiles of registered events within the last 52 weeks
 #'
@@ -38,8 +39,10 @@ nowcast_clean <- function(
   cut_DoE <- NULL
   n_death <- NULL
   temp_outcome <- NULL
+  n0_0 <- NULL
   p0_0 <- NULL
-  temp_variable <- NULL
+  temp_variable_n <- NULL
+  temp_variable_p <- NULL
   . <- NULL
   new_value <- NULL
   # retur only dataset or graphs as well? ## First only dataset! 

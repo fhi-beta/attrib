@@ -6,24 +6,31 @@
 #' For more details see the help vignette:
 #' \code{vignette("intro", package="attrib")}
 #'
-#' @param data Dataset containing DoE (Date of event) and DoR (Date of registation). The columns must have these exact names. 
-#' @param aggregation_date Date of aggregation 
-#' @param n_week Number of weeks to calculate the percentage of the total registraations. Must be larger og equal to 2 amd smaller than the total number of weeks in the dataset.
-#' 
+#' @param data_clean Cleaned dataset from the function npowcast_clean
+#' @param n_week Number of weeks to correct
 #' @examples
 #' \dontrun{
 #'
-#' data <- attrib::data_fake_death
-#' aggregation_date <- as.Date("2020-01-01")
+#' data <- attrib::data_fake_death_clean
+#' n_week <- 8
 #' 
-#' clean_data <- nowcast_clean(data, aggregation_date)
+#' data_correct <- nowcast(data, n_week)
 #' }
-#' @return Cleaned dataset with the percentiles of registered events within the last 52 weeks
+#' @return Dataset including the corrected values for n_death
 #'
 #' @export
-nowcast_clean <- function(
+nowcast <- function(
   data_clean,
-  n_week) {
+  n_week,
+  start_train) {
+
+  data_fake_death_clean <- NULL
+  ncor <- NULL
+  n_death <- NULL
+  temp_variable <- NULL
+  yrwk <- NULL
+  cut_DoE <- NULL
+
   
   ##### for developing
   data <- as.data.table( data_fake_death_clean)
@@ -34,8 +41,8 @@ nowcast_clean <- function(
   #### corrected n_deaths ----
   for ( i in 0:n_week){
     
-    fit <- glm(stats::as.formula(paste0("n_death", "~",  glue::glue("n0_{i}"))), family = "poisson", data = data[1:(nrow(data)-n_week)])
-    n_cor <- round(predict(fit, newdata = data, type = "response")) ###SHOULD THIS BE ROUNDED?
+    fit <- stats::glm(stats::as.formula(paste0("n_death", "~",  glue::glue("n0_{i}"))), family = "poisson", data = data[1:(nrow(data)-n_week)])
+    n_cor <- round(stats::predict(fit, newdata = data, type = "response")) ###SHOULD THIS BE ROUNDED?
     data[, glue::glue("ncor0_{i}"):= n_cor]
 
   }
@@ -48,8 +55,9 @@ nowcast_clean <- function(
   }
   
   data[,temp_variable:=NULL]
-  
-  data[, yrwk:= fhi::isoyearweek(cut_DoE)]
+
+  data[, yrwk:= isoyearweek(cut_DoE)]
+
   
   col_order <- c(c("yrwk", "n_death", "ncor"), colnames(data)[which(!colnames(data) %in% c("yrwk", "n_death", "ncor"))])
   setcolorder(data, col_order)
