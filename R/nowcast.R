@@ -39,18 +39,18 @@ nowcast <- function(
   n_death <- NULL
   temp_variable <- NULL
   yrwk <- NULL
-  cut_DoE <- NULL
+  cut_doe <- NULL
 
   
   ##### for developing
-  data_clean <- as.data.table( data_fake_death_clean)
+  data_clean <- as.data.table(data_fake_death_clean)
   start_train <- as.Date("2019-01-01")
   n_week <- 8
 
   i = 2
   
   data <- as.data.table(data_clean)
-  data <- data[cut_DoE>= start_train]
+  data <- data[cut_doe>= start_train]
   
   #### corrected n_deaths ----
   data <- nowcast_correction_fn(data, n_week_adjusting, n_week_training)
@@ -67,7 +67,7 @@ nowcast <- function(
   
   data[,temp_variable:=NULL]
 
-  data[, yrwk:= isoyearweek(cut_DoE)]
+  data[, yrwk:= isoyearweek(cut_doe)]
 
   
   col_order <- c(c("yrwk", "n_death", "ncor"), colnames(data)[which(!colnames(data) %in% c("yrwk", "n_death", "ncor"))])
