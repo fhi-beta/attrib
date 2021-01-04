@@ -82,9 +82,9 @@ nowcast_aggregate <- function(
   
   ##### for developing
   
-  data <- gen_fake_death_data()
-  aggregation_date <- as.Date("2020-01-01")
-  n_week <- 15
+  # data <- gen_fake_death_data()
+  # aggregation_date <- as.Date("2020-01-01")
+  # n_week <- 15
 
   ### check og parameters ----
   
