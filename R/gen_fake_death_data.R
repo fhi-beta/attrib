@@ -14,8 +14,8 @@
 # @param n_locations Telling how many locations one wants in the output data, default = 11 the number of municipalities in Norway.
 
 # gen_fake_death_data <- function() {
-#   DoE <- NULL
-#   DoR <- NULL
+#   doe <- NULL
+#   dor <- NULL
 #   reg_lag <- NULL
 #   . <- NULL
 #   
@@ -47,20 +47,20 @@
 #   # skeleton[, n_death := rnorm(.N, mean = 150, sd = 20)]
 #   
 #   
-#   skeleton[, DoE := date]
+#   skeleton[, doe := date]
 #   skeleton[, reg_lag := stats::rpois(.N, 28)]
-#   skeleton[, DoR := DoE + reg_lag]
+#   skeleton[, dor := doe + reg_lag]
 #   
-#    # data_fake_death <- skeleton[,.(DoE, DoR)]
+#    # data_fake_death <- skeleton[,.(doe, dor)]
 #    # save(data_fake_death, file = "data/data_fake_death.rda", compress = "bzip2")
 # 
-#   return(skeleton[,.(DoE, DoR)])
+#   return(skeleton[,.(doe, dor)])
 # }
 
 
 gen_fake_death_data <- function() {
-  DoE <- NULL
-  DoR <- NULL
+  doe <- NULL
+  dor <- NULL
   reg_lag <- NULL
   . <- NULL
   
@@ -79,7 +79,7 @@ gen_fake_death_data <- function() {
   for (i in seq_along(date)){
     if(i != length(date)){
       deaths <- round(stats::rnorm(1, mean = n_death[i], sd = 5))
-      while(deaths < 0){
+      while(deaths <= 0){
         deaths <- round(stats::rnorm(1, mean = n_death[i], sd = 5))
       }
       n_death[i+ 1] = deaths
@@ -96,12 +96,12 @@ gen_fake_death_data <- function() {
   
   skeleton <- rbindlist(temp_vec)
   
-  skeleton[, DoE := date]
+  skeleton[, doe := date]
   skeleton[, reg_lag := stats::rpois(.N, 28)]
-    skeleton[, DoR := DoE + reg_lag]
+    skeleton[, dor := doe + reg_lag]
   
-  # data_fake_death <- skeleton[,.(DoE, DoR)]
-  # save(data_fake_death, file = "data/data_fake_death.rda", compress = "bzip2")
+  # data_fake_nowcasting_raw <- skeleton[,.(doe, dor)]
+  # save(data_fake_nowcasting_raw, file = "data/data_fake_nowcasting_raw.rda", compress = "bzip2")
   
-  return(skeleton[,.(DoE, DoR)])
+  return(skeleton[,.(doe, dor)])
 }
