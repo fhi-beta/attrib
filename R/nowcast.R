@@ -1,3 +1,10 @@
+#' For more details see the help vignette:
+#' \code{vignette("intro", package="attrib")}
+#'
+#' @param data cleaned data to perform correction formula on
+#' @param n_week Number of weeks to correct
+#'
+
 
 nowcast_correction_fn_default <- function(data, n_week){
   for ( i in 0:n_week){
@@ -43,7 +50,7 @@ nowcast <- function(
 
   
   ##### for developing
-  data_clean <- as.data.table(data_fake_death_clean)
+  data_clean <- as.data.table(data_fake_nowcasting_aggregated)
   start_train <- as.Date("2019-01-01")
   n_week <- 8
 
