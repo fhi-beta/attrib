@@ -3,10 +3,10 @@
 #'
 #' @format
 #' \describe{
-#' \item{DoE}{Date og event}
-#' \item{DoR}{Date of registration}
+#' \item{doe}{Date og event}
+#' \item{dor}{Date of registration}
 #' }
-"data_fake_death_clean"
+"data_fake_nowcasting_aggregated"
 
 
 
@@ -29,7 +29,7 @@
 #' @return Cleaned dataset with the percentiles of registered events within the last 52 weeks
 #'
 #' @export
-nowcast_clean <- function(
+nowcast_aggregate <- function(
   data,
   aggregation_date,
   n_week) {

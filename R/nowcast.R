@@ -1,5 +1,14 @@
 
-
+nowcast_correction_fn_default <- function(data, n_week){
+  for ( i in 0:n_week){
+    
+    fit <- stats::glm(stats::as.formula(paste0("n_death", "~",  glue::glue("n0_{i}"))), family = "poisson", data = data[1:(nrow(data)-n_week)])
+    n_cor <- round(stats::predict(fit, newdata = data, type = "response")) ###SHOULD THIS BE ROUNDED?
+    data[, glue::glue("ncor0_{i}"):= n_cor]
+    
+  }
+  return(data)
+}
 
 
 
@@ -21,8 +30,9 @@
 #' @export
 nowcast <- function(
   data_clean,
-  n_week,
-  start_train) {
+  n_week_adjusting,
+  n_week_training,
+  nowcast_correction_fn = nowcast_correction_fn_default) {
 
   data_fake_death_clean <- NULL
   ncor <- NULL
@@ -43,13 +53,10 @@ nowcast <- function(
   data <- data[cut_DoE>= start_train]
   
   #### corrected n_deaths ----
-  for ( i in 0:n_week){
-    
-    fit <- stats::glm(stats::as.formula(paste0("n_death", "~",  glue::glue("n0_{i}"))), family = "poisson", data = data[1:(nrow(data)-n_week)])
-    n_cor <- round(stats::predict(fit, newdata = data, type = "response")) ###SHOULD THIS BE ROUNDED?
-    data[, glue::glue("ncor0_{i}"):= n_cor]
-
-  }
+  data <- nowcast_correction_fn(data, n_week_adjusting, n_week_training)
+  
+  #check that all the required variables are there
+  # (i.e. that the correction function actually gives reasonable stuff back)
   
   data[, ncor := n_death]
   for ( i in 0:n_week){
