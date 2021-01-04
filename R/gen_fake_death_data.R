@@ -2,10 +2,10 @@
 #'
 #' @format
 #' \describe{
-#' \item{DoE}{Date og event}
-#' \item{DoR}{Date of registration}
+#' \item{doe}{Date og event}
+#' \item{dor}{Date of registration}
 #' }
-"data_fake_death"
+"data_fake_nowcasting_raw"
 
 
 # Generates fake data
@@ -98,7 +98,7 @@ gen_fake_death_data <- function() {
   
   skeleton[, DoE := date]
   skeleton[, reg_lag := stats::rpois(.N, 28)]
-  skeleton[, DoR := DoE + reg_lag]
+    skeleton[, DoR := DoE + reg_lag]
   
   # data_fake_death <- skeleton[,.(DoE, DoR)]
   # save(data_fake_death, file = "data/data_fake_death.rda", compress = "bzip2")

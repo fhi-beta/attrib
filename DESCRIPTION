@@ -29,5 +29,5 @@ Imports: data.table,
 Suggests: testthat,
     knitr,
     rmarkdown
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 VignetteBuilder: knitr
