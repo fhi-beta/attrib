@@ -3,8 +3,39 @@
 #'
 #' @format
 #' \describe{
-#' \item{doe}{Date og event}
-#' \item{dor}{Date of registration}
+#' \item{cut_doe}{First date of every week}
+#' \item{n_death}{Number of true deaths this week}
+#' \item{n0_0}{Number of registrations within the current week}
+#' \item{n0_1}{Number of registrations within the current and previous week}
+#' \item{p0_1}{Percentile of registrations within the current and previous week}
+#' \item{n0_2}{Number of registrations within the 2 last weeks and the current week}
+#' \item{p0_2}{Percentile of registrations within the current and prvious 2 weeks}
+#' \item{n0_3}{Number of registrations within the 3 last weeks and the current week}
+#' \item{p0_3}{Percentile of registrations within the current and prvious 3 weeks}
+#' \item{n0_4}{Number of registrations within the 4 weeks and the current week}
+#' \item{p0_4}{Percentile of registrations within the current and prvious 4 weeks}
+#' \item{n0_5}{Number of registrations within the 5 weeks and the current week}
+#' \item{p0_5}{Percentile of registrations within the current and prvious 5 weeks}
+#' \item{n0_6}{Number of registrations within the 6 weeks and the current week}
+#' \item{p0_6}{Percentile of registrations within the current and prvious 6 weeks}
+#' \item{n0_7}{Number of registrations within the 7 weeks and the current week}
+#' \item{p0_7}{Percentile of registrations within the current and prvious 7 weeks}
+#' \item{n0_8}{Number of registrations within the 8 weeks and the current week}
+#' \item{p0_8}{Percentile of registrations within the current and prvious 8 weeks}
+#' \item{n0_9}{Number of registrations within the 9 weeks and the current week}
+#' \item{p0_9}{Percentile of registrations within the current and prvious 9 weeks}
+#' \item{n0_10}{Number of registrations within the 10 weeks and the current week}
+#' \item{p0_10}{Percentile of registrations within the current and prvious 10 weeks}
+#' \item{n0_11}{Number of registrations within the 11 weeks and the current week}
+#' \item{p0_11}{Percentile of registrations within the current and prvious 11 weeks}
+#' \item{n0_12}{Number of registrations within the 12 weeks and the current week}
+#' \item{p0_12}{Percentile of registrations within the current and prvious 12 weeks}
+#' \item{n0_13}{Number of registrations within the 13 weeks and the current week}
+#' \item{p0_13}{Percentile of registrations within the current and prvious 13 weeks}
+#' \item{n0_14}{Number of registrations within the 14 weeks and the current week}
+#' \item{p0_14}{Percentile of registrations within the current and prvious 14 weeks}
+#' \item{n0_15}{Number of registrations within the 15 weeks and the current week}
+#' \item{p0_15}{Percentile of registrations within the current and prvious 15 weeks}
 #' }
 "data_fake_nowcasting_aggregated"
 
@@ -13,7 +44,7 @@
 #' For more details see the help vignette:
 #' \code{vignette("intro", package="attrib")}
 #'
-#' @param data Dataset containing DoE (Date of event) and DoR (Date of registation). The columns must have these exact names. 
+#' @param data Dataset containing DoE (Date of event) and dor (Date of registation). The columns must have these exact names. 
 #' @param aggregation_date Date of aggregation 
 #' @param n_week Number of weeks to calculate the percentage of the total registraations. Must be larger og equal to 2 amd smaller than the total number of weeks in the dataset.
 #' 
@@ -34,9 +65,9 @@ nowcast_aggregate <- function(
   aggregation_date,
   n_week) {
   
-  DoE <- NULL
-  DoR <- NULL
-  cut_DoE <- NULL
+  doe <- NULL
+  dor <- NULL
+  cut_doe <- NULL
   n_death <- NULL
   temp_outcome <- NULL
   n0_0 <- NULL
@@ -51,17 +82,17 @@ nowcast_aggregate <- function(
   
   ##### for developing
   
-  # data <- gen_fake_death_data()
-  # aggregation_date <- as.Date("2020-01-01")
-  # n_week <- 52
+  data <- gen_fake_death_data()
+  aggregation_date <- as.Date("2020-01-01")
+  n_week <- 15
 
   ### check og parameters ----
   
-  if (! "DoE" %in% colnames(data)){
+  if (! "doe" %in% colnames(data)){
     stop("The dataset does not have the correct column names")
   }
   
-  if (! "DoR" %in% colnames(data)){
+  if (! "dor" %in% colnames(data)){
     stop("The dataset does not have the correct column names")
   }
   
@@ -73,9 +104,9 @@ nowcast_aggregate <- function(
   
   ### cleaning ----
   d <- data.table::as.data.table(data)
-  d <- d[, .(DoE, DoR)]
-  d <- d[DoR < aggregation_date]
-  d[, cut_DoE := as.Date(cut(DoE, "week"))]
+  d <- d[, .(doe, dor)]
+  d <- d[dor < aggregation_date]
+  d[, cut_doe := as.Date(cut(doe, "week"))]
   
   
   # count deaths
@@ -83,38 +114,38 @@ nowcast_aggregate <- function(
   d_death <- d[ , .(
     "n_death" = .N
   ), keyby = .(
-    cut_DoE
+    cut_doe
   )]
   
   d[ d_death, 
-     on = "cut_DoE",
+     on = "cut_doe",
      n_death := n_death]
   
   retval <- vector("list", length = n_week)
-  d_within_week <- d[, .(cut_DoE)]
+  d_within_week <- d[, .(cut_doe)]
   
   for ( i in 1:n_week){
     
     temp <- d[, .(
-      temp_outcome_n = sum(DoR < (as.Date(cut_DoE) + i*7)),
-      temp_outcome_p = sum(DoR < (as.Date(cut_DoE) + i*7))/n_death), 
-      keyby = .(cut_DoE)]
+      temp_outcome_n = sum(dor < (as.Date(cut_doe) + i*7)),
+      temp_outcome_p = sum(dor < (as.Date(cut_doe) + i*7))/n_death), 
+      keyby = .(cut_doe)]
     
     setnames(temp, "temp_outcome_p", paste0("p0_", (i-1)))
     setnames(temp, "temp_outcome_n", paste0("n0_", (i-1)))
     
-    retval[[i]] <- as.data.frame(subset(temp, select = -c(cut_DoE) ))
+    retval[[i]] <- as.data.frame(subset(temp, select = -c(cut_doe) ))
     
   }
   
   d_within_week <- cbind.data.frame(retval)
   d_within_week <- unique(as.data.table(d_within_week))
-  d_within_week <- (cbind(d_within_week, unique(d[, .(cut_DoE, n_death)])))
+  d_within_week <- (cbind(d_within_week, unique(d[, .(cut_doe, n_death)])))
   
   
   # insert NA where we do not have data
   
-  d_corrected <- d_within_week[, .(cut_DoE, n_death, n0_0)]
+  d_corrected <- d_within_week[, .(cut_doe, n_death, n0_0)]
   for ( i in 2:n_week){
     
     week_n <- paste0("n0_",(i-1))
@@ -125,18 +156,18 @@ nowcast_aggregate <- function(
     d_within_week[(nrow(d_within_week)-i+2):nrow(d_within_week), temp_variable_n := new_value]
     d_within_week[(nrow(d_within_week)-i+2):nrow(d_within_week), temp_variable_p := new_value]
     d_corrected[ d_within_week, 
-                 on = "cut_DoE",
+                 on = "cut_doe",
                  paste0("n0_",(i-1)) := temp_variable_n]
     d_corrected[ d_within_week, 
-                 on = "cut_DoE",
+                 on = "cut_doe",
                  paste0("p0_",(i-1)) := temp_variable_p]
   }
   
   
-  d_corrected[99:103]
-  
-    # data_fake_death_clean <- d_corrected
-    # save(data_fake_death_clean, file = "data/data_fake_death_clean.rda", compress = "bzip2")
+
+
+    # data_fake_nowcasting_aggregated <- d_corrected
+    # save(data_fake_nowcasting_aggregated, file = "data/data_fake_nowcasting_aggregated.rda", compress = "bzip2")
 
   
   retval <- d_corrected
