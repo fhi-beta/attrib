@@ -24,13 +24,14 @@ nowcast_correction_fn_default <- function(data, n_week){
 #'
 #' @param data_clean Cleaned dataset from the function npowcast_clean
 #' @param n_week Number of weeks to correct
+#' @param nowcast_correction_fn Correction function. Must return a table with columnames ncor0_i for i in 0:n_week and cut_doe. The default uses "n_death ~ n0_i" for all i in 0:n_week. 
 #' @examples
 #' \dontrun{
 #'
-#' data <- attrib::data_fake_death_clean
-#' n_week <- 8
-#' 
-#' data_correct <- nowcast(data, n_week)
+#' data <- attrib::data_fake_nowcasting_aggregated
+#' n_week_adjusting <- 8
+#' n_week_training <- 12
+#' data_correct <- nowcast(data, n_week_adjusting,n_week_training )
 #' }
 #' @return Dataset including the corrected values for n_death
 #'
@@ -51,19 +52,28 @@ nowcast <- function(
   
   ##### for developing
   data_clean <- as.data.table(data_fake_nowcasting_aggregated)
-  start_train <- as.Date("2019-01-01")
-  n_week <- 8
-
+  n_week_training <- 50
+  n_week_adjusting <- 8
+  nowcast_correction_fn<- nowcast_correction_fn_default
   i = 2
   
   data <- as.data.table(data_clean)
-  data <- data[cut_doe>= start_train]
+  n_week_start <- n_week_training + n_week_adjusting
+  data <- data[(nrow(data)-n_week_start+1):nrow(data)]
   
   #### corrected n_deaths ----
-  data <- nowcast_correction_fn(data, n_week_adjusting, n_week_training)
+  data <- nowcast_correction_fn(data, n_week_adjusting)
   
   #check that all the required variables are there
   # (i.e. that the correction function actually gives reasonable stuff back)
+  
+  for ( i in 0:n_week){
+    temp <- paste0("ncor0_",i)
+    if(! temp %in% colnames(data)){
+      stop(glue::glue("nowcast_correction_fn is not returning {temp}"))
+    }
+  }
+  
   
   data[, ncor := n_death]
   for ( i in 0:n_week){
