@@ -5,7 +5,7 @@
 \title{For more details see the help vignette:
 \code{vignette("intro", package="attrib")}}
 \usage{
-nowcast(data_clean, n_week, start_train)
+nowcast()
 }
 \arguments{
 \item{data_clean}{Cleaned dataset from the function npowcast_clean}
