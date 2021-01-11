@@ -10,6 +10,12 @@ nowcast(data_aggregated, n_week_adjusting)
 nowcast(data_aggregated, n_week_adjusting)
 }
 \arguments{
+\item{data_aggregated}{Cleaned dataset from the function npowcast_clean}
+
+\item{n_week_adjusting}{Number of weeks to correct}
+
+\item{n_week_training}{Number of weeks to train on}
+
 \item{data_clean}{Cleaned dataset from the function npowcast_clean}
 
 \item{n_week}{Number of weeks to correct}

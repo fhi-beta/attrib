@@ -5,7 +5,7 @@
 \title{For more details see the help vignette:
 \code{vignette("intro", package="attrib")}}
 \usage{
-nowcast_correction_fn_default(data, n_week)
+nowcast_correction_fn_default(data, n_week_adjusting)
 }
 \arguments{
 \item{data}{cleaned data to perform correction formula on}
