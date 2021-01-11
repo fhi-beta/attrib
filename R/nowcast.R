@@ -7,9 +7,9 @@
 
 
 nowcast_correction_fn_default <- function(data, n_week_adjusting){
-  for ( i in 0:n_week){
+  for ( i in 0:n_week_adjusting){
     
-    fit <- stats::glm(stats::as.formula(paste0("n_death", "~",  glue::glue("n0_{i}"))), family = "poisson", data = data[1:(nrow(data)-n_week)])
+    fit <- stats::glm(stats::as.formula(paste0("n_death", "~",  glue::glue("n0_{i}"))), family = "poisson", data = data[1:(nrow(data)-n_week_adjusting)])
     n_cor <- round(stats::predict(fit, newdata = data, type = "response")) ###SHOULD THIS BE ROUNDED?
     data[, glue::glue("ncor0_{i}"):= n_cor]
     
