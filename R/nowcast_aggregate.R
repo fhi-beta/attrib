@@ -44,7 +44,7 @@
 #' For more details see the help vignette:
 #' \code{vignette("intro", package="attrib")}
 #'
-#' @param data Dataset containing DoE (Date of event) and dor (Date of registation). The columns must have these exact names. 
+#' @param data Dataset containing doe (Date of event) and dor (Date of registation). The columns must have these exact names. 
 #' @param aggregation_date Date of aggregation 
 #' @param n_week Number of weeks to calculate the percentage of the total registraations. Must be larger og equal to 2 amd smaller than the total number of weeks in the dataset.
 #' 

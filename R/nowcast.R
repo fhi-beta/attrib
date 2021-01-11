@@ -2,11 +2,11 @@
 #' \code{vignette("intro", package="attrib")}
 #'
 #' @param data cleaned data to perform correction formula on
-#' @param n_week Number of weeks to correct
+#' @param n_week_adjusting Number of weeks to correct
 #'
 
 
-nowcast_correction_fn_default <- function(data, n_week){
+nowcast_correction_fn_default <- function(data, n_week_adjusting){
   for ( i in 0:n_week){
     
     fit <- stats::glm(stats::as.formula(paste0("n_death", "~",  glue::glue("n0_{i}"))), family = "poisson", data = data[1:(nrow(data)-n_week)])
@@ -22,8 +22,9 @@ nowcast_correction_fn_default <- function(data, n_week){
 #' For more details see the help vignette:
 #' \code{vignette("intro", package="attrib")}
 #'
-#' @param data_clean Cleaned dataset from the function npowcast_clean
-#' @param n_week Number of weeks to correct
+#' @param data_aggregated Cleaned dataset from the function npowcast_clean
+#' @param n_week_adjusting Number of weeks to correct
+#' @param n_week_training Number of weeks to train on
 #' @param nowcast_correction_fn Correction function. Must return a table with columnames ncor0_i for i in 0:n_week and cut_doe. The default uses "n_death ~ n0_i" for all i in 0:n_week. 
 #' @examples
 #' \dontrun{
@@ -37,7 +38,7 @@ nowcast_correction_fn_default <- function(data, n_week){
 #'
 #' @export
 nowcast <- function(
-  data_clean,
+  data_aggregated,
   n_week_adjusting,
   n_week_training,
   nowcast_correction_fn = nowcast_correction_fn_default) {
@@ -67,7 +68,7 @@ nowcast <- function(
   #check that all the required variables are there
   # (i.e. that the correction function actually gives reasonable stuff back)
   
-  for ( i in 0:n_week){
+  for ( i in 0:n_week_adjusting){
     temp <- paste0("ncor0_",i)
     if(! temp %in% colnames(data)){
       stop(glue::glue("nowcast_correction_fn is not returning {temp}"))
@@ -76,7 +77,7 @@ nowcast <- function(
   
   
   data[, ncor := n_death]
-  for ( i in 0:n_week){
+  for ( i in 0:n_week_adjusting){
     temp <- paste0("ncor0_",i)
     data[, temp_variable := get(temp)]
     data[(nrow(data)-i), ncor:= temp_variable]
