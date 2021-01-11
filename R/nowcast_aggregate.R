@@ -128,19 +128,23 @@ nowcast_aggregate <- function(
     
     temp <- d[, .(
       temp_outcome_n = sum(dor < (as.Date(cut_doe) + i*7)),
-      temp_outcome_p = sum(dor < (as.Date(cut_doe) + i*7))/n_death), 
+      temp_outcome_p = sum(dor < (as.Date(cut_doe) + i*7))/n_death,
+      n_death = n_death),
       keyby = .(cut_doe)]
     
     setnames(temp, "temp_outcome_p", paste0("p0_", (i-1)))
     setnames(temp, "temp_outcome_n", paste0("n0_", (i-1)))
     
-    retval[[i]] <- as.data.frame(subset(temp, select = -c(cut_doe) ))
+    retval[[i ]] <- as.data.frame(temp)
+    #retval[[i]] <- as.data.frame(subset(temp, select = -c(cut_doe) ))
     
   }
   
   d_within_week <- cbind.data.frame(retval)
   d_within_week <- unique(as.data.table(d_within_week))
-  d_within_week <- (cbind(d_within_week, unique(d[, .(cut_doe, n_death)])))
+  # nrow(d_within_week)
+  # nrow(unique(d[, .(cut_doe, n_death)]))
+  d_within_week <- as.data.table(subset(d_within_week, select = unique(colnames(d_within_week))))
   
   
   # insert NA where we do not have data
