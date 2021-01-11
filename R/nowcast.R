@@ -55,7 +55,7 @@ nowcast <- function(
   # data_aggregated <- as.data.table(data_fake_nowcasting_aggregated)
   # n_week_training <- 50
   # n_week_adjusting <- 8
-  # nowcast_correction_fn<- nowcast_correction_fn_default
+  #nowcast_correction_fn<- nowcast_correction_fn_default
   # i = 2
   
   data <- as.data.table(data_aggregated)
@@ -115,7 +115,18 @@ nowcast <- function(
   
   #### testing ----
   
-  # data[, n_death_lag_2 := shift(n_death, 1L)]
+  # data_aggregated
+  # fit <- stats::glm(stats::as.formula(paste0("n_death", "~", "n0_2 + n0_3 + n0_4")), family = "poisson", data = data_aggregated[600:(nrow(data_aggregated)-n_week_adjusting),])
+  # summary(fit)
+  # n_cor <- round(stats::predict(fit, newdata = data_aggregated, type = "response")) ###SHOULD THIS BE ROUNDED?
+  # n_cor
+  # 
+  # 
+  # data_aggregated[, n_cor :=n_cor]
+  # 
+  # data_aggregated[, diff := n_death - n_cor]
+  
+   # data[, n_death_lag_2 := shift(n_death, 1L)]
   # fit <- glm(n_death ~ n0_2 + n0_3 + n0_4, family = "poisson", data = data[1:(nrow(data)-3)])
   # summary(fit)
   # n_cor <- predict(fit, newdata = data, type = "response")
