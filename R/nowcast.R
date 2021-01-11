@@ -55,7 +55,7 @@ nowcast <- function(
   # data_aggregated <- as.data.table(data_fake_nowcasting_aggregated)
   # n_week_training <- 50
   # n_week_adjusting <- 8
-  #nowcast_correction_fn<- nowcast_correction_fn_default
+  # nowcast_correction_fn<- nowcast_correction_fn_default
   # i = 2
   
   data <- as.data.table(data_aggregated)

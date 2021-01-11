@@ -46,11 +46,21 @@ nowcast_eval <- function(data_aggregated, n_week_adjusting){
     std <- (sum(data$residual[1:50]**2))**0.5
     data[, std_residual:= (temp_variable -n_death)/std]
     
+    mean <- sum(data$n_death)/nrow(data)
+    data[, diff_n_death_mean := n_death - mean]
+    
+    R2 <- 1- (sum(na.omit(data)$residual**2))/(sum(na.omit(data)$diff_n_death_mean**2))
+    MSE <- sum(na.omit(data)$residual**2)/nrow(na.omit(data))
     q <- ggplot2::ggplot(data, ggplot2::aes(x = temp_variable, y = std_residual))
     q <- q + ggplot2::geom_point()
     q <- q + ggplot2::geom_hline(yintercept = 0, colour = "red")
-    q <- q + ggplot2::ggtitle(paste(temp, "std_residual"))
     
+    q <- q + ggplot2::scale_y_continuous("Standard residuals")
+    q <- q + ggplot2::scale_x_continuous("Number of deaths")
+    
+    q <- q + ggplot2::labs(caption = glue::glue(" {lubridate::today()}"))
+    q <- q + ggplot2::ggtitle(paste( "Stdandard residuals for", temp))
+    q
     temp_retval <- list()
     temp_retval$std_residualplot <- copy(q)
     
@@ -62,6 +72,9 @@ nowcast_eval <- function(data_aggregated, n_week_adjusting){
     
     abs_error <- sum(abs(na.omit(data$residual)))/nrow(na.omit(data))
     temp_retval$abs_error <- abs_error
+    temp_retval$R_squared <- R2
+    temp_retval$MSE <- MSE
+    temp_retval$RMSE <- MSE**0.5
     
     retval[[i +1]] <- temp_retval
   }
