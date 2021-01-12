@@ -17,12 +17,27 @@ nowcast_correction_fn_default <- function(data, n_week_adjusting){
   return(data)
 }
 
+# nowcast_correction_fn_pois_mult <- function(data, n_week_adjusting){
+#   for ( i in 0:n_week_adjusting){
+#     formula <- paste0("n_death", "~",  glue::glue("n0_{i}"))
+#     if(i>=1){
+#       for (j in 1:(i)){
+#         formula <-  paste0(formula, "+",  glue::glue("n0_{j}"))
+#       }
+#     }
+#     fit <- stats::glm(stats::as.formula(formula), family = "poisson", data = data[1:(nrow(data)-n_week_adjusting)])
+#     n_cor <- round(stats::predict(fit, newdata = data, type = "response")) ###SHOULD THIS BE ROUNDED?
+#     data[, glue::glue("ncor0_{i}"):= n_cor]
+#     
+#   }
+#   return(data)
+# }
 
 
 #' For more details see the help vignette:
 #' \code{vignette("intro", package="attrib")}
 #'
-#' @param data_aggregated Cleaned dataset from the function npowcast_clean
+#' @param data_aggregated Aggregated dataset from the function npowcast_aggregate
 #' @param n_week_adjusting Number of weeks to correct
 #' @param n_week_training Number of weeks to train on
 #' @param nowcast_correction_fn Correction function. Must return a table with columnames ncor0_i for i in 0:n_week and cut_doe. The default uses "n_death ~ n0_i" for all i in 0:n_week. 
@@ -55,7 +70,7 @@ nowcast <- function(
   # data_aggregated <- as.data.table(data_fake_nowcasting_aggregated)
   # n_week_training <- 50
   # n_week_adjusting <- 8
-  # nowcast_correction_fn<- nowcast_correction_fn_default
+  # nowcast_correction_fn<- nowcast_correction_fn_pois_mult
   # i = 2
   
   data <- as.data.table(data_aggregated)

@@ -5,10 +5,10 @@
 \title{For more details see the help vignette:
 \code{vignette("intro", package="attrib")}}
 \usage{
-nowcast_eval(data_aggregated, n_week_adjusting)
+nowcast_eval(data, n_week_adjusting)
 }
 \arguments{
-\item{data_aggregated}{Aggregated dataset from the function nowcast_aggregate}
+\item{data}{Dataset from the function nowcast}
 
 \item{n_week_adjusting}{Number of weeks to adjust}
 }

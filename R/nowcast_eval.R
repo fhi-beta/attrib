@@ -74,6 +74,7 @@ nowcast_eval <- function(data, n_week_adjusting){
     q <- q + ggplot2::ggtitle(paste( "Stdandard residuals for", temp))
     q
     temp_retval <- list()
+    temp_retval$ncor <- i
     temp_retval$std_residualplot <- copy(q)
     
     # q <- ggplot2::ggplot(data, ggplot2::aes(x = temp_variable, y = residual))
