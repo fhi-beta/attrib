@@ -1,7 +1,7 @@
 #' For more details see the help vignette:
 #' \code{vignette("intro", package="attrib")}
 #'
-#' @param data_aggregated Aggregated dataset from the function nowcast_aggregate
+#' @param data Dataset from the function nowcast
 #' @param n_week_adjusting Number of weeks to adjust
 #' 
 #' @examples
@@ -14,7 +14,7 @@
 #' @return Residualplots for all ncor_i and some evaluationmetrixs for each of them 
 #' @export
 #' 
-nowcast_eval <- function(data_aggregated, n_week_adjusting){
+nowcast_eval <- function(data, n_week_adjusting){
   
 
   temp_variable <- NULL
@@ -45,7 +45,7 @@ nowcast_eval <- function(data_aggregated, n_week_adjusting){
   # for developint
   # data_aggregated <- attrib::data_fake_nowcasting_aggregated
   
-   data <- nowcast(data_aggregated= data_aggregated, n_week_training = 50, n_week_adjusting = 8)
+   #data <- nowcast(data_aggregated= data_aggregated, n_week_training = 50, n_week_adjusting = 8)
   # n_week_adjusting <- 8
   
   retval <- vector("list" , length = (n_week_adjusting+1))
