@@ -44,7 +44,8 @@ nowcast_eval <- function(data_aggregated, n_week_adjusting){
   
   # for developint
   # data_aggregated <- attrib::data_fake_nowcasting_aggregated
-  # data <- nowcast(data_aggregated= data_aggregated, n_week_training = 50, n_week_adjusting = 8)
+  
+   data <- nowcast(data_aggregated= data_aggregated, n_week_training = 50, n_week_adjusting = 8)
   # n_week_adjusting <- 8
   
   retval <- vector("list" , length = (n_week_adjusting+1))

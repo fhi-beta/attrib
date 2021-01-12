@@ -8,14 +8,12 @@
 nowcast_eval(data_aggregated, n_week_adjusting)
 }
 \arguments{
-\item{data_clean}{Cleaned dataset from the function npowcast_clean}
+\item{data_aggregated}{Aggregated dataset from the function nowcast_aggregate}
 
-\item{n_week}{Number of weeks to correct}
-
-\item{nowcast_correction_fn}{Correction function. Must return a table with columnames ncor0_i for i in 0:n_week and cut_doe. The default uses "n_death ~ n0_i" for all i in 0:n_week.}
+\item{n_week_adjusting}{Number of weeks to adjust}
 }
 \value{
-Dataset including the corrected values for n_death
+Residualplots for all ncor_i and some evaluationmetrixs for each of them
 }
 \description{
 For more details see the help vignette:
@@ -26,7 +24,6 @@ For more details see the help vignette:
 
 data <- attrib::data_fake_nowcasting_aggregated
 n_week_adjusting <- 8
-n_week_training <- 12
-data_correct <- nowcast(data, n_week_adjusting,n_week_training )
+data_correct <- nowcast_eval(data, n_week_adjusting )
 }
 }
