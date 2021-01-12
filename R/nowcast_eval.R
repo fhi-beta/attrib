@@ -1,22 +1,33 @@
 #' For more details see the help vignette:
 #' \code{vignette("intro", package="attrib")}
 #'
-#' @param data_clean Cleaned dataset from the function npowcast_clean
-#' @param n_week Number of weeks to correct
-#' @param nowcast_correction_fn Correction function. Must return a table with columnames ncor0_i for i in 0:n_week and cut_doe. The default uses "n_death ~ n0_i" for all i in 0:n_week. 
+#' @param data_aggregated Aggregated dataset from the function nowcast_aggregate
+#' @param n_week_adjusting Number of weeks to adjust
+#' 
 #' @examples
 #' \dontrun{
 #'
 #' data <- attrib::data_fake_nowcasting_aggregated
 #' n_week_adjusting <- 8
-#' n_week_training <- 12
-#' data_correct <- nowcast(data, n_week_adjusting,n_week_training )
+#' data_correct <- nowcast_eval(data, n_week_adjusting )
 #' }
-#' @return Dataset including the corrected values for n_death
-#'
+#' @return Residualplots for all ncor_i and some evaluationmetrixs for each of them 
 #' @export
 #' 
 nowcast_eval <- function(data_aggregated, n_week_adjusting){
+  
+
+  temp_variable <- NULL
+  residual <- NULL
+  n_death <- NULL
+  std_residual <- NULL
+  diff_n_death_mean <- NULL
+  na.omit <- NULL
+  data_fake_nowcasting_aggregated <- NULL
+  diff_n_death_mean <- NULL
+  
+  
+  
   
   # data <- read.table("C:/Users/AUHO/Desktop/FHIDOD2_20201229.txt", sep = ";", header = TRUE)
   # data <- as.data.table(data)
@@ -32,9 +43,9 @@ nowcast_eval <- function(data_aggregated, n_week_adjusting){
 
   
   # for developint
-  data_aggregated <- data_fake_nowcasting_aggregated
-  data <- nowcast(data_aggregated= data_aggregated, n_week_training = 50, n_week_adjusting = 8)
-  n_week_adjusting <- 8
+  # data_aggregated <- attrib::data_fake_nowcasting_aggregated
+  # data <- nowcast(data_aggregated= data_aggregated, n_week_training = 50, n_week_adjusting = 8)
+  # n_week_adjusting <- 8
   
   retval <- vector("list" , length = (n_week_adjusting+1))
   
