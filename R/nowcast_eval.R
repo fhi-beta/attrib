@@ -18,21 +18,21 @@
 #' 
 nowcast_eval <- function(data_aggregated, n_week_adjusting){
   
-  data <- read.table("C:/Users/AUHO/Desktop/FHIDOD2_20201229.txt", sep = ";", header = TRUE)
-  data <- as.data.table(data)
-
-  data[, doe := as.Date(as.character(DODS_DATO), format = "%Y%m%d")]
-  data[, dor := as.Date(as.character(ENDR_DATO), format = "%Y%m%d")]
-
-  data<- na.omit(data)
-
-  data_aggregated <- nowcast_aggregate(data, lubridate::today(), n_week = 13)
+  # data <- read.table("C:/Users/AUHO/Desktop/FHIDOD2_20201229.txt", sep = ";", header = TRUE)
+  # data <- as.data.table(data)
+  # 
+  # data[, doe := as.Date(as.character(DODS_DATO), format = "%Y%m%d")]
+  # data[, dor := as.Date(as.character(ENDR_DATO), format = "%Y%m%d")]
+  # 
+  # data<- na.omit(data)
+  # 
+  # data_aggregated <- nowcast_aggregate(data, lubridate::today(), n_week = 13)
 
   #data_cast<-nowcast(data_aggregated, n_week_adjusting = 8, n_week_training = 40)
 
   
   # for developint
-  #data_aggregated <- data_fake_nowcasting_aggregated
+  data_aggregated <- data_fake_nowcasting_aggregated
   data <- nowcast(data_aggregated= data_aggregated, n_week_training = 50, n_week_adjusting = 8)
   n_week_adjusting <- 8
   

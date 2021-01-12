@@ -10,7 +10,7 @@ nowcast_correction_fn_default(data, n_week_adjusting)
 \arguments{
 \item{data}{cleaned data to perform correction formula on}
 
-\item{n_week}{Number of weeks to correct}
+\item{n_week_adjusting}{Number of weeks to correct}
 }
 \description{
 For more details see the help vignette:
