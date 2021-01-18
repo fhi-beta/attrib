@@ -97,8 +97,8 @@ gen_fake_death_data <- function() {
   skeleton <- rbindlist(temp_vec)
   
   skeleton[, doe := date]
-  skeleton[, reg_lag := stats::rpois(.N, 28)]
-    skeleton[, dor := doe + reg_lag]
+  skeleton[, reg_lag := stats::rpois(.N, 21)]
+  skeleton[, dor := doe + reg_lag]
   
   # data_fake_nowcasting_raw <- skeleton[,.(doe, dor)]
   # save(data_fake_nowcasting_raw, file = "data/data_fake_nowcasting_raw.rda", compress = "bzip2")
