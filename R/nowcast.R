@@ -6,10 +6,10 @@
 #'
 
 
-nowcast_correction_fn_default <- function(data, n_week_adjusting){
+nowcast_correction_fn_simple <- function(data, n_week_adjusting){
   for ( i in 0:n_week_adjusting){
     
-    fit <- stats::glm(stats::as.formula(paste0("n_death", "~",  glue::glue("n0_{i}"))), family = "poisson", data = data[1:(nrow(data)-n_week_adjusting)])
+    fit <- stats::glm(stats::as.formula(paste0("n_death", "~",  glue::glue("n0_{i}"))), family = "quasipoisson", data = data[1:(nrow(data)-n_week_adjusting)])
     n_cor <- round(stats::predict(fit, newdata = data, type = "response")) ###SHOULD THIS BE ROUNDED?
     data[, glue::glue("ncor0_{i}"):= n_cor]
     
@@ -17,22 +17,42 @@ nowcast_correction_fn_default <- function(data, n_week_adjusting){
   return(data)
 }
 
-# nowcast_correction_fn_pois_mult <- function(data, n_week_adjusting){
-#   for ( i in 0:n_week_adjusting){
-#     formula <- paste0("n_death", "~",  glue::glue("n0_{i}"))
-#     if(i>=1){
-#       for (j in 1:(i)){
-#         formula <-  paste0(formula, "+",  glue::glue("n0_{j}"))
-#       }
-#     }
-#     fit <- stats::glm(stats::as.formula(formula), family = "poisson", data = data[1:(nrow(data)-n_week_adjusting)])
-#     n_cor <- round(stats::predict(fit, newdata = data, type = "response")) ###SHOULD THIS BE ROUNDED?
-#     data[, glue::glue("ncor0_{i}"):= n_cor]
-#     
-#   }
-#   return(data)
-# }
+#' For more details see the help vignette:
+#' \code{vignette("intro", package="attrib")}
+#'
+#' @param data cleaned data to perform correction formula on
+#' @param n_week_adjusting Number of weeks to correct
+#'
 
+nowcast_correction_fn_expanded <- function(data, n_week_adjusting){
+  
+  for ( i in 0:n_week_adjusting){
+    
+    week_n <- paste0("n0_",(i))
+    data[, temp_variable_n := get(week_n)]
+    data[, paste0("n0_",(i), "_lag1") := shift(temp_variable_n, 1)]
+    
+  }
+  data <- subset(data, select= -c(temp_variable_n))
+  data[, week := isoweek(cut_doe)]
+  data[, year := year(cut_doe)] #er dettte rett?
+  for ( i in 0:n_week_adjusting){
+    
+    
+    formula <- paste0("n_death", "~sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)+ year +", glue::glue("n0_{i}_lag1"), "+",  glue::glue("n0_{i}"))
+    
+    if(i>=1){
+      for (j in 0:(i-1)){
+        formula <-  paste0(formula, "+",  glue::glue("n0_{j}"))
+      }
+    }
+    fit <- stats::glm(stats::as.formula(formula), family = "quasipoisson", data = data[1:(nrow(data)-n_week_adjusting)])
+    n_cor <- round(stats::predict(fit, newdata = data, type = "response")) ###SHOULD THIS BE ROUNDED?
+    data[, glue::glue("ncor0_{i}"):= n_cor]
+    
+  }
+  return(data)
+}
 
 #' For more details see the help vignette:
 #' \code{vignette("intro", package="attrib")}
@@ -56,7 +76,7 @@ nowcast <- function(
   data_aggregated,
   n_week_adjusting,
   n_week_training,
-  nowcast_correction_fn = nowcast_correction_fn_default) {
+  nowcast_correction_fn = nowcast_correction_fn_expanded) {
 
   data_fake_death_clean <- NULL
   ncor <- NULL
@@ -67,11 +87,11 @@ nowcast <- function(
 
   
   ##### for developing
-  # data_aggregated <- as.data.table(data_fake_nowcasting_aggregated)
-  # n_week_training <- 50
-  # n_week_adjusting <- 8
-  # nowcast_correction_fn<- nowcast_correction_fn_pois_mult
-  # i = 2
+  data_aggregated <- as.data.table(data_fake_nowcasting_aggregated)
+  n_week_training <- 50
+  n_week_adjusting <- 8
+  nowcast_correction_fn<- nowcast_correction_fn_expanded
+
   
   data <- as.data.table(data_aggregated)
   n_week_start <- n_week_training + n_week_adjusting
