@@ -30,7 +30,7 @@ nowcast_correction_fn_expanded <- function(data, n_week_adjusting){
     
     week_n <- paste0("n0_",(i))
     data[, temp_variable_n := get(week_n)]
-    data[, paste0("n0_",(i), "_lag1") := shift(temp_variable_n, 1)]
+    data[, paste0("n0_",(i), "_lag1") := shift(temp_variable_n, 1, fill = 0)]
     
   }
   data <- subset(data, select= -c(temp_variable_n))
@@ -49,6 +49,11 @@ nowcast_correction_fn_expanded <- function(data, n_week_adjusting){
     fit <- stats::glm(stats::as.formula(formula), family = "quasipoisson", data = data[1:(nrow(data)-n_week_adjusting)])
     n_cor <- round(stats::predict(fit, newdata = data, type = "response")) ###SHOULD THIS BE ROUNDED?
     data[, glue::glue("ncor0_{i}"):= n_cor]
+    
+    # n_sim = 500
+    # x<- arm::sim(fit, n_sim)
+    
+    
     
   }
   return(data)

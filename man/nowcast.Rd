@@ -9,11 +9,11 @@ nowcast(
   data_aggregated,
   n_week_adjusting,
   n_week_training,
-  nowcast_correction_fn = nowcast_correction_fn_default
+  nowcast_correction_fn = nowcast_correction_fn_expanded
 )
 }
 \arguments{
-\item{data_aggregated}{Cleaned dataset from the function npowcast_clean}
+\item{data_aggregated}{Aggregated dataset from the function npowcast_aggregate}
 
 \item{n_week_adjusting}{Number of weeks to correct}
 
