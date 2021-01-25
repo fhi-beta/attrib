@@ -60,42 +60,42 @@ nowcast_correction_fn_expanded <- function(data, n_week_adjusting){
   
      n_cor <- round(stats::predict(fit, newdata = data, type = "response")) ###SHOULD THIS BE ROUNDED?
      data[, glue::glue("ncor0_{i}"):= n_cor]
-  #   
-  #   cut_doe_cur <- cut_doe_vec[n_week_adjusting+1-i]
-  #   
-  #   n_sim = 500
-  #   x<- arm::sim(fit, n_sim)
-  #   sim_models <- as.data.frame(x@coef)
-  #   data_x <- as.data.table(copy(stats::model.frame(formula, data = data)))
-  #   data_x <- data_x[nrow(data_x)]
-  #   data_x[, n_death:= NULL]
-  #   
-  #   col_names<-  colnames(sim_models)
-  #   col_names_rel <- col_names[which(col_names != "Intercept")]
-  #   
-  #   dim(cbind(sim_models))
-  #   dim(rbind(1, as.matrix(t(data_x))))
-  #   
-  #   colnames(cbind(cbind(sim_models)))
-  #   rownames(rbind(1, as.matrix(t(data_x))))
-  #   
-  #   expected <- as.matrix(sim_models) %*%  rbind(1, as.matrix(t(data_x)))
-  #   expected_sim <-data.table(
-  #     sim_id = 1:500,
-  #     sim_value = exp(as.numeric(expected[1:500])),
-  #     cut_doe = cut_doe_cur
-  #   )
-  #   print(cut_doe_cur)
-  #   expected_sim[, sim_value:= round(as.numeric(sim_value), 2)]
-  #   sim_val_vec[[i +1]]<- expected_sim
-  #   
+
+    cut_doe_cur <- cut_doe_vec[n_week_adjusting+1-i]
+
+    n_sim = 500
+    x<- arm::sim(fit, n_sim)
+    sim_models <- as.data.frame(x@coef)
+    data_x <- as.data.table(copy(stats::model.frame(formula, data = data)))
+    data_x <- data_x[nrow(data_x)]
+    data_x[, n_death:= NULL]
+
+    col_names<-  colnames(sim_models)
+    col_names_rel <- col_names[which(col_names != "Intercept")]
+
+    dim(cbind(sim_models))
+    dim(rbind(1, as.matrix(t(data_x))))
+
+    colnames(cbind(cbind(sim_models)))
+    rownames(rbind(1, as.matrix(t(data_x))))
+
+    expected <- as.matrix(sim_models) %*%  rbind(1, as.matrix(t(data_x)))
+    expected_sim <-data.table(
+      sim_id = 1:500,
+      sim_value = exp(as.numeric(expected[1:500])),
+      cut_doe = cut_doe_cur
+    )
+    print(cut_doe_cur)
+    expected_sim[, sim_value:= round(as.numeric(sim_value), 2)]
+    sim_val_vec[[i +1]]<- expected_sim
+    
    }
-  # 
-  # 
-  # sim_data <- rbindlist(sim_val_vec)
-  # retval<- merge(data, sim_data, by = "cut_doe", all = TRUE)
-  # return(retval)
-  return(data)
+
+
+  sim_data <- rbindlist(sim_val_vec)
+  retval<- merge(data, sim_data, by = "cut_doe", all = TRUE)
+  return(retval)
+  #return(data)
 }
 
 #' For more details see the help vignette:
