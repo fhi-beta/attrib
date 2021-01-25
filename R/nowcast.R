@@ -26,8 +26,9 @@ nowcast_correction_fn_simple <- function(data, n_week_adjusting){
 
 nowcast_correction_fn_expanded <- function(data, n_week_adjusting){
   
-  #for developping
-  #data<- as.data.table(data_fake_nowcasting_aggregated)
+  # for developping
+  # data<- as.data.table(data_fake_nowcasting_aggregated)
+  # n_week_adjusting <- 8
   
   for ( i in 0:n_week_adjusting){
     
@@ -130,15 +131,18 @@ nowcast <- function(
 
   
   ##### for developing
-  data_aggregated <- as.data.table(data_fake_nowcasting_aggregated)
-  n_week_training <- 50
-  n_week_adjusting <- 8
-  nowcast_correction_fn<- nowcast_correction_fn_expanded
+  # data_aggregated <- as.data.table(data_fake_nowcasting_aggregated)
+  # n_week_training <- 50
+  # n_week_adjusting <- 8
+  # nowcast_correction_fn<- nowcast_correction_fn_expanded
 
   
   data <- as.data.table(data_aggregated)
   n_week_start <- n_week_training + n_week_adjusting
-  data <- data[(nrow(data)-n_week_start+1):nrow(data)]
+  
+  date_0 <- data[nrow(data)]$cut_doe
+  
+  data <- data[cut_doe >= (date_0 - n_week_start*7 + 1) ]
   
   #### corrected n_deaths ----
   data <- nowcast_correction_fn(data, n_week_adjusting)
@@ -155,10 +159,12 @@ nowcast <- function(
   
   
   data[, ncor := n_death]
+  date_0 <- data[nrow(data)]$cut_doe
   for ( i in 0:n_week_adjusting){
+    date_i <- date_0 - 7*i
     temp <- paste0("ncor0_",i)
     data[, temp_variable := get(temp)]
-    data[(nrow(data)-i), ncor:= temp_variable]
+    data[cut_doe == date_i, ncor:= temp_variable]
   }
   
   data[,temp_variable:=NULL]
