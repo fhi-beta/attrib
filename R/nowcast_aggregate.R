@@ -126,17 +126,27 @@ nowcast_aggregate <- function(
   d_within_week <- d[, .(cut_doe)]
   
   for ( i in 1:n_week){
-    
-    temp <- d[, .(
-      temp_outcome_n = sum(dor < (as.Date(cut_doe) + i*7)),
+    temp_d <- d[, .(cut_doe, n_death)]
+    temp <- d[dor < (as.Date(cut_doe) + i*7), .(
+      temp_outcome_n = .N,
       temp_outcome_p = sum(dor < (as.Date(cut_doe) + i*7))/n_death,
       n_death = n_death),
       keyby = .(cut_doe)]
     
-    setnames(temp, "temp_outcome_p", paste0("p0_", (i-1)))
-    setnames(temp, "temp_outcome_n", paste0("n0_", (i-1)))
+    temp_d[,paste0("n0_", (i-1)) := 0]
+    temp_d[,paste0("p0_", (i-1)) := 0]
+    temp_d[temp, on= .(cut_doe),  paste0("n0_", (i-1)) := temp_outcome_n]
+    temp_d[temp, on= .(cut_doe),  paste0("p0_", (i-1)) := temp_outcome_p]
     
-    retval[[i ]] <- as.data.frame(temp)
+    
+    retval[[i ]] <- as.data.frame(temp_d)
+    
+    
+    
+    # setnames(temp, "temp_outcome_p", paste0("p0_", (i-1)))
+    # setnames(temp, "temp_outcome_n", paste0("n0_", (i-1)))
+    # 
+    # retval[[i ]] <- as.data.frame(temp)
     #retval[[i]] <- as.data.frame(subset(temp, select = -c(cut_doe) ))
     
   }
@@ -172,7 +182,7 @@ nowcast_aggregate <- function(
 
 
     # data_fake_nowcasting_aggregated <- d_corrected
-    # save(data_fake_nowcasting_aggregated, file = "data/data_fake_nowcasting_aggregated.rda", compress = "bzip2")
+    # save(data_fake_nowcasting_aggregated, file = "data/data_fake_nowcasting_aggregated.rda", compress = "bzip2")L
 
   
   retval <- d_corrected
