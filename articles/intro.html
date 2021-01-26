@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">attrib</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2020.9.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2021.1.26</span>
       </span>
     </div>
 
@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -87,9 +87,10 @@
 
     
     
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">attrib</span>)
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">attrib</span><span class="op">)</span>
 <span class="co">#&gt; PACKAGE: attrib</span>
-<span class="co">#&gt; Version: 2020.09.01 at 04:48</span></pre></body></html></div>
+<span class="co">#&gt; Version: 2021.01.26 at 04:44</span></code></pre></div>
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
@@ -120,9 +121,10 @@
 <li>deaths: number of deaths</li>
 </ul>
 <p><code>fake_data_nation</code> is a similar dataset at the national level.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">data_fake_county</span> <span class="kw">&lt;-</span> <span class="kw pkg">attrib</span><span class="kw ns">::</span><span class="no"><a href="https://rdrr.io/pkg/attrib/man/data_fake_county.html">data_fake_county</a></span>
-<span class="no">data_fake_nation</span> <span class="kw">&lt;-</span> <span class="kw pkg">attrib</span><span class="kw ns">::</span><span class="no"><a href="https://rdrr.io/pkg/attrib/man/data_fake_nation.html">data_fake_nation</a></span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">data_fake_county</span>, <span class="fl">5</span>)
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">data_fake_county</span> <span class="op">&lt;-</span> <span class="fu">attrib</span><span class="fu">::</span><span class="va"><a href="../reference/data_fake_county.html">data_fake_county</a></span>
+<span class="va">data_fake_nation</span> <span class="op">&lt;-</span> <span class="fu">attrib</span><span class="fu">::</span><span class="va"><a href="../reference/data_fake_nation.html">data_fake_nation</a></span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">data_fake_county</span>, <span class="fl">5</span><span class="op">)</span>
 <span class="co">#&gt;    location_code week    season year    yrwk  x    pop pr100_ili</span>
 <span class="co">#&gt; 1:      county03    1 2009/2010 2010 2010-01 24 693494 0.5302766</span>
 <span class="co">#&gt; 2:      county03    1 2010/2011 2011 2011-01 24 693494 0.7234059</span>
@@ -134,7 +136,7 @@
 <span class="co">#&gt; 2:       0.5359123  0.01462311                0     96</span>
 <span class="co">#&gt; 3:       1.8919261 -2.03893188                0    105</span>
 <span class="co">#&gt; 4:       1.3909804 -6.02035548                0     97</span>
-<span class="co">#&gt; 5:       1.3942666 -1.72146124                0    114</span></pre></body></html></div>
+<span class="co">#&gt; 5:       1.3942666 -1.72146124                0    114</span></code></pre></div>
 <p>In this example we will look at the exposures <code>pr100_ili_lag_1</code> and <code>temperature_high</code> and calculate the attributable mortality due to these exposures.</p>
 </div>
 </div>
@@ -167,31 +169,34 @@
 </ul>
 </li>
 </ul>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="co">#response</span>
-<span class="no">response</span> <span class="kw">&lt;-</span> <span class="st">"deaths"</span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">#response</span>
+<span class="va">response</span> <span class="op">&lt;-</span> <span class="st">"deaths"</span>
 
 <span class="co"># fixed effects</span>
-<span class="no">fixef_county</span> <span class="kw">&lt;-</span> <span class="st">" temperature_high +
+<span class="va">fixef_county</span> <span class="op">&lt;-</span> <span class="st">" temperature_high +
   pr100_ili_lag_1 +
   sin(2 * pi * (week - 1) / 52) +
   cos(2 * pi * (week - 1) / 52)"</span>
 
 
 <span class="co">#random effects</span>
-<span class="no">ranef_county</span> <span class="kw">&lt;-</span> <span class="st">"(1|location_code) +
+<span class="va">ranef_county</span> <span class="op">&lt;-</span> <span class="st">"(1|location_code) +
   (pr100_ili_lag_1|season)"</span>
 
 <span class="co">#offset</span>
-<span class="no">offset_county</span> <span class="kw">&lt;-</span> <span class="st">"log(pop)"</span></pre></body></html></div>
+<span class="va">offset_county</span> <span class="op">&lt;-</span> <span class="st">"log(pop)"</span></code></pre></div>
 <p>Now we fit the model using <code>fit_attrib</code>.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r">
-<span class="no">fit_county</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/attrib/man/fit_attrib.html">fit_attrib</a></span>(<span class="no">data_fake_county</span>,
-                          <span class="kw">response</span> <span class="kw">=</span> <span class="no">response</span>,
-                          <span class="kw">fixef</span> <span class="kw">=</span> <span class="no">fixef_county</span>,
-                          <span class="kw">ranef</span> <span class="kw">=</span> <span class="no">ranef_county</span>,
-                          <span class="kw">offset</span> <span class="kw">=</span> <span class="no">offset_county</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="va">fit_county</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_attrib.html">fit_attrib</a></span><span class="op">(</span><span class="va">data_fake_county</span>, 
+                          response <span class="op">=</span> <span class="va">response</span>, 
+                          fixef <span class="op">=</span> <span class="va">fixef_county</span>, 
+                          ranef <span class="op">=</span> <span class="va">ranef_county</span>, 
+                          offset <span class="op">=</span> <span class="va">offset_county</span><span class="op">)</span></code></pre></div>
 <p>This results in the following fit:</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">fit_county</span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">fit_county</span>
 <span class="co">#&gt; Generalized linear mixed model fit by maximum likelihood (Laplace</span>
 <span class="co">#&gt;   Approximation) [glmerMod]</span>
 <span class="co">#&gt;  Family: poisson  ( log )</span>
@@ -214,7 +219,7 @@
 <span class="co">#&gt;                     0.02796                      0.01878  </span>
 <span class="co">#&gt; cos(2 * pi * (week - 1)/52)  </span>
 <span class="co">#&gt;                     0.07498  </span>
-<span class="co">#&gt; convergence code 0; 0 optimizer warnings; 1 lme4 warnings</span></pre></body></html></div>
+<span class="co">#&gt; optimizer (Nelder_Mead) convergence code: 0 (OK) ; 0 optimizer warnings; 1 lme4 warnings</span></code></pre></div>
 <p>Note that fit has the added attributes <code>offset</code> (saving the offset name) and <code>fit_fix</code> (the coefficients of the linear model fitted on only the fixed effects). These are needed by <code>est_attrib</code> to create the dataset containing only the fixed effects.</p>
 </div>
 <div id="national-level" class="section level2">
@@ -241,25 +246,27 @@
 </ul>
 </li>
 </ul>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="co"># take in the fixed effects</span>
-<span class="no">response</span> <span class="kw">=</span> <span class="st">"deaths"</span>
-<span class="no">fixef_nation</span> <span class="kw">&lt;-</span> <span class="st">"temperature_high +
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># take in the fixed effects</span>
+<span class="va">response</span> <span class="op">=</span> <span class="st">"deaths"</span>
+<span class="va">fixef_nation</span> <span class="op">&lt;-</span> <span class="st">"temperature_high +
   pr100_ili_lag_1 +
   sin(2 * pi * (week - 1) / 52) +
   cos(2 * pi * (week - 1) / 52)"</span>
 
 
 <span class="co">#take in the random effects</span>
-<span class="no">ranef_nation</span> <span class="kw">&lt;-</span> <span class="st">"(pr100_ili_lag_1|season)"</span>
+<span class="va">ranef_nation</span> <span class="op">&lt;-</span> <span class="st">"(pr100_ili_lag_1|season)"</span>
 
 <span class="co"># take in the offset</span>
-<span class="no">offset_nation</span> <span class="kw">&lt;-</span> <span class="st">"log(pop)"</span></pre></body></html></div>
-<div class="sourceCode" id="cb7"><html><body><pre class="r">
-  <span class="no">fit_nation</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/attrib/man/fit_attrib.html">fit_attrib</a></span>(<span class="no">data_fake_nation</span>,
-                           <span class="kw">response</span> <span class="kw">=</span> <span class="no">response</span>,
-                           <span class="kw">fixef</span> <span class="kw">=</span> <span class="no">fixef_nation</span>,
-                           <span class="kw">ranef</span> <span class="kw">=</span> <span class="no">ranef_nation</span>,
-                           <span class="kw">offset</span> <span class="kw">=</span> <span class="no">offset_nation</span>)</pre></body></html></div>
+<span class="va">offset_nation</span> <span class="op">&lt;-</span> <span class="st">"log(pop)"</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+  <span class="va">fit_nation</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_attrib.html">fit_attrib</a></span><span class="op">(</span><span class="va">data_fake_nation</span>, 
+                           response <span class="op">=</span> <span class="va">response</span>, 
+                           fixef <span class="op">=</span> <span class="va">fixef_nation</span>, 
+                           ranef <span class="op">=</span> <span class="va">ranef_nation</span>, 
+                           offset <span class="op">=</span> <span class="va">offset_nation</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
 <div id="using-the-sim-function" class="section level1">
@@ -267,9 +274,10 @@
 <a href="#using-the-sim-function" class="anchor"></a>Using the sim function</h1>
 <p>The <code>sim</code> function can be used to generate simulations for all the rows in our data.</p>
 <p>It first generates <code>n_sim</code> simulations from the posterior distribution of the coefficients from out fit before applying these coefficients on our dataset generating <code>n_sim</code> simulations and expected mortality for each line. This is quite generic. Hence if the goal is to compute attributable mortality or incident risk ratios we use <code>est_attrib</code> as shown in a later part of the vignette.</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">n_sim</span> <span class="kw">&lt;-</span> <span class="fl">20</span>
-<span class="no">sim_data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/attrib/man/sim.html">sim</a></span>(<span class="no">fit_nation</span>, <span class="no">data_fake_nation</span>, <span class="no">n_sim</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">sim_data</span>[<span class="no">id_row</span> <span class="kw">==</span> <span class="fl">1</span>], <span class="fl">5</span>)
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">n_sim</span> <span class="op">&lt;-</span> <span class="fl">20</span>
+<span class="va">sim_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim.html">sim</a></span><span class="op">(</span><span class="va">fit_nation</span>, <span class="va">data_fake_nation</span>, <span class="va">n_sim</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">sim_data</span><span class="op">[</span><span class="va">id_row</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span>, <span class="fl">5</span><span class="op">)</span>
 <span class="co">#&gt;    week    season year    yrwk  x location_code     pop pr100_ili</span>
 <span class="co">#&gt; 1:    1 2009/2010 2010 2010-01 24         norge 5367580  1.160403</span>
 <span class="co">#&gt; 2:    1 2009/2010 2010 2010-01 24         norge 5367580  1.160403</span>
@@ -277,11 +285,11 @@
 <span class="co">#&gt; 4:    1 2009/2010 2010 2010-01 24         norge 5367580  1.160403</span>
 <span class="co">#&gt; 5:    1 2009/2010 2010 2010-01 24         norge 5367580  1.160403</span>
 <span class="co">#&gt;    pr100_ili_lag_1 temperature_high deaths id_row sim_id sim_value</span>
-<span class="co">#&gt; 1:        1.100072                0    891      1      1  907.8248</span>
-<span class="co">#&gt; 2:        1.100072                0    891      1      2  902.5292</span>
-<span class="co">#&gt; 3:        1.100072                0    891      1      3  908.9340</span>
-<span class="co">#&gt; 4:        1.100072                0    891      1      4  898.5274</span>
-<span class="co">#&gt; 5:        1.100072                0    891      1      5  895.7445</span></pre></body></html></div>
+<span class="co">#&gt; 1:        1.100072                0    891      1      1  897.0764</span>
+<span class="co">#&gt; 2:        1.100072                0    891      1      2  900.9344</span>
+<span class="co">#&gt; 3:        1.100072                0    891      1      3  899.5073</span>
+<span class="co">#&gt; 4:        1.100072                0    891      1      4  895.2787</span>
+<span class="co">#&gt; 5:        1.100072                0    891      1      5  902.8483</span></code></pre></div>
 <p>We can see that we now have multiple expected mortalities for the same dataline. This is due to the coefficient simulations.</p>
 </div>
 <div id="estimating-attributable-mortality-using-est_attrib" class="section level1">
@@ -293,20 +301,21 @@
 <li>the estimated mortality for the exposures set to reference values</li>
 </ul>
 <p>This is easily done using <code>est_attrib</code>.</p>
-<p>We need to give the fit, the dataset, the exposures with reference values, and the number of simulations. <code>est_attrib</code> will then using the <code><a href="https://rdrr.io/pkg/arm/man/sim.html">arm::sim</a></code> function to generate simulations of the underlying posterior distribution. <code><a href="https://rdrr.io/pkg/attrib/man/sim.html">attrib::sim</a></code> will then combine the simulated coefficients to estimate the modeled outcome (i.e. number of deaths) for each simulation.</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">exposures</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>( <span class="st">"temperature_high"</span> <span class="kw">=</span> <span class="fl">0</span>, <span class="st">"pr100_ili_lag_1"</span> <span class="kw">=</span> <span class="fl">0</span>)
-<span class="no">n_sim</span> <span class="kw">&lt;-</span> <span class="fl">20</span>
-<span class="no">est_attrib_sim_county</span> <span class="kw">&lt;-</span> <span class="kw pkg">attrib</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/attrib/man/est_attrib.html">est_attrib</a></span>(<span class="no">fit_county</span>,
-                                        <span class="no">data_fake_county</span>,
-                                        <span class="kw">exposures</span> <span class="kw">=</span> <span class="no">exposures</span>,
-                                        <span class="kw">n_sim</span> <span class="kw">=</span> <span class="no">n_sim</span>)
+<p>We need to give the fit, the dataset, the exposures with reference values, and the number of simulations. <code>est_attrib</code> will then using the <code><a href="https://rdrr.io/pkg/arm/man/sim.html">arm::sim</a></code> function to generate simulations of the underlying posterior distribution. <code><a href="../reference/sim.html">attrib::sim</a></code> will then combine the simulated coefficients to estimate the modeled outcome (i.e. number of deaths) for each simulation.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">exposures</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span> <span class="st">"temperature_high"</span> <span class="op">=</span> <span class="fl">0</span>, <span class="st">"pr100_ili_lag_1"</span> <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>
+<span class="va">n_sim</span> <span class="op">&lt;-</span> <span class="fl">20</span>
+<span class="va">est_attrib_sim_county</span> <span class="op">&lt;-</span> <span class="fu">attrib</span><span class="fu">::</span><span class="fu"><a href="../reference/est_attrib.html">est_attrib</a></span><span class="op">(</span><span class="va">fit_county</span>, 
+                                        <span class="va">data_fake_county</span>, 
+                                        exposures <span class="op">=</span> <span class="va">exposures</span>, 
+                                        n_sim <span class="op">=</span> <span class="va">n_sim</span><span class="op">)</span>
 
-<span class="no">est_attrib_sim_nation</span> <span class="kw">&lt;-</span> <span class="kw pkg">attrib</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/attrib/man/est_attrib.html">est_attrib</a></span>(<span class="no">fit_nation</span>,
-                                        <span class="no">data_fake_nation</span>,
-                                        <span class="kw">exposures</span> <span class="kw">=</span> <span class="no">exposures</span>,
-                                        <span class="kw">n_sim</span> <span class="kw">=</span> <span class="no">n_sim</span>)
+<span class="va">est_attrib_sim_nation</span> <span class="op">&lt;-</span> <span class="fu">attrib</span><span class="fu">::</span><span class="fu"><a href="../reference/est_attrib.html">est_attrib</a></span><span class="op">(</span><span class="va">fit_nation</span>, 
+                                        <span class="va">data_fake_nation</span>, 
+                                        exposures <span class="op">=</span> <span class="va">exposures</span>,
+                                        n_sim <span class="op">=</span> <span class="va">n_sim</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">est_attrib_sim_county</span>, <span class="fl">5</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">est_attrib_sim_county</span>, <span class="fl">5</span><span class="op">)</span>
 <span class="co">#&gt;    location_code week    season year    yrwk  x    pop pr100_ili</span>
 <span class="co">#&gt; 1:      county03    1 2009/2010 2010 2010-01 24 693494 0.5302766</span>
 <span class="co">#&gt; 2:      county03    1 2010/2011 2011 2011-01 24 693494 0.7234059</span>
@@ -320,33 +329,34 @@
 <span class="co">#&gt; 4:       1.3909804 -6.02035548                0     97  4      1</span>
 <span class="co">#&gt; 5:       1.3942666 -1.72146124                0    114  5      1</span>
 <span class="co">#&gt;    sim_value_exposures=observed sim_value_temperature_high=0</span>
-<span class="co">#&gt; 1:                     114.4828                     114.4828</span>
-<span class="co">#&gt; 2:                     114.6208                     114.6208</span>
-<span class="co">#&gt; 3:                     118.9416                     118.9416</span>
-<span class="co">#&gt; 4:                     118.7619                     118.7619</span>
-<span class="co">#&gt; 5:                     117.0958                     117.0958</span>
+<span class="co">#&gt; 1:                     114.2335                     114.2335</span>
+<span class="co">#&gt; 2:                     114.1081                     114.1081</span>
+<span class="co">#&gt; 3:                     119.3749                     119.3749</span>
+<span class="co">#&gt; 4:                     118.1146                     118.1146</span>
+<span class="co">#&gt; 5:                     117.5689                     117.5689</span>
 <span class="co">#&gt;    sim_value_pr100_ili_lag_1=0</span>
-<span class="co">#&gt; 1:                    112.5734</span>
-<span class="co">#&gt; 2:                    112.6277</span>
-<span class="co">#&gt; 3:                    111.8187</span>
-<span class="co">#&gt; 4:                    113.3869</span>
-<span class="co">#&gt; 5:                    112.2057</span></pre></body></html></div>
+<span class="co">#&gt; 1:                    112.0490</span>
+<span class="co">#&gt; 2:                    111.7748</span>
+<span class="co">#&gt; 3:                    111.0028</span>
+<span class="co">#&gt; 4:                    111.7554</span>
+<span class="co">#&gt; 5:                    111.8105</span></code></pre></div>
 <p>We can see in the above dataset that the columns <em>id</em>, <em>sim_id</em>, <em>sim_value_exposures=observed</em>, <em>sim_value_temperature_high=0</em>, <em>sim_value_pr100_ili_lag_1=0</em> are added to the previous set of columns. For each row in the original dataset we now have 20 <!-- change this if we change n_sim --> rows, one for each of the simulations done by est_attrib. In each row we see the estimate of the number of deaths given a reference value for <em>sim_value_temperature_high</em> and <em>sim_value_pr100_ili_lag_1</em>.</p>
 <p>To make the data processing easier later we convert the dataset from wide to long form and collapse the estimated mortality</p>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="no">est_attrib_county_long</span><span class="kw">&lt;-</span><span class="kw pkg">data.table</span><span class="kw ns">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/melt.data.table.html">melt.data.table</a></span>(<span class="no">est_attrib_sim_county</span>,
-                                                  <span class="kw">id.vars</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"location_code"</span>,
-                                                              <span class="st">"season"</span>,
-                                                              <span class="st">"x"</span>,
-                                                              <span class="st">"week"</span>,
-                                                              <span class="st">"id"</span>,
-                                                              <span class="st">"sim_id"</span>,
-                                                              <span class="st">"deaths"</span>,
-                                                              <span class="st">"sim_value_exposures=observed"</span>),
-                                           <span class="kw">measure.vars</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"sim_value_temperature_high=0"</span>,
-                                                            <span class="st">"sim_value_pr100_ili_lag_1=0"</span>))
-<span class="kw pkg">data.table</span><span class="kw ns">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setattr.html">setnames</a></span>(<span class="no">est_attrib_county_long</span>, <span class="st">"variable"</span>, <span class="st">"attr"</span>)
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">est_attrib_county_long</span><span class="op">&lt;-</span><span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/melt.data.table.html">melt.data.table</a></span><span class="op">(</span><span class="va">est_attrib_sim_county</span>, 
+                                                  id.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"location_code"</span>, 
+                                                              <span class="st">"season"</span>,  
+                                                              <span class="st">"x"</span>, 
+                                                              <span class="st">"week"</span>, 
+                                                              <span class="st">"id"</span>, 
+                                                              <span class="st">"sim_id"</span>, 
+                                                              <span class="st">"deaths"</span>, 
+                                                              <span class="st">"sim_value_exposures=observed"</span><span class="op">)</span>,
+                                           measure.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"sim_value_temperature_high=0"</span>, 
+                                                            <span class="st">"sim_value_pr100_ili_lag_1=0"</span><span class="op">)</span><span class="op">)</span> 
+<span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setattr.html">setnames</a></span><span class="op">(</span><span class="va">est_attrib_county_long</span>, <span class="st">"variable"</span>, <span class="st">"attr"</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">est_attrib_county_long</span>, <span class="fl">5</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">est_attrib_county_long</span>, <span class="fl">5</span><span class="op">)</span>
 <span class="co">#&gt;    location_code    season  x week id sim_id deaths</span>
 <span class="co">#&gt; 1:      county03 2009/2010 24    1  1      1    103</span>
 <span class="co">#&gt; 2:      county03 2010/2011 24    1  2      1     96</span>
@@ -354,24 +364,25 @@
 <span class="co">#&gt; 4:      county03 2012/2013 24    1  4      1     97</span>
 <span class="co">#&gt; 5:      county03 2013/2014 24    1  5      1    114</span>
 <span class="co">#&gt;    sim_value_exposures=observed                         attr    value</span>
-<span class="co">#&gt; 1:                     114.4828 sim_value_temperature_high=0 114.4828</span>
-<span class="co">#&gt; 2:                     114.6208 sim_value_temperature_high=0 114.6208</span>
-<span class="co">#&gt; 3:                     118.9416 sim_value_temperature_high=0 118.9416</span>
-<span class="co">#&gt; 4:                     118.7619 sim_value_temperature_high=0 118.7619</span>
-<span class="co">#&gt; 5:                     117.0958 sim_value_temperature_high=0 117.0958</span></pre></body></html></div>
+<span class="co">#&gt; 1:                     114.2335 sim_value_temperature_high=0 114.2335</span>
+<span class="co">#&gt; 2:                     114.1081 sim_value_temperature_high=0 114.1081</span>
+<span class="co">#&gt; 3:                     119.3749 sim_value_temperature_high=0 119.3749</span>
+<span class="co">#&gt; 4:                     118.1146 sim_value_temperature_high=0 118.1146</span>
+<span class="co">#&gt; 5:                     117.5689 sim_value_temperature_high=0 117.5689</span></code></pre></div>
 <p>We can see that the columns <em>sim_value_temperature_high=0</em>, <em>sim_value_pr100_ili_lag_1=0</em> are now collapsed into the new column <em>attr</em> and <em>value</em> with <em>attr</em> describing which exposure we have and <em>value</em> giving the corresponding reference value.</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">est_attrib_nation_long</span><span class="kw">&lt;-</span><span class="kw pkg">data.table</span><span class="kw ns">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/melt.data.table.html">melt.data.table</a></span>(<span class="no">est_attrib_sim_nation</span>,
-                                                  <span class="kw">id.vars</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"location_code"</span>,
-                                                              <span class="st">"season"</span>,
-                                                              <span class="st">"x"</span>,
-                                                              <span class="st">"week"</span>,
-                                                              <span class="st">"id"</span>,
-                                                              <span class="st">"sim_id"</span>,
-                                                              <span class="st">"deaths"</span>,
-                                                              <span class="st">"sim_value_exposures=observed"</span>),
-                                           <span class="kw">measure.vars</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"sim_value_temperature_high=0"</span>,
-                                                            <span class="st">"sim_value_pr100_ili_lag_1=0"</span>))
-<span class="kw pkg">data.table</span><span class="kw ns">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setattr.html">setnames</a></span>(<span class="no">est_attrib_nation_long</span>, <span class="st">"variable"</span>, <span class="st">"attr"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">est_attrib_nation_long</span><span class="op">&lt;-</span><span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/melt.data.table.html">melt.data.table</a></span><span class="op">(</span><span class="va">est_attrib_sim_nation</span>, 
+                                                  id.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"location_code"</span>, 
+                                                              <span class="st">"season"</span>,  
+                                                              <span class="st">"x"</span>, 
+                                                              <span class="st">"week"</span>, 
+                                                              <span class="st">"id"</span>, 
+                                                              <span class="st">"sim_id"</span>, 
+                                                              <span class="st">"deaths"</span>, 
+                                                              <span class="st">"sim_value_exposures=observed"</span><span class="op">)</span>,
+                                           measure.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"sim_value_temperature_high=0"</span>, 
+                                                            <span class="st">"sim_value_pr100_ili_lag_1=0"</span><span class="op">)</span><span class="op">)</span> 
+<span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setattr.html">setnames</a></span><span class="op">(</span><span class="va">est_attrib_nation_long</span>, <span class="st">"variable"</span>, <span class="st">"attr"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="compare-the-national-data-to-data-aggregated-from-county-to-national-level-" class="section level1">
 <h1 class="hasAnchor">
@@ -382,88 +393,93 @@
 <a href="#aggregate-from-countyweekly-to-nationalseasonal" class="anchor"></a>Aggregate from county/weekly to national/seasonal</h2>
 <p>We proceed by aggregating the county dataset to the national/seasonal level. Afterwards we calculate the expected attributable mortality, <code>exp_attr</code>, by subtracting <code>value</code> (the simulated expected number of deaths given the reference value of the exposure) from <em>the sim_value_exposures=observed</em>.</p>
 <p>To be able to separate this dataset from the other we add a tag.</p>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">aggregated_county_to_nation</span> <span class="kw">&lt;-</span>  <span class="no">est_attrib_county_long</span>[,<span class="fu">.</span>(
-  <span class="st">"sim_value_exposures=observed"</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">`sim_value_exposures=observed`</span>),
-  <span class="kw">value</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">value</span>),
-  <span class="kw">deaths</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">deaths</span>)
-), <span class="kw">keyby</span> <span class="kw">=</span> <span class="fu">.</span>(<span class="no">season</span>, <span class="no">attr</span>, <span class="no">sim_id</span>)]
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">aggregated_county_to_nation</span> <span class="op">&lt;-</span>  <span class="va">est_attrib_county_long</span><span class="op">[</span>,<span class="fu">.</span><span class="op">(</span>
+  <span class="st">"sim_value_exposures=observed"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">`sim_value_exposures=observed`</span><span class="op">)</span>,
+  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, 
+  deaths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">deaths</span><span class="op">)</span>
+<span class="op">)</span>, keyby <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="va">season</span>, <span class="va">attr</span>, <span class="va">sim_id</span><span class="op">)</span><span class="op">]</span>
 
 <span class="co"># Add exp_attr, exp_irr and a tag.</span>
-<span class="no">aggregated_county_to_nation</span>[, <span class="no">exp_attr</span><span class="kw">:=</span> (<span class="no">`sim_value_exposures=observed`</span> - <span class="no">value</span>)]
-<span class="no">aggregated_county_to_nation</span>[, <span class="no">tag</span> <span class="kw">:=</span> <span class="st">"aggregated_from_county"</span>]
+<span class="va">aggregated_county_to_nation</span><span class="op">[</span>, <span class="va">exp_attr</span><span class="op">:=</span> <span class="op">(</span><span class="va">`sim_value_exposures=observed`</span> <span class="op">-</span> <span class="va">value</span><span class="op">)</span><span class="op">]</span>
+<span class="va">aggregated_county_to_nation</span><span class="op">[</span>, <span class="va">tag</span> <span class="op">:=</span> <span class="st">"aggregated_from_county"</span><span class="op">]</span>
 
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">aggregated_county_to_nation</span>, <span class="fl">5</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">aggregated_county_to_nation</span>, <span class="fl">5</span><span class="op">)</span>
 <span class="co">#&gt;       season                         attr sim_id sim_value_exposures=observed</span>
-<span class="co">#&gt; 1: 2009/2010 sim_value_temperature_high=0      1                     44291.20</span>
-<span class="co">#&gt; 2: 2009/2010 sim_value_temperature_high=0      2                     44091.89</span>
-<span class="co">#&gt; 3: 2009/2010 sim_value_temperature_high=0      3                     43960.36</span>
-<span class="co">#&gt; 4: 2009/2010 sim_value_temperature_high=0      4                     44293.82</span>
-<span class="co">#&gt; 5: 2009/2010 sim_value_temperature_high=0      5                     44296.35</span>
+<span class="co">#&gt; 1: 2009/2010 sim_value_temperature_high=0      1                     44477.29</span>
+<span class="co">#&gt; 2: 2009/2010 sim_value_temperature_high=0      2                     44404.60</span>
+<span class="co">#&gt; 3: 2009/2010 sim_value_temperature_high=0      3                     44046.47</span>
+<span class="co">#&gt; 4: 2009/2010 sim_value_temperature_high=0      4                     44719.68</span>
+<span class="co">#&gt; 5: 2009/2010 sim_value_temperature_high=0      5                     44032.60</span>
 <span class="co">#&gt;       value deaths exp_attr                    tag</span>
-<span class="co">#&gt; 1: 43868.66  44421 422.5420 aggregated_from_county</span>
-<span class="co">#&gt; 2: 43692.84  44421 399.0418 aggregated_from_county</span>
-<span class="co">#&gt; 3: 43540.53  44421 419.8373 aggregated_from_county</span>
-<span class="co">#&gt; 4: 43873.78  44421 420.0388 aggregated_from_county</span>
-<span class="co">#&gt; 5: 43871.65  44421 424.6955 aggregated_from_county</span></pre></body></html></div>
+<span class="co">#&gt; 1: 44057.41  44421 419.8808 aggregated_from_county</span>
+<span class="co">#&gt; 2: 44005.93  44421 398.6736 aggregated_from_county</span>
+<span class="co">#&gt; 3: 43638.28  44421 408.1906 aggregated_from_county</span>
+<span class="co">#&gt; 4: 44300.63  44421 419.0446 aggregated_from_county</span>
+<span class="co">#&gt; 5: 43632.17  44421 400.4287 aggregated_from_county</span></code></pre></div>
 </div>
 <div id="aggregating-the-national-model-per-season" class="section level2">
 <h2 class="hasAnchor">
 <a href="#aggregating-the-national-model-per-season" class="anchor"></a>Aggregating the national model per season</h2>
 <p>For the national model we aggregate over seasons and create exp_attr in the same way as above.</p>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">aggregated_nation</span> <span class="kw">&lt;-</span>  <span class="no">est_attrib_nation_long</span>[, <span class="fu">.</span>(
-  <span class="st">"sim_value_exposures=observed"</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">`sim_value_exposures=observed`</span>),
-  <span class="kw">value</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">value</span>),
-  <span class="kw">deaths</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">deaths</span>)
-), <span class="kw">keyby</span> <span class="kw">=</span> <span class="fu">.</span>(<span class="no">season</span>, <span class="no">attr</span>, <span class="no">sim_id</span>)]
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">aggregated_nation</span> <span class="op">&lt;-</span>  <span class="va">est_attrib_nation_long</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>
+  <span class="st">"sim_value_exposures=observed"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">`sim_value_exposures=observed`</span><span class="op">)</span>,
+  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, 
+  deaths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">deaths</span><span class="op">)</span>
+<span class="op">)</span>, keyby <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="va">season</span>, <span class="va">attr</span>, <span class="va">sim_id</span><span class="op">)</span><span class="op">]</span>
 
-<span class="no">aggregated_nation</span>[, <span class="no">exp_attr</span><span class="kw">:=</span> (<span class="no">`sim_value_exposures=observed`</span> - <span class="no">value</span>)]
-<span class="no">aggregated_nation</span>[, <span class="no">tag</span><span class="kw">:=</span> <span class="st">"nation"</span>]
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">aggregated_nation</span>, <span class="fl">5</span>)
+<span class="va">aggregated_nation</span><span class="op">[</span>, <span class="va">exp_attr</span><span class="op">:=</span> <span class="op">(</span><span class="va">`sim_value_exposures=observed`</span> <span class="op">-</span> <span class="va">value</span><span class="op">)</span><span class="op">]</span>
+<span class="va">aggregated_nation</span><span class="op">[</span>, <span class="va">tag</span><span class="op">:=</span> <span class="st">"nation"</span><span class="op">]</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">aggregated_nation</span>, <span class="fl">5</span><span class="op">)</span>
 <span class="co">#&gt;       season                         attr sim_id sim_value_exposures=observed</span>
-<span class="co">#&gt; 1: 2009/2010 sim_value_temperature_high=0      1                     44369.61</span>
-<span class="co">#&gt; 2: 2009/2010 sim_value_temperature_high=0      2                     44732.40</span>
-<span class="co">#&gt; 3: 2009/2010 sim_value_temperature_high=0      3                     44315.96</span>
-<span class="co">#&gt; 4: 2009/2010 sim_value_temperature_high=0      4                     44354.11</span>
-<span class="co">#&gt; 5: 2009/2010 sim_value_temperature_high=0      5                     44254.06</span>
+<span class="co">#&gt; 1: 2009/2010 sim_value_temperature_high=0      1                     44526.17</span>
+<span class="co">#&gt; 2: 2009/2010 sim_value_temperature_high=0      2                     44451.95</span>
+<span class="co">#&gt; 3: 2009/2010 sim_value_temperature_high=0      3                     44828.59</span>
+<span class="co">#&gt; 4: 2009/2010 sim_value_temperature_high=0      4                     44420.46</span>
+<span class="co">#&gt; 5: 2009/2010 sim_value_temperature_high=0      5                     44252.00</span>
 <span class="co">#&gt;       value deaths exp_attr    tag</span>
-<span class="co">#&gt; 1: 44369.61  44421        0 nation</span>
-<span class="co">#&gt; 2: 44732.40  44421        0 nation</span>
-<span class="co">#&gt; 3: 44315.96  44421        0 nation</span>
-<span class="co">#&gt; 4: 44354.11  44421        0 nation</span>
-<span class="co">#&gt; 5: 44254.06  44421        0 nation</span></pre></body></html></div>
+<span class="co">#&gt; 1: 44526.17  44421        0 nation</span>
+<span class="co">#&gt; 2: 44451.95  44421        0 nation</span>
+<span class="co">#&gt; 3: 44828.59  44421        0 nation</span>
+<span class="co">#&gt; 4: 44420.46  44421        0 nation</span>
+<span class="co">#&gt; 5: 44252.00  44421        0 nation</span></code></pre></div>
 <p>For simplicity we <code><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html">data.table::rbindlist</a></code> the two datasets together.</p>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ggplot2</span>)
-<span class="no">data_national</span><span class="kw">&lt;-</span> <span class="kw pkg">data.table</span><span class="kw ns">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html">rbindlist</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="no">aggregated_county_to_nation</span>, <span class="no">aggregated_nation</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
+<span class="va">data_national</span><span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html">rbindlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">aggregated_county_to_nation</span>, <span class="va">aggregated_nation</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="calculate-simulation-quantiles-" class="section level2">
 <h2 class="hasAnchor">
 <a href="#calculate-simulation-quantiles-" class="anchor"></a>Calculate simulation quantiles.</h2>
 <p>The next thing to do is to aggregate away the simulations. The benefits of having the simulations is the possibility it gives to efficiently compute all desired quantiles. For this example we will use the .05, .5 and .95 quantiles.</p>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="co"># Quantile functins</span>
-<span class="no">q05</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>){
-  <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span>(<span class="no">x</span>, <span class="fl">0.05</span>))
-}
-<span class="no">q95</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>){
-  <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span>(<span class="no">x</span>, <span class="fl">0.95</span>))
-}</pre></body></html></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Quantile functins</span>
+<span class="va">q05</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span>
+  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="va">q95</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span>
+  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0.95</span><span class="op">)</span><span class="op">)</span>
+<span class="op">}</span></code></pre></div>
 <p>We compute the quantiles for <em>exp_attr</em> in the following way.</p>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">col_names</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">data_national</span>)
-<span class="kw pkg">data.table</span><span class="kw ns">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setkey.html">setkeyv</a></span>(<span class="no">data_national</span>,
-                    <span class="no">col_names</span>[!<span class="no">col_names</span> <span class="kw">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"exp_attr"</span>,
-                                                <span class="st">"sim_id"</span>,
-                                                <span class="st">"sim_value_exposures=observed"</span>,
-                                                <span class="st">"value"</span>,
-                                                <span class="st">"deaths"</span>)])
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">col_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">data_national</span><span class="op">)</span>
+<span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setkey.html">setkeyv</a></span><span class="op">(</span><span class="va">data_national</span>, 
+                    <span class="va">col_names</span><span class="op">[</span><span class="op">!</span><span class="va">col_names</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"exp_attr"</span>, 
+                                                <span class="st">"sim_id"</span>, 
+                                                <span class="st">"sim_value_exposures=observed"</span>, 
+                                                <span class="st">"value"</span>, 
+                                                <span class="st">"deaths"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
 
-<span class="no">aggregated_sim_seasonal_data_national</span><span class="kw">&lt;-</span> <span class="no">data_national</span>[,
-                                   <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span>(<span class="kw">recursive</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
-                                          <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="fu">.</span>(<span class="kw">median</span> <span class="kw">=</span> <span class="no">median</span>, <span class="kw">q05</span> <span class="kw">=</span> <span class="no">q05</span>, <span class="kw">q95</span> <span class="kw">=</span> <span class="no">q95</span>),
-                                                                    <span class="kw">function</span>(<span class="no">f</span>) <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">.SD</span>, <span class="no">f</span>)
-                                   )),
-                                   <span class="kw">by</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/eval.html">eval</a></span>(<span class="kw pkg">data.table</span><span class="kw ns">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setkey.html">key</a></span>(<span class="no">data_national</span>)),
-                                   <span class="kw">.SDcols</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"exp_attr"</span>)]
+<span class="va">aggregated_sim_seasonal_data_national</span><span class="op">&lt;-</span> <span class="va">data_national</span><span class="op">[</span>,
+                                   <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span>recursive <span class="op">=</span> <span class="cn">FALSE</span>, 
+                                          <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="fu">.</span><span class="op">(</span>median <span class="op">=</span> <span class="va">median</span>, q05 <span class="op">=</span> <span class="va">q05</span>, q95 <span class="op">=</span> <span class="va">q95</span><span class="op">)</span>,
+                                                                    <span class="kw">function</span><span class="op">(</span><span class="va">f</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">.SD</span>, <span class="va">f</span><span class="op">)</span>
+                                   <span class="op">)</span><span class="op">)</span>, 
+                                   by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/eval.html">eval</a></span><span class="op">(</span><span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setkey.html">key</a></span><span class="op">(</span><span class="va">data_national</span><span class="op">)</span><span class="op">)</span>,
+                                   .SDcols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"exp_attr"</span><span class="op">)</span><span class="op">]</span>
 
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">aggregated_sim_seasonal_data_national</span>,<span class="fl">5</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">aggregated_sim_seasonal_data_national</span>,<span class="fl">5</span><span class="op">)</span>
 <span class="co">#&gt;       season                         attr                    tag</span>
 <span class="co">#&gt; 1: 2009/2010 sim_value_temperature_high=0 aggregated_from_county</span>
 <span class="co">#&gt; 2: 2009/2010 sim_value_temperature_high=0                 nation</span>
@@ -471,25 +487,26 @@
 <span class="co">#&gt; 4: 2009/2010  sim_value_pr100_ili_lag_1=0                 nation</span>
 <span class="co">#&gt; 5: 2010/2011 sim_value_temperature_high=0 aggregated_from_county</span>
 <span class="co">#&gt;    median.exp_attr q05.exp_attr q95.exp_attr</span>
-<span class="co">#&gt; 1:        418.8853     386.4123     445.1653</span>
+<span class="co">#&gt; 1:        409.5727     394.4030     429.4196</span>
 <span class="co">#&gt; 2:          0.0000       0.0000       0.0000</span>
-<span class="co">#&gt; 3:        673.5467     541.5865     807.5228</span>
-<span class="co">#&gt; 4:       1204.3857     977.6259    1402.0749</span>
-<span class="co">#&gt; 5:        445.5911     406.7189     474.2706</span></pre></body></html></div>
+<span class="co">#&gt; 3:        728.0091     585.3667     884.7774</span>
+<span class="co">#&gt; 4:       1174.0957    1085.0376    1302.9560</span>
+<span class="co">#&gt; 5:        435.0326     415.8530     454.8746</span></code></pre></div>
 <p>We can now see that we have credible intervals and estimates for attributable deaths for all exposures.</p>
 </div>
 <div id="plot-to-compare-the-national-with-the-aggregated-county-to-national-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#plot-to-compare-the-national-with-the-aggregated-county-to-national-model" class="anchor"></a>Plot to compare the national with the aggregated county to national model</h2>
 <p>To be able to compare the two models we make a point range plot using ggplot2.</p>
-<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="no">q</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">aggregated_sim_seasonal_data_national</span>[<span class="no">attr</span> <span class="kw">==</span> <span class="st">"sim_value_pr100_ili_lag_1=0"</span>],
-                       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">season</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">median.exp_attr</span>, <span class="kw">group</span> <span class="kw">=</span> <span class="no">tag</span>, <span class="kw">color</span> <span class="kw">=</span> <span class="no">tag</span>))
-<span class="no">q</span> <span class="kw">&lt;-</span> <span class="no">q</span> + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html">geom_pointrange</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">season</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">median.exp_attr</span>, <span class="kw">ymin</span> <span class="kw">=</span> <span class="no">q05.exp_attr</span>, <span class="kw">ymax</span> <span class="kw">=</span> <span class="no">q95.exp_attr</span>), <span class="kw">position</span> <span class="kw">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/position_dodge.html">position_dodge</a></span>(<span class="kw">width</span> <span class="kw">=</span> <span class="fl">0.3</span>))
-<span class="no">q</span> <span class="kw">&lt;-</span> <span class="no">q</span> + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"Attributable mortality due to ILI in Norway according to 2 models"</span>)
-<span class="no">q</span> <span class="kw">&lt;-</span> <span class="no">q</span> +  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span>(<span class="st">"Estimated attributable mortality"</span>)
-<span class="no">q</span> <span class="kw">&lt;-</span> <span class="no">q</span> +  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="kw">axis.text.x</span> <span class="kw">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_text</a></span>(<span class="kw">angle</span> <span class="kw">=</span> <span class="fl">90</span>),<span class="kw">axis.title.x</span><span class="kw">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span>())
-<span class="no">q</span> <span class="kw">&lt;-</span> <span class="no">q</span> +  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span>(<span class="kw">caption</span> <span class="kw">=</span> <span class="kw pkg">glue</span><span class="kw ns">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html">glue</a></span>(<span class="st">"Aggregated county model: Attributable mortality modeled on a county level before beeing aggregated up to a national level.\n National model: Attributable mortality modeled on a national level."</span>))
-<span class="no">q</span></pre></body></html></div>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">aggregated_sim_seasonal_data_national</span><span class="op">[</span><span class="va">attr</span> <span class="op">==</span> <span class="st">"sim_value_pr100_ili_lag_1=0"</span><span class="op">]</span>, 
+                       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">season</span>, y <span class="op">=</span> <span class="va">median.exp_attr</span>, group <span class="op">=</span> <span class="va">tag</span>, color <span class="op">=</span> <span class="va">tag</span><span class="op">)</span><span class="op">)</span> 
+<span class="va">q</span> <span class="op">&lt;-</span> <span class="va">q</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html">geom_pointrange</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">season</span>, y <span class="op">=</span> <span class="va">median.exp_attr</span>, ymin <span class="op">=</span> <span class="va">q05.exp_attr</span>, ymax <span class="op">=</span> <span class="va">q95.exp_attr</span><span class="op">)</span>, position <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/position_dodge.html">position_dodge</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span><span class="op">)</span>
+<span class="va">q</span> <span class="op">&lt;-</span> <span class="va">q</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"Attributable mortality due to ILI in Norway according to 2 models"</span><span class="op">)</span> 
+<span class="va">q</span> <span class="op">&lt;-</span> <span class="va">q</span> <span class="op">+</span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span><span class="st">"Estimated attributable mortality"</span><span class="op">)</span> 
+<span class="va">q</span> <span class="op">&lt;-</span> <span class="va">q</span> <span class="op">+</span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">90</span><span class="op">)</span>,axis.title.x<span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> 
+<span class="va">q</span> <span class="op">&lt;-</span> <span class="va">q</span> <span class="op">+</span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>caption <span class="op">=</span> <span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html">glue</a></span><span class="op">(</span><span class="st">"Aggregated county model: Attributable mortality modeled on a county level before beeing aggregated up to a national level.\n National model: Attributable mortality modeled on a national level."</span><span class="op">)</span><span class="op">)</span>
+<span class="va">q</span></code></pre></div>
 <p><img src="intro_files/figure-html/unnamed-chunk-17-1.png" width="576"></p>
 </div>
 </div>
@@ -497,15 +514,16 @@
 <h1 class="hasAnchor">
 <a href="#comparing-cumulative-sums-over-seasons" class="anchor"></a>Comparing cumulative sums over seasons</h1>
 <p>When operating on the national level, we prefer to aggregate the county model to national level (instead of using the national model). This ensures consistent results at all geographical levels.</p>
-<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="no">aggregated_county_to_nation</span> <span class="kw">&lt;-</span>  <span class="no">est_attrib_county_long</span>[, <span class="fu">.</span>(
-  <span class="st">"sim_value_exposures=observed"</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">`sim_value_exposures=observed`</span>),
-  <span class="kw">value</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">value</span>),
-  <span class="kw">deaths</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">deaths</span>)
-), <span class="kw">keyby</span> <span class="kw">=</span> <span class="fu">.</span>(<span class="no">season</span>, <span class="no">x</span>, <span class="no">week</span>, <span class="no">attr</span>, <span class="no">sim_id</span>)]
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">aggregated_county_to_nation</span> <span class="op">&lt;-</span>  <span class="va">est_attrib_county_long</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>
+  <span class="st">"sim_value_exposures=observed"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">`sim_value_exposures=observed`</span><span class="op">)</span>,
+  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, 
+  deaths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">deaths</span><span class="op">)</span>
+<span class="op">)</span>, keyby <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="va">season</span>, <span class="va">x</span>, <span class="va">week</span>, <span class="va">attr</span>, <span class="va">sim_id</span><span class="op">)</span><span class="op">]</span>
 
-<span class="no">aggregated_county_to_nation</span>[, <span class="no">exp_attr</span><span class="kw">:=</span> (<span class="no">`sim_value_exposures=observed`</span> - <span class="no">value</span>)]
-<span class="no">aggregated_county_to_nation</span>[, <span class="no">exp_irr</span><span class="kw">:=</span> (<span class="no">`sim_value_exposures=observed`</span> /<span class="no">value</span>)]
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">aggregated_county_to_nation</span>,<span class="fl">5</span>)
+<span class="va">aggregated_county_to_nation</span><span class="op">[</span>, <span class="va">exp_attr</span><span class="op">:=</span> <span class="op">(</span><span class="va">`sim_value_exposures=observed`</span> <span class="op">-</span> <span class="va">value</span><span class="op">)</span><span class="op">]</span>
+<span class="va">aggregated_county_to_nation</span><span class="op">[</span>, <span class="va">exp_irr</span><span class="op">:=</span> <span class="op">(</span><span class="va">`sim_value_exposures=observed`</span> <span class="op">/</span><span class="va">value</span><span class="op">)</span><span class="op">]</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">aggregated_county_to_nation</span>,<span class="fl">5</span><span class="op">)</span>
 <span class="co">#&gt;       season x week                         attr sim_id</span>
 <span class="co">#&gt; 1: 2009/2010 1   30 sim_value_temperature_high=0      1</span>
 <span class="co">#&gt; 2: 2009/2010 1   30 sim_value_temperature_high=0      2</span>
@@ -513,138 +531,143 @@
 <span class="co">#&gt; 4: 2009/2010 1   30 sim_value_temperature_high=0      4</span>
 <span class="co">#&gt; 5: 2009/2010 1   30 sim_value_temperature_high=0      5</span>
 <span class="co">#&gt;    sim_value_exposures=observed    value deaths exp_attr  exp_irr</span>
-<span class="co">#&gt; 1:                     789.3687 751.1410    816 38.22770 1.050893</span>
-<span class="co">#&gt; 2:                     789.4418 753.3310    816 36.11087 1.047935</span>
-<span class="co">#&gt; 3:                     783.5625 745.5907    816 37.97174 1.050928</span>
-<span class="co">#&gt; 4:                     788.4514 750.4676    816 37.98380 1.050614</span>
-<span class="co">#&gt; 5:                     788.4239 750.0213    816 38.40262 1.051202</span></pre></body></html></div>
+<span class="co">#&gt; 1:                     796.3953 758.3834    816 38.01194 1.050122</span>
+<span class="co">#&gt; 2:                     794.4613 758.3731    816 36.08818 1.047586</span>
+<span class="co">#&gt; 3:                     786.7533 749.8205    816 36.93281 1.049256</span>
+<span class="co">#&gt; 4:                     798.7191 760.8143    816 37.90487 1.049821</span>
+<span class="co">#&gt; 5:                     784.5405 748.3214    816 36.21906 1.048400</span></code></pre></div>
 <p>Again we compute the quantiles.</p>
-<div class="sourceCode" id="cb19"><html><body><pre class="r">
-<span class="no">col_names</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">aggregated_county_to_nation</span>)
-<span class="kw pkg">data.table</span><span class="kw ns">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setkey.html">setkeyv</a></span>(<span class="no">aggregated_county_to_nation</span>, <span class="no">col_names</span>[!<span class="no">col_names</span> <span class="kw">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"exp_attr"</span>, <span class="st">"exp_irr"</span>,<span class="st">"sim_id"</span>, <span class="st">"exposures"</span>, <span class="st">"sim_value_exposures=observed"</span>, <span class="st">"value"</span>)])
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="va">col_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">aggregated_county_to_nation</span><span class="op">)</span>
+<span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setkey.html">setkeyv</a></span><span class="op">(</span><span class="va">aggregated_county_to_nation</span>, <span class="va">col_names</span><span class="op">[</span><span class="op">!</span><span class="va">col_names</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"exp_attr"</span>, <span class="st">"exp_irr"</span>,<span class="st">"sim_id"</span>, <span class="st">"exposures"</span>, <span class="st">"sim_value_exposures=observed"</span>, <span class="st">"value"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
 
-<span class="no">aggregated_county_to_nation_weekly</span> <span class="kw">&lt;-</span> <span class="no">aggregated_county_to_nation</span>[,
-              <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span>(<span class="kw">recursive</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="fu">.</span>(<span class="kw">median</span> <span class="kw">=</span> <span class="no">median</span>, <span class="kw">q05</span> <span class="kw">=</span> <span class="no">q05</span>, <span class="kw">q95</span> <span class="kw">=</span> <span class="no">q95</span>),
-                                               <span class="kw">function</span>(<span class="no">f</span>) <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">.SD</span>, <span class="no">f</span>)
-              )),
-              <span class="kw">by</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/eval.html">eval</a></span>(<span class="kw pkg">data.table</span><span class="kw ns">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setkey.html">key</a></span>(<span class="no">aggregated_county_to_nation</span>)),
-              <span class="kw">.SDcols</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"exp_attr"</span>, <span class="st">"exp_irr"</span>)]</pre></body></html></div>
+<span class="va">aggregated_county_to_nation_weekly</span> <span class="op">&lt;-</span> <span class="va">aggregated_county_to_nation</span><span class="op">[</span>,
+              <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span>recursive <span class="op">=</span> <span class="cn">FALSE</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="fu">.</span><span class="op">(</span>median <span class="op">=</span> <span class="va">median</span>, q05 <span class="op">=</span> <span class="va">q05</span>, q95 <span class="op">=</span> <span class="va">q95</span><span class="op">)</span>,
+                                               <span class="kw">function</span><span class="op">(</span><span class="va">f</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">.SD</span>, <span class="va">f</span><span class="op">)</span>
+              <span class="op">)</span><span class="op">)</span>, 
+              by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/eval.html">eval</a></span><span class="op">(</span><span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setkey.html">key</a></span><span class="op">(</span><span class="va">aggregated_county_to_nation</span><span class="op">)</span><span class="op">)</span>,
+              .SDcols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"exp_attr"</span>, <span class="st">"exp_irr"</span><span class="op">)</span><span class="op">]</span></code></pre></div>
 <p>We then estimate the cumulative sums of attributable mortality and corresponding credible intervals.</p>
-<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="no">aggregated_county_to_nation_weekly</span>[, <span class="no">cumsum</span> <span class="kw">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html">cumsum</a></span>(<span class="no">median.exp_attr</span>), <span class="kw">by</span> <span class="kw">=</span> <span class="fu">.</span>( <span class="no">attr</span>, <span class="no">season</span>)]
-<span class="no">aggregated_county_to_nation_weekly</span>[, <span class="no">cumsum_q05</span> <span class="kw">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html">cumsum</a></span>(<span class="no">q05.exp_attr</span>), <span class="kw">by</span> <span class="kw">=</span> <span class="fu">.</span>( <span class="no">attr</span>, <span class="no">season</span>)]
-<span class="no">aggregated_county_to_nation_weekly</span>[, <span class="no">cumsum_q95</span> <span class="kw">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html">cumsum</a></span>(<span class="no">q95.exp_attr</span>), <span class="kw">by</span> <span class="kw">=</span> <span class="fu">.</span>( <span class="no">attr</span>, <span class="no">season</span>)]
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">aggregated_county_to_nation_weekly</span><span class="op">[</span>, <span class="va">cumsum</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html">cumsum</a></span><span class="op">(</span><span class="va">median.exp_attr</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu">.</span><span class="op">(</span> <span class="va">attr</span>, <span class="va">season</span><span class="op">)</span><span class="op">]</span>
+<span class="va">aggregated_county_to_nation_weekly</span><span class="op">[</span>, <span class="va">cumsum_q05</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html">cumsum</a></span><span class="op">(</span><span class="va">q05.exp_attr</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu">.</span><span class="op">(</span> <span class="va">attr</span>, <span class="va">season</span><span class="op">)</span><span class="op">]</span>
+<span class="va">aggregated_county_to_nation_weekly</span><span class="op">[</span>, <span class="va">cumsum_q95</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html">cumsum</a></span><span class="op">(</span><span class="va">q95.exp_attr</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu">.</span><span class="op">(</span> <span class="va">attr</span>, <span class="va">season</span><span class="op">)</span><span class="op">]</span>
 
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">aggregated_county_to_nation_weekly</span>, <span class="fl">5</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">aggregated_county_to_nation_weekly</span>, <span class="fl">5</span><span class="op">)</span>
 <span class="co">#&gt;       season x week                         attr deaths median.exp_attr</span>
-<span class="co">#&gt; 1: 2009/2010 1   30 sim_value_temperature_high=0    816    37.877341095</span>
+<span class="co">#&gt; 1: 2009/2010 1   30 sim_value_temperature_high=0    816    37.060433436</span>
 <span class="co">#&gt; 2: 2009/2010 1   30  sim_value_pr100_ili_lag_1=0    816     0.000000000</span>
-<span class="co">#&gt; 3: 2009/2010 2   31 sim_value_temperature_high=0    854    81.046252374</span>
-<span class="co">#&gt; 4: 2009/2010 2   31  sim_value_pr100_ili_lag_1=0    854     0.002154905</span>
-<span class="co">#&gt; 5: 2009/2010 3   32 sim_value_temperature_high=0    777    45.505824763</span>
+<span class="co">#&gt; 3: 2009/2010 2   31 sim_value_temperature_high=0    854    79.274909721</span>
+<span class="co">#&gt; 4: 2009/2010 2   31  sim_value_pr100_ili_lag_1=0    854     0.002331474</span>
+<span class="co">#&gt; 5: 2009/2010 3   32 sim_value_temperature_high=0    777    44.516169033</span>
 <span class="co">#&gt;    median.exp_irr q05.exp_attr q05.exp_irr q95.exp_attr q95.exp_irr</span>
-<span class="co">#&gt; 1:       1.050698 34.955773794    1.046638 40.250044700    1.053856</span>
-<span class="co">#&gt; 2:       1.000000  0.000000000    1.000000  0.000000000    1.000000</span>
-<span class="co">#&gt; 3:       1.108287 74.699596525    1.099545 86.172516433    1.115098</span>
-<span class="co">#&gt; 4:       1.000003  0.001723184    1.000002  0.002594335    1.000003</span>
-<span class="co">#&gt; 5:       1.060628 41.951180907    1.055772 48.358122309    1.064406</span>
+<span class="co">#&gt; 1:       1.049358 35.669498754    1.047286  38.83332481    1.051846</span>
+<span class="co">#&gt; 2:       1.000000  0.000000000    1.000000   0.00000000    1.000000</span>
+<span class="co">#&gt; 3:       1.105400 76.255765654    1.100939  83.12685987    1.110764</span>
+<span class="co">#&gt; 4:       1.000003  0.001873602    1.000002   0.00285421    1.000003</span>
+<span class="co">#&gt; 5:       1.059025 42.831545772    1.056546  46.67443007    1.062002</span>
 <span class="co">#&gt;          cumsum   cumsum_q05   cumsum_q95</span>
-<span class="co">#&gt; 1: 3.787734e+01 3.495577e+01 4.025004e+01</span>
-<span class="co">#&gt; 2: 0.000000e+00 0.000000e+00 0.000000e+00</span>
-<span class="co">#&gt; 3: 1.189236e+02 1.096554e+02 1.264226e+02</span>
-<span class="co">#&gt; 4: 2.154905e-03 1.723184e-03 2.594335e-03</span>
-<span class="co">#&gt; 5: 1.644294e+02 1.516066e+02 1.747807e+02</span></pre></body></html></div>
+<span class="co">#&gt; 1: 3.706043e+01 3.566950e+01  38.83332481</span>
+<span class="co">#&gt; 2: 0.000000e+00 0.000000e+00   0.00000000</span>
+<span class="co">#&gt; 3: 1.163353e+02 1.119253e+02 121.96018468</span>
+<span class="co">#&gt; 4: 2.331474e-03 1.873602e-03   0.00285421</span>
+<span class="co">#&gt; 5: 1.608515e+02 1.547568e+02 168.63461474</span></code></pre></div>
 <p>We can then plot the estimated cumulative attributable mortality over influenza seasons in Norway</p>
-<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ggplot2</span>)
-<span class="no">q</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(
-  <span class="kw">data</span> <span class="kw">=</span> <span class="no">aggregated_county_to_nation_weekly</span>[
-    <span class="no">season</span> <span class="kw">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
+<span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span>
+  data <span class="op">=</span> <span class="va">aggregated_county_to_nation_weekly</span><span class="op">[</span>
+    <span class="va">season</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
       <span class="st">"2015/2016"</span>,
       <span class="st">"2016/2017"</span>,
       <span class="st">"2017/2018"</span>,
       <span class="st">"2018/2019"</span>,
       <span class="st">"2019/2020"</span>
-    ) <span class="kw">&amp;</span>
-    <span class="no">attr</span> <span class="kw">==</span> <span class="st">"sim_value_pr100_ili_lag_1=0"</span>
-  ],
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(
-    <span class="kw">x</span> <span class="kw">=</span> <span class="no">x</span>,
-    <span class="kw">y</span> <span class="kw">=</span> <span class="no">cumsum</span>,
-    <span class="kw">group</span> <span class="kw">=</span> <span class="no">season</span>,
-    <span class="kw">color</span> <span class="kw">=</span> <span class="no">season</span>,
-    <span class="kw">fill</span> <span class="kw">=</span> <span class="no">season</span>
-  )
-)
-<span class="no">q</span> <span class="kw">&lt;-</span> <span class="no">q</span> + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>()
-<span class="no">q</span> <span class="kw">&lt;-</span> <span class="no">q</span> + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html">geom_ribbon</a></span>(
-  <span class="kw">data</span> <span class="kw">=</span> <span class="no">aggregated_county_to_nation_weekly</span>[
-    <span class="no">season</span> <span class="kw">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"2019/2020"</span>) <span class="kw">&amp;</span>
-    <span class="no">attr</span> <span class="kw">==</span> <span class="st">"sim_value_pr100_ili_lag_1=0"</span>
-  ],
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(
-    <span class="kw">ymin</span> <span class="kw">=</span> <span class="no">cumsum_q05</span>,
-    <span class="kw">ymax</span> <span class="kw">=</span> <span class="no">cumsum_q95</span>
-  ),
-  <span class="kw">alpha</span> <span class="kw">=</span> <span class="fl">0.4</span>,
-  <span class="kw">colour</span> <span class="kw">=</span> <span class="fl">NA</span>
-)
-<span class="no">q</span> <span class="kw">&lt;-</span> <span class="no">q</span> + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span>(<span class="st">"Estimated cumulative attributable mortality"</span>)
-<span class="no">q</span> <span class="kw">&lt;-</span> <span class="no">q</span> + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"Estimated cumulative attributable mortality over influenza seasons in Norway"</span>)
-<span class="no">q</span></pre></body></html></div>
+    <span class="op">)</span> <span class="op">&amp;</span>
+    <span class="va">attr</span> <span class="op">==</span> <span class="st">"sim_value_pr100_ili_lag_1=0"</span>
+  <span class="op">]</span>,
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>
+    x <span class="op">=</span> <span class="va">x</span>, 
+    y <span class="op">=</span> <span class="va">cumsum</span>, 
+    group <span class="op">=</span> <span class="va">season</span>, 
+    color <span class="op">=</span> <span class="va">season</span>, 
+    fill <span class="op">=</span> <span class="va">season</span>
+  <span class="op">)</span>
+<span class="op">)</span>
+<span class="va">q</span> <span class="op">&lt;-</span> <span class="va">q</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">q</span> <span class="op">&lt;-</span> <span class="va">q</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html">geom_ribbon</a></span><span class="op">(</span>
+  data <span class="op">=</span> <span class="va">aggregated_county_to_nation_weekly</span><span class="op">[</span>
+    <span class="va">season</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"2019/2020"</span><span class="op">)</span> <span class="op">&amp;</span>
+    <span class="va">attr</span> <span class="op">==</span> <span class="st">"sim_value_pr100_ili_lag_1=0"</span>
+  <span class="op">]</span>,
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>
+    ymin <span class="op">=</span> <span class="va">cumsum_q05</span>, 
+    ymax <span class="op">=</span> <span class="va">cumsum_q95</span>
+  <span class="op">)</span>, 
+  alpha <span class="op">=</span> <span class="fl">0.4</span>, 
+  colour <span class="op">=</span> <span class="cn">NA</span>
+<span class="op">)</span>
+<span class="va">q</span> <span class="op">&lt;-</span> <span class="va">q</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span><span class="st">"Estimated cumulative attributable mortality"</span><span class="op">)</span>
+<span class="va">q</span> <span class="op">&lt;-</span> <span class="va">q</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"Estimated cumulative attributable mortality over influenza seasons in Norway"</span><span class="op">)</span>
+<span class="va">q</span></code></pre></div>
 <p><img src="intro_files/figure-html/unnamed-chunk-21-1.png" width="576"></p>
 <p>We can also plot the estimated weekly attributable mortality in Norway</p>
-<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="no">q</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(
-  <span class="kw">data</span> <span class="kw">=</span> <span class="no">aggregated_county_to_nation_weekly</span>[<span class="no">attr</span> <span class="kw">==</span> <span class="st">"sim_value_pr100_ili_lag_1=0"</span>],
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">x</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">cumsum</span>, <span class="kw">group</span> <span class="kw">=</span> <span class="no">season</span>)
-  )
-<span class="no">q</span> <span class="kw">&lt;-</span> <span class="no">q</span> + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(
-  <span class="kw">data</span> <span class="kw">=</span> <span class="no">aggregated_county_to_nation_weekly</span>[
-    <span class="no">season</span> <span class="kw">!=</span> <span class="st">"2019/2020"</span> <span class="kw">&amp;</span>
-    <span class="no">attr</span> <span class="kw">==</span> <span class="st">"sim_value_pr100_ili_lag_1=0"</span>
-  ],
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(
-    <span class="kw">x</span> <span class="kw">=</span> <span class="no">x</span>,
-    <span class="kw">y</span> <span class="kw">=</span> <span class="no">median.exp_attr</span>,
-    <span class="kw">group</span> <span class="kw">=</span> <span class="no">season</span>
-  ),
-  <span class="kw">color</span> <span class="kw">=</span> <span class="st">"grey"</span>
-)
-<span class="no">q</span> <span class="kw">&lt;-</span> <span class="no">q</span> + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(
-  <span class="kw">data</span> <span class="kw">=</span> <span class="no">aggregated_county_to_nation_weekly</span>[
-    <span class="no">season</span> <span class="kw">==</span> <span class="st">"2019/2020"</span> <span class="kw">&amp;</span>
-    <span class="no">attr</span> <span class="kw">==</span> <span class="st">"sim_value_pr100_ili_lag_1=0"</span>
-  ],
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(
-    <span class="kw">x</span> <span class="kw">=</span> <span class="no">x</span>,
-    <span class="kw">y</span> <span class="kw">=</span> <span class="no">median.exp_attr</span>,
-    <span class="kw">group</span> <span class="kw">=</span> <span class="no">season</span>
-  ),
-  <span class="kw">color</span> <span class="kw">=</span> <span class="st">"blue"</span>
-)
-<span class="no">q</span> <span class="kw">&lt;-</span> <span class="no">q</span> + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html">geom_ribbon</a></span>(
-  <span class="kw">data</span> <span class="kw">=</span> <span class="no">aggregated_county_to_nation_weekly</span>[
-    <span class="no">season</span> <span class="kw">==</span> <span class="st">"2019/2020"</span> <span class="kw">&amp;</span>
-    <span class="no">attr</span> <span class="kw">==</span> <span class="st">"sim_value_pr100_ili_lag_1=0"</span>
-  ],
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(
-    <span class="kw">x</span> <span class="kw">=</span> <span class="no">x</span>,
-    <span class="kw">ymin</span> <span class="kw">=</span> <span class="no">q05.exp_attr</span>,
-    <span class="kw">ymax</span> <span class="kw">=</span> <span class="no">q95.exp_attr</span>
-  ),
-  <span class="kw">fill</span> <span class="kw">=</span> <span class="st">"blue"</span>,
-  <span class="kw">alpha</span><span class="kw">=</span><span class="fl">0.4</span>
-)
-<span class="no">q</span> <span class="kw">&lt;-</span> <span class="no">q</span> + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span>(<span class="st">"Estimated attributable mortality"</span>)
-<span class="no">q</span> <span class="kw">&lt;-</span> <span class="no">q</span> + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"Estimated mortality due to ILI per week"</span>)
-<span class="no">q</span></pre></body></html></div>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span>
+  data <span class="op">=</span> <span class="va">aggregated_county_to_nation_weekly</span><span class="op">[</span><span class="va">attr</span> <span class="op">==</span> <span class="st">"sim_value_pr100_ili_lag_1=0"</span><span class="op">]</span>, 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">cumsum</span>, group <span class="op">=</span> <span class="va">season</span><span class="op">)</span>
+  <span class="op">)</span> 
+<span class="va">q</span> <span class="op">&lt;-</span> <span class="va">q</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>
+  data <span class="op">=</span> <span class="va">aggregated_county_to_nation_weekly</span><span class="op">[</span>
+    <span class="va">season</span> <span class="op">!=</span> <span class="st">"2019/2020"</span> <span class="op">&amp;</span>
+    <span class="va">attr</span> <span class="op">==</span> <span class="st">"sim_value_pr100_ili_lag_1=0"</span>
+  <span class="op">]</span>,
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>
+    x <span class="op">=</span> <span class="va">x</span>, 
+    y <span class="op">=</span> <span class="va">median.exp_attr</span>, 
+    group <span class="op">=</span> <span class="va">season</span>
+  <span class="op">)</span>, 
+  color <span class="op">=</span> <span class="st">"grey"</span>
+<span class="op">)</span>
+<span class="va">q</span> <span class="op">&lt;-</span> <span class="va">q</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>
+  data <span class="op">=</span> <span class="va">aggregated_county_to_nation_weekly</span><span class="op">[</span>
+    <span class="va">season</span> <span class="op">==</span> <span class="st">"2019/2020"</span> <span class="op">&amp;</span>
+    <span class="va">attr</span> <span class="op">==</span> <span class="st">"sim_value_pr100_ili_lag_1=0"</span>
+  <span class="op">]</span>, 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>
+    x <span class="op">=</span> <span class="va">x</span>,
+    y <span class="op">=</span> <span class="va">median.exp_attr</span>,
+    group <span class="op">=</span> <span class="va">season</span>
+  <span class="op">)</span>, 
+  color <span class="op">=</span> <span class="st">"blue"</span>
+<span class="op">)</span>
+<span class="va">q</span> <span class="op">&lt;-</span> <span class="va">q</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html">geom_ribbon</a></span><span class="op">(</span>
+  data <span class="op">=</span> <span class="va">aggregated_county_to_nation_weekly</span><span class="op">[</span>
+    <span class="va">season</span> <span class="op">==</span> <span class="st">"2019/2020"</span> <span class="op">&amp;</span>
+    <span class="va">attr</span> <span class="op">==</span> <span class="st">"sim_value_pr100_ili_lag_1=0"</span>
+  <span class="op">]</span>,
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>
+    x <span class="op">=</span> <span class="va">x</span>,
+    ymin <span class="op">=</span> <span class="va">q05.exp_attr</span>,
+    ymax <span class="op">=</span> <span class="va">q95.exp_attr</span>
+  <span class="op">)</span>,
+  fill <span class="op">=</span> <span class="st">"blue"</span>,
+  alpha<span class="op">=</span><span class="fl">0.4</span>
+<span class="op">)</span>
+<span class="va">q</span> <span class="op">&lt;-</span> <span class="va">q</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span><span class="st">"Estimated attributable mortality"</span><span class="op">)</span>
+<span class="va">q</span> <span class="op">&lt;-</span> <span class="va">q</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"Estimated mortality due to ILI per week"</span><span class="op">)</span>
+<span class="va">q</span></code></pre></div>
 <p><img src="intro_files/figure-html/unnamed-chunk-22-1.png" width="700"></p>
 </div>
 <div id="incident-rate-ratio" class="section level1">
 <h1 class="hasAnchor">
 <a href="#incident-rate-ratio" class="anchor"></a>Incident rate ratio</h1>
 <p>Until now we have focused on estimating attributable mortality. Now we will investigate computing the incident rate ratio (IRR) for <em>pr100_ili_lag_1</em>. To do this we will use the fit made by <code>fit_attrib</code> on the county dataset but we will change the values for <em>pr100_ili_lag_1</em> to 1 (IRRs are generally expressed as the effect of the exposure changing from 0 to 1).</p>
-<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="no">data_fake_county_irr</span> <span class="kw">&lt;-</span> <span class="kw pkg">data.table</span><span class="kw ns">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/copy.html">copy</a></span>(<span class="no">data_fake_county</span>)
-<span class="no">data_fake_county_irr</span>[, <span class="no">pr100_ili_lag_1</span> <span class="kw">:=</span> <span class="fl">1</span>]
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">data_fake_county_irr</span>, <span class="fl">5</span>)
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">data_fake_county_irr</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/copy.html">copy</a></span><span class="op">(</span><span class="va">data_fake_county</span><span class="op">)</span>
+<span class="va">data_fake_county_irr</span><span class="op">[</span>, <span class="va">pr100_ili_lag_1</span> <span class="op">:=</span> <span class="fl">1</span><span class="op">]</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">data_fake_county_irr</span>, <span class="fl">5</span><span class="op">)</span>
 <span class="co">#&gt;    location_code week    season year    yrwk  x    pop pr100_ili</span>
 <span class="co">#&gt; 1:      county03    1 2009/2010 2010 2010-01 24 693494 0.5302766</span>
 <span class="co">#&gt; 2:      county03    1 2010/2011 2011 2011-01 24 693494 0.7234059</span>
@@ -656,17 +679,19 @@
 <span class="co">#&gt; 2:               1  0.01462311                0     96</span>
 <span class="co">#&gt; 3:               1 -2.03893188                0    105</span>
 <span class="co">#&gt; 4:               1 -6.02035548                0     97</span>
-<span class="co">#&gt; 5:               1 -1.72146124                0    114</span></pre></body></html></div>
+<span class="co">#&gt; 5:               1 -1.72146124                0    114</span></code></pre></div>
 <p>Then we can set the reference value to zero and hence obtain the IRR for the given exposure.</p>
-<div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="no">exposures_irr</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">pr100_ili_lag_1</span> <span class="kw">=</span> <span class="fl">0</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">exposures_irr</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>pr100_ili_lag_1 <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></code></pre></div>
 <p>Now we use <code>est_attrib</code> to create the simulations.</p>
-<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="no">est_attrib_sim_county_irr</span> <span class="kw">&lt;-</span> <span class="kw pkg">attrib</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/attrib/man/est_attrib.html">est_attrib</a></span>(
-  <span class="no">fit_county</span>,
-  <span class="no">data_fake_county_irr</span>,
-  <span class="kw">exposures</span> <span class="kw">=</span> <span class="no">exposures_irr</span>,
-  <span class="kw">n_sim</span> <span class="kw">=</span> <span class="fl">100</span>
-)
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">est_attrib_sim_county_irr</span>, <span class="fl">5</span>)
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">est_attrib_sim_county_irr</span> <span class="op">&lt;-</span> <span class="fu">attrib</span><span class="fu">::</span><span class="fu"><a href="../reference/est_attrib.html">est_attrib</a></span><span class="op">(</span>
+  <span class="va">fit_county</span>, 
+  <span class="va">data_fake_county_irr</span>, 
+  exposures <span class="op">=</span> <span class="va">exposures_irr</span>,
+  n_sim <span class="op">=</span> <span class="fl">100</span>
+<span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">est_attrib_sim_county_irr</span>, <span class="fl">5</span><span class="op">)</span>
 <span class="co">#&gt;    location_code week    season year    yrwk  x    pop pr100_ili</span>
 <span class="co">#&gt; 1:      county03    1 2009/2010 2010 2010-01 24 693494 0.5302766</span>
 <span class="co">#&gt; 2:      county03    1 2010/2011 2011 2011-01 24 693494 0.7234059</span>
@@ -680,71 +705,75 @@
 <span class="co">#&gt; 4:               1 -6.02035548                0     97  4      1</span>
 <span class="co">#&gt; 5:               1 -1.72146124                0    114  5      1</span>
 <span class="co">#&gt;    sim_value_exposures=observed sim_value_pr100_ili_lag_1=0</span>
-<span class="co">#&gt; 1:                     115.9877                    112.2759</span>
-<span class="co">#&gt; 2:                     115.4729                    112.2987</span>
-<span class="co">#&gt; 3:                     116.1195                    113.0947</span>
-<span class="co">#&gt; 4:                     116.8128                    113.5896</span>
-<span class="co">#&gt; 5:                     116.4137                    113.6271</span></pre></body></html></div>
+<span class="co">#&gt; 1:                     117.5199                    114.3936</span>
+<span class="co">#&gt; 2:                     116.1492                    113.4973</span>
+<span class="co">#&gt; 3:                     116.8654                    114.3731</span>
+<span class="co">#&gt; 4:                     116.5424                    113.7691</span>
+<span class="co">#&gt; 5:                     116.7415                    114.4553</span></code></pre></div>
 <p>We see we have obtained values for the reference of the exposure in the same way as before. The difference is that we changed the dataset before running <em>est_attrib</em>. This means we will now be observing the difference between <code>pr100_ili_lag_1=0</code> and <code>pr100_ili_lag_1=1</code>.</p>
 <p>We now aggregate to the national seasonal level.</p>
-<div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="no">aggregated_county_to_nation_sim_irr</span> <span class="kw">&lt;-</span>  <span class="no">est_attrib_sim_county_irr</span>[, <span class="fu">.</span>(
-  <span class="st">"sim_value_exposures=observed"</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">`sim_value_exposures=observed`</span>),
-  <span class="st">"sim_value_pr100_ili_lag_1=0"</span><span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">`sim_value_pr100_ili_lag_1=0`</span>),
-  <span class="kw">deaths</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">deaths</span>)
-), <span class="kw">keyby</span> <span class="kw">=</span> <span class="fu">.</span>(<span class="no">season</span>, <span class="no">sim_id</span>)]</pre></body></html></div>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">aggregated_county_to_nation_sim_irr</span> <span class="op">&lt;-</span>  <span class="va">est_attrib_sim_county_irr</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>
+  <span class="st">"sim_value_exposures=observed"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">`sim_value_exposures=observed`</span><span class="op">)</span>,
+  <span class="st">"sim_value_pr100_ili_lag_1=0"</span><span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">`sim_value_pr100_ili_lag_1=0`</span><span class="op">)</span>, 
+  deaths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">deaths</span><span class="op">)</span>
+<span class="op">)</span>, keyby <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="va">season</span>, <span class="va">sim_id</span><span class="op">)</span><span class="op">]</span></code></pre></div>
 <p>Here we generate the IRR:</p>
-<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="no">aggregated_county_to_nation_sim_irr</span>[, <span class="no">exp_irr</span><span class="kw">:=</span> (<span class="no">`sim_value_exposures=observed`</span>/<span class="no">`sim_value_pr100_ili_lag_1=0`</span>
-)]
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">aggregated_county_to_nation_sim_irr</span>,<span class="fl">5</span>)
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">aggregated_county_to_nation_sim_irr</span><span class="op">[</span>, <span class="va">exp_irr</span><span class="op">:=</span> <span class="op">(</span><span class="va">`sim_value_exposures=observed`</span><span class="op">/</span><span class="va">`sim_value_pr100_ili_lag_1=0`</span>
+<span class="op">)</span><span class="op">]</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">aggregated_county_to_nation_sim_irr</span>,<span class="fl">5</span><span class="op">)</span>
 <span class="co">#&gt;       season sim_id sim_value_exposures=observed sim_value_pr100_ili_lag_1=0</span>
-<span class="co">#&gt; 1: 2009/2010      1                     44617.02                    43189.20</span>
-<span class="co">#&gt; 2: 2009/2010      2                     45112.97                    43722.70</span>
-<span class="co">#&gt; 3: 2009/2010      3                     45265.87                    43837.01</span>
-<span class="co">#&gt; 4: 2009/2010      4                     44827.63                    43267.64</span>
-<span class="co">#&gt; 5: 2009/2010      5                     45171.86                    43450.68</span>
+<span class="co">#&gt; 1: 2009/2010      1                     45071.05                    43872.05</span>
+<span class="co">#&gt; 2: 2009/2010      2                     44878.58                    43720.65</span>
+<span class="co">#&gt; 3: 2009/2010      3                     44596.78                    43425.20</span>
+<span class="co">#&gt; 4: 2009/2010      4                     45101.48                    43418.29</span>
+<span class="co">#&gt; 5: 2009/2010      5                     44743.23                    43122.50</span>
 <span class="co">#&gt;    deaths  exp_irr</span>
-<span class="co">#&gt; 1:  44421 1.033060</span>
-<span class="co">#&gt; 2:  44421 1.031797</span>
-<span class="co">#&gt; 3:  44421 1.032595</span>
-<span class="co">#&gt; 4:  44421 1.036054</span>
-<span class="co">#&gt; 5:  44421 1.039612</span></pre></body></html></div>
+<span class="co">#&gt; 1:  44421 1.027329</span>
+<span class="co">#&gt; 2:  44421 1.026485</span>
+<span class="co">#&gt; 3:  44421 1.026979</span>
+<span class="co">#&gt; 4:  44421 1.038767</span>
+<span class="co">#&gt; 5:  44421 1.037584</span></code></pre></div>
 <p>Now we can compute the quantiles:</p>
-<div class="sourceCode" id="cb28"><html><body><pre class="r">
-<span class="no">col_names</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">aggregated_county_to_nation_sim_irr</span>)
-<span class="kw pkg">data.table</span><span class="kw ns">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setkey.html">setkeyv</a></span>(
-  <span class="no">aggregated_county_to_nation_sim_irr</span>,
-  <span class="no">col_names</span>[!<span class="no">col_names</span> <span class="kw">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"exp_irr"</span>, <span class="st">"sim_id"</span>, <span class="st">"sim_value_exposures=observed"</span>, <span class="st">"sim_value_pr100_ili_lag_1=0"</span>)]
-)
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="va">col_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">aggregated_county_to_nation_sim_irr</span><span class="op">)</span>
+<span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setkey.html">setkeyv</a></span><span class="op">(</span>
+  <span class="va">aggregated_county_to_nation_sim_irr</span>,
+  <span class="va">col_names</span><span class="op">[</span><span class="op">!</span><span class="va">col_names</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"exp_irr"</span>, <span class="st">"sim_id"</span>, <span class="st">"sim_value_exposures=observed"</span>, <span class="st">"sim_value_pr100_ili_lag_1=0"</span><span class="op">)</span><span class="op">]</span>
+<span class="op">)</span>
 
-<span class="no">aggregated_county_to_nation_irr</span> <span class="kw">&lt;-</span> <span class="no">aggregated_county_to_nation_sim_irr</span>[,
-  <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span>(<span class="kw">recursive</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="fu">.</span>(<span class="kw">median</span> <span class="kw">=</span> <span class="no">median</span>, <span class="kw">q05</span> <span class="kw">=</span> <span class="no">q05</span>, <span class="kw">q95</span> <span class="kw">=</span> <span class="no">q95</span>), <span class="kw">function</span>(<span class="no">f</span>) <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">.SD</span>, <span class="no">f</span>))),
-  <span class="kw">by</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/eval.html">eval</a></span>(<span class="kw pkg">data.table</span><span class="kw ns">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setkey.html">key</a></span>(<span class="no">aggregated_county_to_nation_sim_irr</span>)),
-  <span class="kw">.SDcols</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"exp_irr"</span>)
-]
-<span class="no">aggregated_county_to_nation_irr</span>[, <span class="no">tag</span> <span class="kw">:=</span> <span class="st">"aggregated"</span>]
+<span class="va">aggregated_county_to_nation_irr</span> <span class="op">&lt;-</span> <span class="va">aggregated_county_to_nation_sim_irr</span><span class="op">[</span>,
+  <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span>recursive <span class="op">=</span> <span class="cn">FALSE</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="fu">.</span><span class="op">(</span>median <span class="op">=</span> <span class="va">median</span>, q05 <span class="op">=</span> <span class="va">q05</span>, q95 <span class="op">=</span> <span class="va">q95</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">f</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">.SD</span>, <span class="va">f</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
+  by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/eval.html">eval</a></span><span class="op">(</span><span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setkey.html">key</a></span><span class="op">(</span><span class="va">aggregated_county_to_nation_sim_irr</span><span class="op">)</span><span class="op">)</span>,
+  .SDcols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"exp_irr"</span><span class="op">)</span>
+<span class="op">]</span>
+<span class="va">aggregated_county_to_nation_irr</span><span class="op">[</span>, <span class="va">tag</span> <span class="op">:=</span> <span class="st">"aggregated"</span><span class="op">]</span>
 
-<span class="no">aggregated_county_to_nation_irr</span>
+<span class="va">aggregated_county_to_nation_irr</span>
 <span class="co">#&gt;        season deaths median.exp_irr q05.exp_irr q95.exp_irr        tag</span>
-<span class="co">#&gt;  1: 2009/2010  44421       1.032836    1.025608    1.040040 aggregated</span>
-<span class="co">#&gt;  2: 2010/2011  43062       1.028173    1.020845    1.035339 aggregated</span>
-<span class="co">#&gt;  3: 2011/2012  43431       1.027190    1.019737    1.034350 aggregated</span>
-<span class="co">#&gt;  4: 2012/2013  43228       1.029227    1.021800    1.036664 aggregated</span>
-<span class="co">#&gt;  5: 2013/2014  43328       1.025770    1.018088    1.033005 aggregated</span>
-<span class="co">#&gt;  6: 2014/2015  42951       1.027996    1.020598    1.035665 aggregated</span>
-<span class="co">#&gt;  7: 2015/2016  43736       1.022871    1.015720    1.029530 aggregated</span>
-<span class="co">#&gt;  8: 2016/2017  43821       1.033282    1.026103    1.040307 aggregated</span>
-<span class="co">#&gt;  9: 2017/2018  43716       1.031681    1.024183    1.038754 aggregated</span>
-<span class="co">#&gt; 10: 2018/2019  43326       1.026798    1.019741    1.034325 aggregated</span>
-<span class="co">#&gt; 11: 2019/2020  43572       1.030753    1.023499    1.037950 aggregated</span></pre></body></html></div>
+<span class="co">#&gt;  1: 2009/2010  44421       1.031916    1.026308    1.038444 aggregated</span>
+<span class="co">#&gt;  2: 2010/2011  43062       1.026973    1.021445    1.033672 aggregated</span>
+<span class="co">#&gt;  3: 2011/2012  43431       1.026311    1.020262    1.033384 aggregated</span>
+<span class="co">#&gt;  4: 2012/2013  43228       1.028274    1.022408    1.035125 aggregated</span>
+<span class="co">#&gt;  5: 2013/2014  43328       1.024468    1.018562    1.031276 aggregated</span>
+<span class="co">#&gt;  6: 2014/2015  42951       1.026993    1.021317    1.033835 aggregated</span>
+<span class="co">#&gt;  7: 2015/2016  43736       1.021893    1.015511    1.028451 aggregated</span>
+<span class="co">#&gt;  8: 2016/2017  43821       1.032732    1.026557    1.039005 aggregated</span>
+<span class="co">#&gt;  9: 2017/2018  43716       1.031051    1.024517    1.036883 aggregated</span>
+<span class="co">#&gt; 10: 2018/2019  43326       1.026022    1.020367    1.032560 aggregated</span>
+<span class="co">#&gt; 11: 2019/2020  43572       1.029825    1.023684    1.035704 aggregated</span></code></pre></div>
 <p>Now we compare the resulting values for IRR with the ones obtained by <code>coef(fit_county)$season</code> and the 90 percent credible interval computed manually using the standard deviation given by summary(fit_county) for <em>pr100_ili_lag_1</em>.</p>
-<div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="no">coef_fit_county</span> <span class="kw">&lt;-</span> <span class="kw pkg">data.table</span><span class="kw ns">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span>(<span class="no">fit_county</span>)$<span class="no">season</span>)
-<span class="no">col_names_coef</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"pr100_ili_lag_1"</span>)
-<span class="no">coef_irr_data</span> <span class="kw">&lt;-</span> <span class="no">coef_fit_county</span>[, <span class="no">..col_names_coef</span>]
-<span class="no">coef_irr_data</span>[, <span class="no">irr</span> <span class="kw">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="no">pr100_ili_lag_1</span>)]
-<span class="no">coef_irr_data</span>[, <span class="no">q05</span> <span class="kw">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="no">pr100_ili_lag_1</span> - <span class="fl">1.645</span> *<span class="fl">0.003761</span>)]  <span class="co"># 0.003761 is the standard deviation from coef(fit_county)</span>
-<span class="no">coef_irr_data</span>[, <span class="no">q95</span> <span class="kw">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="no">pr100_ili_lag_1</span> + <span class="fl">1.645</span> *<span class="fl">0.003761</span>)]
-<span class="no">coef_irr_data</span>[, <span class="no">tag</span> <span class="kw">:=</span> <span class="st">"from_coef"</span>]
-<span class="no">coef_irr_data</span>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">coef_fit_county</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">fit_county</span><span class="op">)</span><span class="op">$</span><span class="va">season</span><span class="op">)</span>
+<span class="va">col_names_coef</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"pr100_ili_lag_1"</span><span class="op">)</span>
+<span class="va">coef_irr_data</span> <span class="op">&lt;-</span> <span class="va">coef_fit_county</span><span class="op">[</span>, <span class="va">..col_names_coef</span><span class="op">]</span>
+<span class="va">coef_irr_data</span><span class="op">[</span>, <span class="va">irr</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">pr100_ili_lag_1</span><span class="op">)</span><span class="op">]</span>
+<span class="va">coef_irr_data</span><span class="op">[</span>, <span class="va">q05</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">pr100_ili_lag_1</span> <span class="op">-</span> <span class="fl">1.645</span> <span class="op">*</span><span class="fl">0.003761</span><span class="op">)</span><span class="op">]</span>  <span class="co"># 0.003761 is the standard deviation from coef(fit_county)</span>
+<span class="va">coef_irr_data</span><span class="op">[</span>, <span class="va">q95</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">pr100_ili_lag_1</span> <span class="op">+</span> <span class="fl">1.645</span> <span class="op">*</span><span class="fl">0.003761</span><span class="op">)</span><span class="op">]</span>
+<span class="va">coef_irr_data</span><span class="op">[</span>, <span class="va">tag</span> <span class="op">:=</span> <span class="st">"from_coef"</span><span class="op">]</span>
+<span class="va">coef_irr_data</span>
 <span class="co">#&gt;     pr100_ili_lag_1      irr      q05      q95       tag</span>
 <span class="co">#&gt;  1:      0.03191717 1.032432 1.026064 1.038839 from_coef</span>
 <span class="co">#&gt;  2:      0.02728598 1.027662 1.021323 1.034039 from_coef</span>
@@ -756,10 +785,11 @@
 <span class="co">#&gt;  8:      0.03244757 1.032980 1.026609 1.039390 from_coef</span>
 <span class="co">#&gt;  9:      0.03068968 1.031165 1.024805 1.037565 from_coef</span>
 <span class="co">#&gt; 10:      0.02624064 1.026588 1.020256 1.032959 from_coef</span>
-<span class="co">#&gt; 11:      0.02986668 1.030317 1.023962 1.036711 from_coef</span></pre></body></html></div>
+<span class="co">#&gt; 11:      0.02986668 1.030317 1.023962 1.036711 from_coef</span></code></pre></div>
 <p>Add the correct seasons to the data.</p>
-<div class="sourceCode" id="cb30"><html><body><pre class="r"><span class="no">coef_irr_data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="kw">season</span> <span class="kw">=</span> <span class="no">aggregated_county_to_nation_irr</span>$<span class="no">season</span>, <span class="no">coef_irr_data</span>)
-<span class="no">coef_irr_data</span>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">coef_irr_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span>season <span class="op">=</span> <span class="va">aggregated_county_to_nation_irr</span><span class="op">$</span><span class="va">season</span>, <span class="va">coef_irr_data</span><span class="op">)</span>
+<span class="va">coef_irr_data</span>
 <span class="co">#&gt;        season pr100_ili_lag_1      irr      q05      q95       tag</span>
 <span class="co">#&gt;  1: 2009/2010      0.03191717 1.032432 1.026064 1.038839 from_coef</span>
 <span class="co">#&gt;  2: 2010/2011      0.02728598 1.027662 1.021323 1.034039 from_coef</span>
@@ -771,11 +801,12 @@
 <span class="co">#&gt;  8: 2016/2017      0.03244757 1.032980 1.026609 1.039390 from_coef</span>
 <span class="co">#&gt;  9: 2017/2018      0.03068968 1.031165 1.024805 1.037565 from_coef</span>
 <span class="co">#&gt; 10: 2018/2019      0.02624064 1.026588 1.020256 1.032959 from_coef</span>
-<span class="co">#&gt; 11: 2019/2020      0.02986668 1.030317 1.023962 1.036711 from_coef</span></pre></body></html></div>
+<span class="co">#&gt; 11: 2019/2020      0.02986668 1.030317 1.023962 1.036711 from_coef</span></code></pre></div>
 <p>rbindlist the two datasets together.</p>
-<div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="no">total_data_irr</span> <span class="kw">&lt;-</span> <span class="kw pkg">data.table</span><span class="kw ns">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html">rbindlist</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="no">coef_irr_data</span>, <span class="no">aggregated_county_to_nation_irr</span>), <span class="kw">use.names</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
-<span class="no">total_data_irr</span>[, <span class="no">pr100_ili_lag_1</span> <span class="kw">:=</span> <span class="kw">NULL</span>]
-<span class="no">total_data_irr</span>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">total_data_irr</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html">rbindlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">coef_irr_data</span>, <span class="va">aggregated_county_to_nation_irr</span><span class="op">)</span>, use.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="va">total_data_irr</span><span class="op">[</span>, <span class="va">pr100_ili_lag_1</span> <span class="op">:=</span> <span class="cn">NULL</span><span class="op">]</span>
+<span class="va">total_data_irr</span>
 <span class="co">#&gt;        season      irr      q05      q95        tag</span>
 <span class="co">#&gt;  1: 2009/2010 1.032432 1.026064 1.038839  from_coef</span>
 <span class="co">#&gt;  2: 2010/2011 1.027662 1.021323 1.034039  from_coef</span>
@@ -788,38 +819,39 @@
 <span class="co">#&gt;  9: 2017/2018 1.031165 1.024805 1.037565  from_coef</span>
 <span class="co">#&gt; 10: 2018/2019 1.026588 1.020256 1.032959  from_coef</span>
 <span class="co">#&gt; 11: 2019/2020 1.030317 1.023962 1.036711  from_coef</span>
-<span class="co">#&gt; 12: 2009/2010 1.032836 1.025608 1.040040 aggregated</span>
-<span class="co">#&gt; 13: 2010/2011 1.028173 1.020845 1.035339 aggregated</span>
-<span class="co">#&gt; 14: 2011/2012 1.027190 1.019737 1.034350 aggregated</span>
-<span class="co">#&gt; 15: 2012/2013 1.029227 1.021800 1.036664 aggregated</span>
-<span class="co">#&gt; 16: 2013/2014 1.025770 1.018088 1.033005 aggregated</span>
-<span class="co">#&gt; 17: 2014/2015 1.027996 1.020598 1.035665 aggregated</span>
-<span class="co">#&gt; 18: 2015/2016 1.022871 1.015720 1.029530 aggregated</span>
-<span class="co">#&gt; 19: 2016/2017 1.033282 1.026103 1.040307 aggregated</span>
-<span class="co">#&gt; 20: 2017/2018 1.031681 1.024183 1.038754 aggregated</span>
-<span class="co">#&gt; 21: 2018/2019 1.026798 1.019741 1.034325 aggregated</span>
-<span class="co">#&gt; 22: 2019/2020 1.030753 1.023499 1.037950 aggregated</span>
-<span class="co">#&gt;        season      irr      q05      q95        tag</span></pre></body></html></div>
-<div class="sourceCode" id="cb32"><html><body><pre class="r"><span class="no">q</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(
-  <span class="kw">data</span> <span class="kw">=</span> <span class="no">total_data_irr</span>,
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(
-    <span class="kw">x</span> <span class="kw">=</span> <span class="no">season</span>,
-    <span class="kw">group</span> <span class="kw">=</span> <span class="no">tag</span>,
-    <span class="kw">color</span> <span class="kw">=</span> <span class="no">tag</span>
-  )
-)
-<span class="no">q</span> <span class="kw">&lt;-</span> <span class="no">q</span> +  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html">geom_pointrange</a></span>(
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(
-    <span class="kw">y</span> <span class="kw">=</span> <span class="no">irr</span>,
-    <span class="kw">ymin</span> <span class="kw">=</span> <span class="no">q05</span>,
-    <span class="kw">ymax</span> <span class="kw">=</span> <span class="no">q95</span>
-  ),
-  <span class="kw">position</span> <span class="kw">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/position_dodge.html">position_dodge</a></span>(<span class="kw">width</span> <span class="kw">=</span> <span class="fl">0.3</span>)
-)
-<span class="no">q</span> <span class="kw">&lt;-</span> <span class="no">q</span> + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="kw">axis.text.x</span> <span class="kw">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_text</a></span>(<span class="kw">angle</span> <span class="kw">=</span> <span class="fl">90</span>),<span class="kw">axis.title.x</span><span class="kw">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span>())
-<span class="no">q</span> <span class="kw">&lt;-</span> <span class="no">q</span> + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span>(<span class="kw">y</span> <span class="kw">=</span> <span class="st">"Incident risk ratio"</span>)
-<span class="no">q</span> <span class="kw">&lt;-</span> <span class="no">q</span> + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"Incident risk ratio for ILI per season"</span>)
-<span class="no">q</span></pre></body></html></div>
+<span class="co">#&gt; 12: 2009/2010 1.031916 1.026308 1.038444 aggregated</span>
+<span class="co">#&gt; 13: 2010/2011 1.026973 1.021445 1.033672 aggregated</span>
+<span class="co">#&gt; 14: 2011/2012 1.026311 1.020262 1.033384 aggregated</span>
+<span class="co">#&gt; 15: 2012/2013 1.028274 1.022408 1.035125 aggregated</span>
+<span class="co">#&gt; 16: 2013/2014 1.024468 1.018562 1.031276 aggregated</span>
+<span class="co">#&gt; 17: 2014/2015 1.026993 1.021317 1.033835 aggregated</span>
+<span class="co">#&gt; 18: 2015/2016 1.021893 1.015511 1.028451 aggregated</span>
+<span class="co">#&gt; 19: 2016/2017 1.032732 1.026557 1.039005 aggregated</span>
+<span class="co">#&gt; 20: 2017/2018 1.031051 1.024517 1.036883 aggregated</span>
+<span class="co">#&gt; 21: 2018/2019 1.026022 1.020367 1.032560 aggregated</span>
+<span class="co">#&gt; 22: 2019/2020 1.029825 1.023684 1.035704 aggregated</span>
+<span class="co">#&gt;        season      irr      q05      q95        tag</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span>
+  data <span class="op">=</span> <span class="va">total_data_irr</span>, 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>
+    x <span class="op">=</span> <span class="va">season</span>,
+    group <span class="op">=</span> <span class="va">tag</span>, 
+    color <span class="op">=</span> <span class="va">tag</span>
+  <span class="op">)</span>
+<span class="op">)</span> 
+<span class="va">q</span> <span class="op">&lt;-</span> <span class="va">q</span> <span class="op">+</span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html">geom_pointrange</a></span><span class="op">(</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>
+    y <span class="op">=</span> <span class="va">irr</span>,
+    ymin <span class="op">=</span> <span class="va">q05</span>,
+    ymax <span class="op">=</span> <span class="va">q95</span>
+  <span class="op">)</span>,
+  position <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/position_dodge.html">position_dodge</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span>
+<span class="op">)</span>
+<span class="va">q</span> <span class="op">&lt;-</span> <span class="va">q</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">90</span><span class="op">)</span>,axis.title.x<span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="va">q</span> <span class="op">&lt;-</span> <span class="va">q</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"Incident risk ratio"</span><span class="op">)</span>
+<span class="va">q</span> <span class="op">&lt;-</span> <span class="va">q</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"Incident risk ratio for ILI per season"</span><span class="op">)</span>
+<span class="va">q</span></code></pre></div>
 <p><img src="intro_files/figure-html/unnamed-chunk-32-1.png" width="576"></p>
 <p>As we can see these intervals are very similar.</p>
 <p>The benefit of the simulated approach is that this process will be equally easy no matter the complexity of what we want to compute the IRR for. We do not have to take into account the variance-covariance matrix at any stage.</p>
@@ -841,7 +873,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

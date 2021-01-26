@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">attrib</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2020.9.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2021.1.26</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -127,7 +127,7 @@
     <p>Data fit using glmer from lme4 with family poisson to fit the dataset with the given formula.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>fit_attrib</span>(<span class='no'>data</span>, <span class='no'>response</span>, <span class='no'>fixef</span>, <span class='no'>ranef</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>fit_attrib</span><span class='op'>(</span><span class='va'>data</span>, <span class='va'>response</span>, <span class='va'>fixef</span>, <span class='va'>ranef</span>, offset <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -159,20 +159,21 @@
     <p>The model fit of the data with additional attributes offset, response and fit_fix.
 Offset and response are the same as in the input and fit_fix is the linear model of the fix effects.</p>
 <p>For more details see the help vignette:
-<code>vignette("intro", package="attrib")</code></p>
+<code><a href='../articles/intro.html'>vignette("intro", package="attrib")</a></code></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='no'>response</span> <span class='kw'>&lt;-</span> <span class='st'>"deaths"</span>
+<span class='va'>response</span> <span class='op'>&lt;-</span> <span class='st'>"deaths"</span>
 
-<span class='no'>fixef</span> <span class='kw'>&lt;-</span> <span class='st'>"pr100_ili_lag_1 + sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)"</span>
-<span class='no'>ranef</span> <span class='kw'>&lt;-</span> <span class='st'>" (pr100_ili_lag_1| season)"</span>
-<span class='no'>offset</span> <span class='kw'>&lt;-</span> <span class='st'>"log(pop)"</span>
+<span class='va'>fixef</span> <span class='op'>&lt;-</span> <span class='st'>"pr100_ili_lag_1 + sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)"</span>
+<span class='va'>ranef</span> <span class='op'>&lt;-</span> <span class='st'>" (pr100_ili_lag_1| season)"</span>
+<span class='va'>offset</span> <span class='op'>&lt;-</span> <span class='st'>"log(pop)"</span>
 
-<span class='no'>data</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>attrib</span><span class='kw ns'>::</span><span class='no'>data_fake_nation</span>
+<span class='va'>data</span> <span class='op'>&lt;-</span> <span class='fu'>attrib</span><span class='fu'>::</span><span class='va'><a href='data_fake_nation.html'>data_fake_nation</a></span>
 
 
-<span class='fu'>fit_attrib</span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>data</span>, <span class='kw'>response</span> <span class='kw'>=</span> <span class='no'>response</span>, <span class='kw'>fixef</span> <span class='kw'>=</span> <span class='no'>fixef</span>, <span class='kw'>ranef</span> <span class='kw'>=</span> <span class='no'>ranef</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='no'>offset</span>)</div><div class='output co'>#&gt; <span class='message'>boundary (singular) fit: see ?isSingular</span></div><div class='output co'>#&gt; Generalized linear mixed model fit by maximum likelihood (Laplace
+<span class='fu'>fit_attrib</span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>data</span>, response <span class='op'>=</span> <span class='va'>response</span>, fixef <span class='op'>=</span> <span class='va'>fixef</span>, ranef <span class='op'>=</span> <span class='va'>ranef</span>, offset <span class='op'>=</span> <span class='va'>offset</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>boundary (singular) fit: see ?isSingular</span></div><div class='output co'>#&gt; Generalized linear mixed model fit by maximum likelihood (Laplace
 #&gt;   Approximation) [glmerMod]
 #&gt;  Family: poisson  ( log )
 #&gt; Formula: deaths ~ pr100_ili_lag_1 + sin(2 * pi * (week - 1)/52) + cos(2 *  
@@ -190,7 +191,7 @@ Offset and response are the same as in the input and fit_fix is the linear model
 #&gt;                  -8.7962692                    0.0536117  
 #&gt; sin(2 * pi * (week - 1)/52)  cos(2 * pi * (week - 1)/52)  
 #&gt;                  -0.0003147                    0.0425239  
-#&gt; convergence code 0; 0 optimizer warnings; 1 lme4 warnings </div></pre>
+#&gt; optimizer (Nelder_Mead) convergence code: 0 (OK) ; 0 optimizer warnings; 1 lme4 warnings </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -206,7 +207,7 @@ Offset and response are the same as in the input and fit_fix is the linear model
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

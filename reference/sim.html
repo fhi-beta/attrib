@@ -74,7 +74,7 @@ This is then used to compute the expected response for all simulations and rows 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">attrib</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2020.9.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2021.1.26</span>
       </span>
     </div>
 
@@ -82,7 +82,7 @@ This is then used to compute the expected response for all simulations and rows 
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -131,7 +131,7 @@ of all the coefficients, from there respective posterior distributions.
 This is then used to compute the expected response for all simulations and rows in the input dataset.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>sim</span>(<span class='no'>fit</span>, <span class='no'>data</span>, <span class='no'>n_sim</span>)</pre>
+    <pre class="usage"><span class='fu'>sim</span><span class='op'>(</span><span class='va'>fit</span>, <span class='va'>data</span>, <span class='va'>n_sim</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -155,20 +155,22 @@ This is then used to compute the expected response for all simulations and rows 
     <p>A dataset with 500 simulations of the expected response for each row in the original dataset.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><code>vignette("intro", package="attrib")</code></p>
+    <p><code><a href='../articles/intro.html'>vignette("intro", package="attrib")</a></code></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='no'>response</span> <span class='kw'>&lt;-</span> <span class='st'>"deaths"</span>
-<span class='no'>fixef</span> <span class='kw'>&lt;-</span> <span class='st'>"pr100_ili_lag_1 + sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)"</span>
-<span class='no'>ranef</span> <span class='kw'>&lt;-</span> <span class='st'>" (pr100_ili_lag_1| season)"</span>
-<span class='no'>offset</span> <span class='kw'>&lt;-</span> <span class='st'>"log(pop)"</span>
+<span class='va'>response</span> <span class='op'>&lt;-</span> <span class='st'>"deaths"</span>
+<span class='va'>fixef</span> <span class='op'>&lt;-</span> <span class='st'>"pr100_ili_lag_1 + sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)"</span>
+<span class='va'>ranef</span> <span class='op'>&lt;-</span> <span class='st'>" (pr100_ili_lag_1| season)"</span>
+<span class='va'>offset</span> <span class='op'>&lt;-</span> <span class='st'>"log(pop)"</span>
 
-<span class='no'>data</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>attrib</span><span class='kw ns'>::</span><span class='no'>data_fake_nation</span>
+<span class='va'>data</span> <span class='op'>&lt;-</span> <span class='fu'>attrib</span><span class='fu'>::</span><span class='va'><a href='data_fake_nation.html'>data_fake_nation</a></span>
 
-<span class='no'>fit</span> <span class='kw'>&lt;-</span> <span class='fu'>fit_attrib</span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>data</span>, <span class='kw'>response</span> <span class='kw'>=</span> <span class='no'>response</span>, <span class='kw'>fixef</span> <span class='kw'>=</span> <span class='no'>fixef</span>, <span class='kw'>ranef</span> <span class='kw'>=</span> <span class='no'>ranef</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='no'>offset</span>)</div><div class='output co'>#&gt; <span class='message'>boundary (singular) fit: see ?isSingular</span></div><div class='input'>
-<span class='no'>n_sim</span> <span class='kw'>&lt;-</span> <span class='fl'>5</span>
-<span class='fu'>sim</span>(<span class='no'>fit</span>, <span class='no'>data</span>, <span class='no'>n_sim</span>)</div><div class='output co'>#&gt;       week    season year    yrwk    x location_code     pop pr100_ili
+<span class='va'>fit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fit_attrib.html'>fit_attrib</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>data</span>, response <span class='op'>=</span> <span class='va'>response</span>, fixef <span class='op'>=</span> <span class='va'>fixef</span>, ranef <span class='op'>=</span> <span class='va'>ranef</span>, offset <span class='op'>=</span> <span class='va'>offset</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>boundary (singular) fit: see ?isSingular</span></div><div class='input'>
+<span class='va'>n_sim</span> <span class='op'>&lt;-</span> <span class='fl'>5</span>
+<span class='fu'>sim</span><span class='op'>(</span><span class='va'>fit</span>, <span class='va'>data</span>, <span class='va'>n_sim</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;       week    season year    yrwk    x location_code     pop pr100_ili
 #&gt;    1:    1 2009/2010 2010 2010-01 24.0         norge 5367580  1.160403
 #&gt;    2:    1 2010/2011 2011 2011-01 24.0         norge 5367580  1.164511
 #&gt;    3:    1 2011/2012 2012 2012-01 24.0         norge 5367580  1.472767
@@ -207,7 +209,7 @@ This is then used to compute the expected response for all simulations and rows 
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
