@@ -1,12 +1,12 @@
-Meta
-doc
 *.Rcheck
-*.RData
-*.Rdata
+*.tar.gz
+*.[rR][dD][sS]
+*.[rR][dD][aA][tT][aA]
 
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
+
 # Folder config file
 Desktop.ini
 # Recycle Bin used on file shares
@@ -38,4 +38,5 @@ Temporary Items
 .Rproj.user
 .Rhistory
 inst/doc
-*.swp
+doc
+Meta
